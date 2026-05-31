@@ -61,6 +61,13 @@ public class UserServiceImp implements UserService {
         return toDto(saved);
     }
 
+    @Override
+    public UserResponsedto deleteuser(Long id) {
+        Users user = userrepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        userrepo.delete(user);
+        return toDto(user);
+    }
     private UserResponsedto toDto(Users s) {
         return UserResponsedto.builder()
                 .id(s.getId())

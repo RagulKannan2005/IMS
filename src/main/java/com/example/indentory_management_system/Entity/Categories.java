@@ -1,43 +1,33 @@
 package com.example.indentory_management_system.Entity;
 
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+
+import java.time.*;
 import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "categories")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Users {
+public class Categories {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String name;
 
     @Column(nullable = false)
-    private String firstName;
+    private String description;
 
     @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private String phone_number;
-
-    @Column(nullable = false)
-    private String role;
+    private String active_status;
 
     @Column(nullable = false)
     private LocalDate created_at;
@@ -55,10 +45,9 @@ public class Users {
     public void preUpdate() {
         this.updated_at = LocalDate.now();
     }
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Categories> categories;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "categories",cascade = CascadeType.ALL)
     private List<Products> products;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
 }

@@ -7,5 +7,5 @@ public interface UserService {
     UserResponsedto createUser(UserRequestdto userRequestdto);
     List<UserResponsedto> getUserAllusers();
     UserResponsedto updateuser(Long id, UserRequestdto userRequestdto);
-    
+    UserResponsedto deleteuser(Long id);
 }
