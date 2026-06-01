@@ -34,4 +34,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+        String message = "A record with this unique value already exists (Duplicate entry).";
+        
+        if (ex.getRootCause() != null) {
+            String rootMsg = ex.getRootCause().getMessage();
+            if (rootMsg != null && rootMsg.contains("Duplicate entry")) {
+                int start = rootMsg.indexOf("Duplicate entry");
+                int end = rootMsg.indexOf("for key");
+                if (start != -1 && end != -1) {
+                    message = rootMsg.substring(start, end).trim() + ". Please use a unique value.";
+                } else {
+                    message = rootMsg;
+                }
+            }
+        }
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", message));
+    }
+
 }
