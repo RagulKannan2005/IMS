@@ -61,4 +61,8 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Products> products;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = true)
+    private Supplier supplier;
+
 }

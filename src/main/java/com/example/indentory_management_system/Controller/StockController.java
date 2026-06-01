@@ -11,6 +11,7 @@ import com.example.indentory_management_system.dto.StockRequestdto;
 import com.example.indentory_management_system.dto.StockResponsedto;
 import com.example.indentory_management_system.dto.StockTransferRequestdto;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,7 +21,7 @@ public class StockController {
     private final StockService stockService;
 
     @PostMapping("/addstock")
-    public ResponseEntity<StockResponsedto> addStock(@RequestBody StockRequestdto dto) {
+    public ResponseEntity<StockResponsedto> addStock(@Valid @RequestBody StockRequestdto dto) {
         return ResponseEntity.ok(stockService.addStock(dto));
     }
 
@@ -30,7 +31,7 @@ public class StockController {
     }
 
     @PutMapping("/updatestock/{id}")
-    public ResponseEntity<StockResponsedto> updateStock(@PathVariable Long id, @RequestBody StockRequestdto dto) {
+    public ResponseEntity<StockResponsedto> updateStock(@PathVariable Long id, @Valid @RequestBody StockRequestdto dto) {
         return ResponseEntity.ok(stockService.updateStock(id, dto));
     }
 
@@ -41,7 +42,7 @@ public class StockController {
     }
 
     @PostMapping("/transferstock")
-    public ResponseEntity<List<StockResponsedto>> transferStock(@RequestBody StockTransferRequestdto dto) {
+    public ResponseEntity<List<StockResponsedto>> transferStock(@Valid @RequestBody StockTransferRequestdto dto) {
         StockRequestdto serviceDto = new StockRequestdto();
         serviceDto.setProduct_id(dto.getProduct_id());
         serviceDto.setQuantityOnHand(dto.getQuantityOnHand());

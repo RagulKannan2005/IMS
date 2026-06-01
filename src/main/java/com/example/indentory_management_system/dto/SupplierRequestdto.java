@@ -1,0 +1,27 @@
+package com.example.indentory_management_system.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class SupplierRequestdto {
+
+    @NotBlank(message = "suppliername is required")
+    private String supplierName;
+
+    @NotBlank(message = "contactperson is required")
+    private String contactPerson;
+
+    @NotBlank(message = "supplier_email is required")
+    private String supplier_email;
+
+    @NotBlank(message = "supplierPhone is required")
+    private String supplierPhone;
+
+    @NotBlank(message = "address is required")
+    private String address;
+
+    @NotBlank(message = "status is required")
+    private String status;
+    
+}

@@ -40,7 +40,7 @@ public class Supplier {
     private String address;
 
     @Column(nullable = false)
-    private Integer status;
+    private String status;
 
     @Column(nullable=false)
     private LocalDate createDate;

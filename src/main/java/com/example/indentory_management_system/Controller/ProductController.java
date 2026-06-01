@@ -27,13 +27,15 @@ public class ProductController {
     private final ProductService productservice;
 
     @PostMapping("/addproduct")
-    public ProductResponsedto addproduct(@RequestBody ProductRequestdto dto){
+    public ProductResponsedto addproduct(@Valid @RequestBody ProductRequestdto dto){
         return productservice.createProduct(dto);
     }
+
     @GetMapping("/allproducts")
     public ResponseEntity<List<ProductResponsedto>> getallproducts(){
         return ResponseEntity.ok().body(productservice.getAllProducts());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponsedto> getbyid(@PathVariable Long id){
         return ResponseEntity.ok().body(productservice.getByProductId(id));
@@ -43,23 +45,27 @@ public class ProductController {
     public ResponseEntity<List<ProductResponsedto>> getactiveproducts(){
         return ResponseEntity.ok().body(productservice.getActiveProducts());
     }
-    @GetMapping("/productname'{productname}")
+
+    @GetMapping("/productname/{productname}")
     public ResponseEntity<ProductResponsedto> getbyproductname(@PathVariable String productname){
         return ResponseEntity.ok().body(productservice.getByProductName(productname));
     }
-    @GetMapping("/productsku'{sku}")
+
+    @GetMapping("/productsku/{sku}")
     public ResponseEntity<ProductResponsedto> getbyproductsku(@PathVariable String sku){
         return ResponseEntity.ok().body(productservice.getByProductSku(sku));
     }
+
     @GetMapping("/productcategory/{productcategory}")
     public ResponseEntity<List<ProductResponsedto>> getbyproductcategory(@PathVariable String productcategory){
         return ResponseEntity.ok(productservice.findproductCategory(productcategory));
     }
     
     @PutMapping("/updateproduct/{id}")
-    public ResponseEntity<ProductResponsedto> updateproduct(@PathVariable Long id, @RequestBody ProductRequestdto dto){
+    public ResponseEntity<ProductResponsedto> updateproduct(@PathVariable Long id, @Valid @RequestBody ProductRequestdto dto){
         return ResponseEntity.ok().body(productservice.updateProduct(id, dto));
     }
+
     @DeleteMapping("/deleteproduct/{id}")
     public ResponseEntity<ProductResponsedto> deleteproduct(@PathVariable Long id){
         return ResponseEntity.ok().body(productservice.deleteProduct(id));
@@ -71,5 +77,4 @@ public class ProductController {
             @Valid @RequestBody StockAdjustmentRequest request) {
         return ResponseEntity.ok().body(productservice.adjustStock(id, request));
     }
-    
 }

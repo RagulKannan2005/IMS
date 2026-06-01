@@ -27,4 +27,6 @@ public class UserRequestdto {
     @NotBlank(message = "Role is required that must be either 'admin' or 'manager' or 'employee'")
     private String role;
 
+    private Long supplierId;
+
 }

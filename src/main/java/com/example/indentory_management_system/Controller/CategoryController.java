@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.indentory_management_system.Service.CategoryService;
 import com.example.indentory_management_system.dto.*;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,7 +20,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/newcategory")
-    public CategoryResponsedto createCategory(@RequestBody CategoryRequestdto categoryRequestdto) {
+    public CategoryResponsedto createCategory(@Valid @RequestBody CategoryRequestdto categoryRequestdto) {
         return categoryService.createCategory(categoryRequestdto);
     }
 
@@ -39,7 +40,7 @@ public class CategoryController {
     }
 
     @PutMapping("/updatecategory/{id}")
-    public CategoryResponsedto updateCategory(@PathVariable Long id, @RequestBody CategoryRequestdto categoryRequestdto) {
+    public CategoryResponsedto updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestdto categoryRequestdto) {
         return categoryService.updateCategory(id, categoryRequestdto);
     }
 

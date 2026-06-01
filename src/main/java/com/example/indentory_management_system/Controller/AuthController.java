@@ -1,5 +1,8 @@
 package com.example.indentory_management_system.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.JwtService;
 import com.example.indentory_management_system.dto.AuthRequest;
 import com.example.indentory_management_system.dto.AuthResponse;
@@ -25,6 +30,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
     @PostMapping("/login")
@@ -36,8 +42,19 @@ public class AuthController {
                 )
         );
 
+        Users user = userRepository.findByUsername(authRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + authRequest.getUsername()));
+
+        Map<String, Object> claims = new HashMap<>();
+        Long supplierId = null;
+        if (user.getSupplier() != null) {
+            supplierId = user.getSupplier().getId();
+            claims.put("supplierId", supplierId);
+        }
+        claims.put("role", user.getRole());
+
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
-        final String token = jwtService.generateToken(userDetails);
+        final String token = jwtService.generateToken(userDetails, claims);
 
         final String role = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -49,6 +66,7 @@ public class AuthController {
                 .token(token)
                 .username(userDetails.getUsername())
                 .role(role)
+                .supplierId(supplierId)
                 .build();
 
         return ResponseEntity.ok(authResponse);

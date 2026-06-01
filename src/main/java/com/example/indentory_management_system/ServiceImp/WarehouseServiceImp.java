@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.indentory_management_system.Entity.warehouses;
 import com.example.indentory_management_system.Repository.WarehouseRepository;
+import com.example.indentory_management_system.dto.warehousesRequestdto;
 import com.example.indentory_management_system.dto.warehousesResponsedto;
 import com.example.indentory_management_system.Service.WarehouseService;
 
@@ -19,7 +20,7 @@ public class WarehouseServiceImp implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
 
     @Override
-    public warehousesResponsedto addwarehouses(warehousesResponsedto w) {
+    public warehousesResponsedto addwarehouses(warehousesRequestdto w) {
         warehouses warehouse = warehouses.builder()
                 .name(w.getName())
                 .warehouseCode(w.getWarehouseCode())
@@ -27,7 +28,7 @@ public class WarehouseServiceImp implements WarehouseService {
                 .managerName(w.getManagerName())
                 .contactNumber(w.getContactNumber())
                 .email(w.getEmail())
-                .isActive(w.getIsActive())
+                .isActive("active")
                 .build();
         warehouses saved = warehouseRepository.save(warehouse);
         return toDto(saved);
@@ -63,7 +64,7 @@ public class WarehouseServiceImp implements WarehouseService {
     }
 
     @Override
-    public warehousesResponsedto updatewarehouse(Long id, warehousesResponsedto w) {
+    public warehousesResponsedto updatewarehouse(Long id, warehousesRequestdto w) {
         warehouses warehouse = warehouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found with id: " + id));
         warehouse.setName(w.getName());
@@ -72,7 +73,6 @@ public class WarehouseServiceImp implements WarehouseService {
         warehouse.setManagerName(w.getManagerName());
         warehouse.setContactNumber(w.getContactNumber());
         warehouse.setEmail(w.getEmail());
-        warehouse.setIsActive(w.getIsActive());
         warehouses saved = warehouseRepository.save(warehouse);
         return toDto(saved);
     }
@@ -87,8 +87,8 @@ public class WarehouseServiceImp implements WarehouseService {
                 .contactNumber(s.getContactNumber())
                 .email(s.getEmail())
                 .isActive(s.getIsActive())
+                .createdDate(s.getCreatedDate())
+                .updatedDate(s.getUpdatedDate())
                 .build();
-
     }
-
 }

@@ -19,4 +19,5 @@ public class UserResponsedto {
     private String email;
     private String phone_number;
     private String role;
+    private Long supplierId;
 }
