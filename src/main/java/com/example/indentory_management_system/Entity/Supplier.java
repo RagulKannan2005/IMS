@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -40,7 +41,7 @@ public class Supplier {
     private String address;
 
     @Column(nullable = false)
-    private String status;
+    private boolean status;
 
     @Column(nullable=false)
     private LocalDate createDate;
@@ -58,5 +59,11 @@ public class Supplier {
     public void preUpdate() {
         this.updateDate = LocalDate.now();
     }
-    
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
+    private Users user;
+
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Products> products;
 }

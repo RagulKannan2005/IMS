@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.indentory_management_system.Service.CategoryService;
 import com.example.indentory_management_system.dto.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("api/v1/category")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 public class CategoryController {
 
     private final CategoryService categoryService;

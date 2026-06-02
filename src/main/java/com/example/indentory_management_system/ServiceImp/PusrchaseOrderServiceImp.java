@@ -10,12 +10,15 @@ import com.example.indentory_management_system.Entity.PurchaseOrder;
 import com.example.indentory_management_system.Entity.Supplier;
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Exception.ResourceNotFoundException;
-import com.example.indentory_management_system.Repository.PurchaseOrderRepository;
-import com.example.indentory_management_system.Repository.SupplierRepository;
-import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Repository.*;
+import com.example.indentory_management_system.Entity.PurchaseOrderItem;
+import com.example.indentory_management_system.Entity.warehouses;
+import com.example.indentory_management_system.Entity.Products;
 import com.example.indentory_management_system.Service.PurchaseOrderService;
+import com.example.indentory_management_system.Service.StockService;
 import com.example.indentory_management_system.dto.PurchaseOrderRequestdto;
 import com.example.indentory_management_system.dto.PurchaseOrderResponsedto;
+import com.example.indentory_management_system.dto.StockRequestdto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +29,10 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     private final PurchaseOrderRepository purchaseorderrepo;
     private final SupplierRepository supplierrepo;
     private final UserRepository userRepository;
+    private final PurchaseOrderItemRepository purchaseOrderItemRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final ProductRepository productRepository;
+    private final StockService stockService;
 
     @Override
     public PurchaseOrderResponsedto addPurchaseOrder(PurchaseOrderRequestdto dto) {
@@ -131,8 +138,47 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     @Override
     public PurchaseOrderResponsedto receivePurchaseOrder(Long id) {
         PurchaseOrder order = purchaseorderrepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+
+        if ("RECEIVED".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Purchase order is already RECEIVED");
+        }
+
         order.setStatus("RECEIVED");
+        PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
+
+        warehouses defaultWarehouse = warehouseRepository.findAll().stream().findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("No warehouses available to receive stock"));
+
+        List<PurchaseOrderItem> items = purchaseOrderItemRepository.findByPurchaseOrderId(id);
+        for (PurchaseOrderItem item : items) {
+            int qtyToReceive = item.getQuantityReceived() > 0 ? item.getQuantityReceived() : item.getQuantityOrdered();
+            
+            StockRequestdto stockRequest = StockRequestdto.builder()
+                    .product_id(item.getProduct().getId())
+                    .warehouse_id(defaultWarehouse.getId())
+                    .quantityOnHand(qtyToReceive)
+                    .build();
+            stockService.addStock(stockRequest);
+
+            Products product = item.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + qtyToReceive);
+            productRepository.save(product);
+        }
+
+        return toDto(updatedOrder);
+    }
+
+    @Override
+    public PurchaseOrderResponsedto updateStatus(Long id, String status) {
+        PurchaseOrder order = purchaseorderrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+
+        if ("RECEIVED".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Cannot update status of a RECEIVED purchase order");
+        }
+
+        order.setStatus(status);
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
         return toDto(updatedOrder);
     }

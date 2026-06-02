@@ -16,12 +16,15 @@ import com.example.indentory_management_system.Service.UserService;
 import com.example.indentory_management_system.dto.UserRequestdto;
 import com.example.indentory_management_system.dto.UserResponsedto;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final UserService userService;
 

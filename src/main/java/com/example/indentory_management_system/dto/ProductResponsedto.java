@@ -20,4 +20,6 @@ public class ProductResponsedto {
     private int reorderLevel;
     private int reorderQuantity;
     private boolean isActive;
+    private Long supplierId;
+    private String supplierName;
 }

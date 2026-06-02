@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.indentory_management_system.Service.PurchaseOrderItemService;
@@ -21,6 +22,7 @@ public class PurchaseOrderItemController {
     private final PurchaseOrderItemService purchaseOrderItemService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<PurchaseOrderItemResponsedto> addPurchaseOrderItem(
             @Valid @RequestBody PurchaseOrderItemRequestdto dto) {
         PurchaseOrderItemResponsedto response = purchaseOrderItemService.addPurchaseOrderItem(dto);
@@ -28,6 +30,7 @@ public class PurchaseOrderItemController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<PurchaseOrderItemResponsedto> updatePurchaseOrderItem(
             @PathVariable Long id,
             @Valid @RequestBody PurchaseOrderItemRequestdto dto) {
@@ -36,24 +39,28 @@ public class PurchaseOrderItemController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Void> deletePurchaseOrderItem(@PathVariable Long id) {
         purchaseOrderItemService.deletePurchaseOrderItem(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<PurchaseOrderItemResponsedto> getPurchaseOrderItemById(@PathVariable Long id) {
         PurchaseOrderItemResponsedto response = purchaseOrderItemService.getPurchaseOrderItemById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<List<PurchaseOrderItemResponsedto>> getAllPurchaseOrderItems() {
         List<PurchaseOrderItemResponsedto> response = purchaseOrderItemService.getAllPurchaseOrderItems();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/purchaseorder/{purchaseOrderId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isSupplierForOrder(authentication, #purchaseOrderId))")
     public ResponseEntity<List<PurchaseOrderItemResponsedto>> getItemsByPurchaseOrder(
             @PathVariable Long purchaseOrderId) {
         List<PurchaseOrderItemResponsedto> response = purchaseOrderItemService.getItemsByPurchaseOrder(purchaseOrderId);
@@ -61,6 +68,7 @@ public class PurchaseOrderItemController {
     }
 
     @GetMapping("/product/{productId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<List<PurchaseOrderItemResponsedto>> getItemsByProduct(
             @PathVariable Long productId) {
         List<PurchaseOrderItemResponsedto> response = purchaseOrderItemService.getItemsByProduct(productId);

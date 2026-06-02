@@ -26,4 +26,6 @@ public interface PurchaseOrderService {
     List<PurchaseOrderResponsedto> findByOrderDateRange(LocalDate from, LocalDate to);
 
     PurchaseOrderResponsedto receivePurchaseOrder(Long id);
+
+    PurchaseOrderResponsedto updateStatus(Long id, String status);
 }

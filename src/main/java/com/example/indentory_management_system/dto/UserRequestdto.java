@@ -24,7 +24,7 @@ public class UserRequestdto {
     @NotBlank(message = "Phone number is required")
     private String phone_number;
 
-    @NotBlank(message = "Role is required that must be either 'admin' or 'manager' or 'employee'")
+    @NotBlank(message = "Role is required and must be either 'ADMIN', 'MANAGER', 'STAFF', or 'SUPPLIER'")
     private String role;
 
     private Long supplierId;

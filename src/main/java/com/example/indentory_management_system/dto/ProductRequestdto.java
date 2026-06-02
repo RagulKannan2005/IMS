@@ -38,4 +38,6 @@ public class ProductRequestdto {
 
     @NotBlank(message = "Category name is required")
     private String category;
+
+    private Long supplierId;
 }

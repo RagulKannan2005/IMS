@@ -6,8 +6,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.indentory_management_system.Entity.Supplier;
+import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Exception.ResourceNotFoundException;
 import com.example.indentory_management_system.Repository.SupplierRepository;
+import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.SupplierService;
 import com.example.indentory_management_system.dto.SupplierRequestdto;
 import com.example.indentory_management_system.dto.SupplierResponsedto;
@@ -19,16 +21,24 @@ import lombok.RequiredArgsConstructor;
 public class SupplierServiceImp implements SupplierService {
 
     private final SupplierRepository supplierrepo;
+    private final UserRepository userRepository;
 
     @Override
     public SupplierResponsedto addSupplier(SupplierRequestdto dto) {
+        Users user = null;
+        if (dto.getUserId() != null) {
+            user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
+        }
+
         Supplier supplier = Supplier.builder()
                 .supplierName(dto.getSupplierName())
                 .contactPerson(dto.getContactPerson())
                 .supplier_email(dto.getSupplier_email())
                 .supplierPhone(dto.getSupplierPhone())
                 .address(dto.getAddress())
-                .status(dto.getStatus())
+                .status(dto.isStatus())
+                .user(user)
                 .build();
         supplierrepo.save(supplier);
         return toDto(supplier);
@@ -39,12 +49,19 @@ public class SupplierServiceImp implements SupplierService {
         Supplier supplier = supplierrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
 
+        Users user = null;
+        if (dto.getUserId() != null) {
+            user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
+        }
+
         supplier.setSupplierName(dto.getSupplierName());
         supplier.setContactPerson(dto.getContactPerson());
         supplier.setSupplier_email(dto.getSupplier_email());
         supplier.setSupplierPhone(dto.getSupplierPhone());
         supplier.setAddress(dto.getAddress());
-        supplier.setStatus(dto.getStatus());
+        supplier.setStatus(dto.isStatus());
+        supplier.setUser(user);
 
         supplierrepo.save(supplier);
         return toDto(supplier);
@@ -88,7 +105,7 @@ public class SupplierServiceImp implements SupplierService {
     }
 
     @Override
-    public List<SupplierResponsedto> getSuppliersByStatus(String status){
+    public List<SupplierResponsedto> getSuppliersByStatus(boolean status){
         List<Supplier> suppliers = supplierrepo.findSuppliersByStatus(status);
         return suppliers.stream()
                 .map(this::toDto)
@@ -111,7 +128,8 @@ public class SupplierServiceImp implements SupplierService {
                 .supplier_email(s.getSupplier_email())
                 .supplierPhone(s.getSupplierPhone())
                 .address(s.getAddress())
-                .status(s.getStatus())
+                .status(s.isStatus())
+                .userId(s.getUser() != null ? s.getUser().getId() : null)
                 .build();
     }
 }

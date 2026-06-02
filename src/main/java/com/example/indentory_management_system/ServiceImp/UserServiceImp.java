@@ -40,9 +40,15 @@ public class UserServiceImp implements UserService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .phone_number(dto.getPhone_number())
                 .role(dto.getRole())
-                .supplier(supplier)
                 .build();
         Users saved = userrepo.save(user);
+
+        if (supplier != null) {
+            supplier.setUser(saved);
+            supplierrepo.save(supplier);
+            saved.setSupplier(supplier);
+        }
+
         return toDto(saved);
     }
 
@@ -63,19 +69,33 @@ public class UserServiceImp implements UserService {
                     .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + userRequestdto.getSupplierId()));
         }
 
+        if (user.getSupplier() != null && !user.getSupplier().equals(supplier)) {
+            Supplier oldSupplier = user.getSupplier();
+            oldSupplier.setUser(null);
+            supplierrepo.save(oldSupplier);
+        }
+
         user.setUsername(userRequestdto.getUsername());
         user.setFirstName(userRequestdto.getFirstName());
         user.setLastName(userRequestdto.getLastName());
         user.setEmail(userRequestdto.getEmail());
         user.setPhone_number(userRequestdto.getPhone_number());
         user.setRole(userRequestdto.getRole());
-        user.setSupplier(supplier);
 
         if (userRequestdto.getPassword() != null && !userRequestdto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userRequestdto.getPassword()));
         }
 
         Users saved = userrepo.save(user);
+
+        if (supplier != null) {
+            supplier.setUser(saved);
+            supplierrepo.save(supplier);
+            saved.setSupplier(supplier);
+        } else {
+            saved.setSupplier(null);
+        }
+
         return toDto(saved);
     }
 

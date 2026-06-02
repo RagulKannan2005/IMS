@@ -5,17 +5,19 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.indentory_management_system.Entity.Categories;
+import com.example.indentory_management_system.Entity.Supplier;
+import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Entity.Products;
+import com.example.indentory_management_system.Entity.Categories;
 import com.example.indentory_management_system.Repository.CategoriesRepository;
 import com.example.indentory_management_system.Repository.ProductRepository;
+import com.example.indentory_management_system.Repository.SupplierRepository;
 import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.ProductService;
 import com.example.indentory_management_system.dto.PriceUpdateRequestdto;
 import com.example.indentory_management_system.dto.ProductRequestdto;
 import com.example.indentory_management_system.dto.ProductResponsedto;
 import com.example.indentory_management_system.dto.StockAdjustmentRequest;
-import com.example.indentory_management_system.Entity.Users;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class ProductServiceImp implements ProductService {
     private final ProductRepository productrepo;
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
+    private final SupplierRepository supplierRepository;
 
     @Override
     public ProductResponsedto createProduct(ProductRequestdto dto) {
@@ -36,6 +39,14 @@ public class ProductServiceImp implements ProductService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        Supplier supplier = null;
+        if (dto.getSupplierId() != null) {
+            supplier = supplierRepository.findById(dto.getSupplierId())
+                    .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + dto.getSupplierId()));
+        } else if (currentUser.getSupplier() != null) {
+            supplier = currentUser.getSupplier();
+        }
 
         Products products = Products.builder()
                 .sku(dto.getSku())
@@ -49,6 +60,7 @@ public class ProductServiceImp implements ProductService {
                 .isActive("active".equalsIgnoreCase(dto.getActive_status()))
                 .categories(category)
                 .user(currentUser)
+                .supplier(supplier)
                 .build();
 
         Products savedProduct = productrepo.save(products);
@@ -109,6 +121,12 @@ public class ProductServiceImp implements ProductService {
         product.setReorderQuantity(dto.getReorderQuantity());
         product.setActive("active".equalsIgnoreCase(dto.getActive_status()));
         product.setCategories(category);
+
+        if (dto.getSupplierId() != null) {
+            Supplier supplier = supplierRepository.findById(dto.getSupplierId())
+                    .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + dto.getSupplierId()));
+            product.setSupplier(supplier);
+        }
 
         Products updatedProduct = productrepo.save(product);
         return mapToResponseDto(updatedProduct);
@@ -172,6 +190,15 @@ public class ProductServiceImp implements ProductService {
                 .reorderLevel(product.getReorderLevel())
                 .reorderQuantity(product.getReorderQuantity())
                 .isActive(product.isActive())
+                .supplierId(product.getSupplier() != null ? product.getSupplier().getId() : null)
+                .supplierName(product.getSupplier() != null ? product.getSupplier().getSupplierName() : null)
                 .build();
+    }
+
+    @Override
+    public List<ProductResponsedto> getProductsBySupplierId(Long supplierId) {
+        return productrepo.findBySupplierId(supplierId).stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
     }
 }

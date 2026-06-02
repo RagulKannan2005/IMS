@@ -21,7 +21,7 @@ public class SupplierRequestdto {
     @NotBlank(message = "address is required")
     private String address;
 
-    @NotBlank(message = "status is required")
-    private String status;
-    
+    private boolean status;
+
+    private Long userId;
 }

@@ -19,7 +19,7 @@ public interface SupplierService {
 
     public List<SupplierResponsedto> searchSuppliers(String keyword);
 
-    public List<SupplierResponsedto> getSuppliersByStatus(String status);
+    public List<SupplierResponsedto> getSuppliersByStatus(boolean status);
 
     List<SupplierResponsedto> getSuppliersByProduct(String productName);
 
