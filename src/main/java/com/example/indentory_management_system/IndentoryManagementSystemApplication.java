@@ -1,14 +1,13 @@
 package com.example.indentory_management_system;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Repository.UserRepository;
-import java.time.LocalDate;
 
 @SpringBootApplication
 public class IndentoryManagementSystemApplication {
