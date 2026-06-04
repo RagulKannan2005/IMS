@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Default Theme: Dark (Interstellar Obsidian & Neon Cyan-Indigo) */
+:root {
+  --bg-color: #080b11;
+  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.08) 50%, rgba(8, 11, 17, 0) 100%);
+  --card-bg: rgba(17, 24, 39, 0.65);
+  --card-border: rgba(255, 255, 255, 0.07);
+  --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 80px rgba(6, 182, 212, 0.05);
+  
+  /* Text */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Inputs */
+  --input-bg: rgba(10, 15, 30, 0.5);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-focus-border: #06b6d4;
+  --input-focus-shadow: rgba(6, 182, 212, 0.2);
+  
+  /* Accents */
+  --accent-primary: #06b6d4;
+  --accent-secondary: #6366f1;
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
+  --accent-hover-gradient: linear-gradient(135deg, #0891b2 0%, #4f46e5 100%);
+  --heading-gradient: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  
+  /* Statuses */
+  --error: #ef4444;
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --success: #10b981;
+  
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Theme: Pearl-Cream & Sunset Rose-Amber */
+[data-theme="light"] {
+  --bg-color: #fbfaf7;
+  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.08) 0%, rgba(245, 158, 11, 0.06) 40%, rgba(251, 250, 247, 0) 100%);
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(244, 63, 94, 0.12);
+  --card-shadow: 0 20px 40px rgba(244, 63, 94, 0.06), 0 0 60px rgba(245, 158, 11, 0.04);
+  
+  /* Text */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  /* Inputs */
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-border: rgba(244, 63, 94, 0.15);
+  --input-focus-border: #f43f5e;
+  --input-focus-shadow: rgba(244, 63, 94, 0.15);
+  
+  /* Accents */
+  --accent-primary: #f43f5e;
+  --accent-secondary: #f59e0b;
+  --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #f59e0b 100%);
+  --accent-hover-gradient: linear-gradient(135deg, #e11d48 0%, #d97706 100%);
+  --heading-gradient: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  background-image: var(--bg-gradient);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color 0.5s ease, background-image 0.5s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .auth-header h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+}
+
+/* --- Animated Icons & Micro-animations --- */
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+  z-index: 10;
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(15deg) scale(1.08);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.theme-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Form Icons Styling */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+.form-group input {
+  padding-left: 44px !important;
+}
+
+/* Icon Animations on Focus & Hover */
+.form-group:focus-within .input-icon,
+.form-group:hover .input-icon {
+  color: var(--accent-primary);
+  transform: scale(1.05);
+}
+
+/* Mail Envelope Flap Animation */
+.form-group:focus-within .input-icon-mail .mail-flap,
+.form-group:hover .input-icon-mail .mail-flap {
+  animation: flapMove 0.6s ease-in-out forwards;
+}
+
+@keyframes flapMove {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-2px) scaleY(0.8); }
+  100% { transform: translateY(0); }
+}
+
+/* Lock Shackle Slide Animation */
+.form-group:focus-within .input-icon-lock .lock-shackle,
+.form-group:hover .input-icon-lock .lock-shackle {
+  animation: unlockMove 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes unlockMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px) translateX(1px); }
+}
+
+/* User Head Bobbing */
+.form-group:focus-within .input-icon-user .user-head,
+.form-group:hover .input-icon-user .user-head {
+  animation: userBob 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes userBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-1.5px); }
+}
+
+/* Phone Ring Animation */
+.form-group:focus-within .input-icon-phone,
+.form-group:hover .input-icon-phone {
+  animation: phoneRing 0.5s ease-in-out infinite;
+}
+
+@keyframes phoneRing {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(8deg); }
+  50% { transform: rotate(-8deg); }
+  75% { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Role Gear Rotation */
+.form-group:focus-within .input-icon-role,
+.form-group:hover .input-icon-role {
+  animation: gearSpin 3s linear infinite;
+}
+
+@keyframes gearSpin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Supplier Key Animation */
+.form-group:focus-within .input-icon-key,
+.form-group:hover .input-icon-key {
+  animation: keyTurn 0.8s ease-in-out forwards;
+}
+
+@keyframes keyTurn {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-30deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* global animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
