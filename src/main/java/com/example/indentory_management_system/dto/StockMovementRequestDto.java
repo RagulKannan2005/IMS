@@ -15,21 +15,21 @@ import lombok.NoArgsConstructor;
 public class StockMovementRequestDto {
 
     @NotNull(message = "Product ID is required")
-    private Long product_id;
+    private Long productId;
 
     @NotNull(message = "Warehouse ID is required")
-    private Long warehouse_id;
+    private Long warehouseId;
 
     @NotBlank(message = "Movement type is required (IN, OUT, ADJUSTMENT, TRANSFER)")
-    private String movement_type;
+    private String movementType;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
 
-    private String reference_no;
+    private String referenceNo;
 
-    private Long performed_by;
+    private Long performedBy;
 
     private String remarks;
 

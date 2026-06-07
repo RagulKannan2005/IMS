@@ -17,7 +17,9 @@ public class UserResponsedto {
     private String lastName;
     private String password;
     private String email;
-    private String phone_number;
+    private String phoneNumber;
     private String role;
     private Long supplierId;
+    private Long createdById;
+    private String createdByUsername;
 }

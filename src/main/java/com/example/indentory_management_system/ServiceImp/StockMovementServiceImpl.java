@@ -39,16 +39,16 @@ public class StockMovementServiceImpl implements StockMovementService {
     @Override
     @Transactional
     public StockMovementResponseDto createMovement(StockMovementRequestDto dto) {
-        Products product = productRepo.findById(dto.getProduct_id())
+        Products product = productRepo.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        warehouses warehouse = warehouseRepo.findById(dto.getWarehouse_id())
+        warehouses warehouse = warehouseRepo.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
         // Determine who performed the action
         Users user = null;
-        if (dto.getPerformed_by() != null) {
-            user = userRepo.findById(dto.getPerformed_by())
+        if (dto.getPerformedBy() != null) {
+            user = userRepo.findById(dto.getPerformedBy())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         } else {
             String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -56,15 +56,15 @@ public class StockMovementServiceImpl implements StockMovementService {
                     .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
         }
 
-        String type = dto.getMovement_type().toUpperCase();
+        String type = dto.getMovementType().toUpperCase();
         Integer qty = dto.getQuantity();
-        String refNo = dto.getReference_no() != null ? dto.getReference_no() : "REF-" + UUID.randomUUID().toString().substring(0, 8);
+        String refNo = dto.getReferenceNo() != null ? dto.getReferenceNo() : "REF-" + UUID.randomUUID().toString().substring(0, 8);
 
         StockMovement mainMovement = null;
 
         if ("IN".equals(type)) {
             // Adjust Physical Stock (IN)
-            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getWarehouseId())
                     .map(existingStock -> {
                         existingStock.setQuantityOnHand(existingStock.getQuantityOnHand() + qty);
                         existingStock.setUpdatedAt(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 
         } else if ("OUT".equals(type)) {
             // Adjust Physical Stock (OUT)
-            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getWarehouseId())
                     .orElseThrow(() -> new RuntimeException("Stock record not found in warehouse"));
 
             if (stock.getQuantityOnHand() < qty) {
@@ -118,7 +118,7 @@ public class StockMovementServiceImpl implements StockMovementService {
 
         } else if ("ADJUSTMENT".equals(type)) {
             // Adjust Physical Stock
-            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+            Stock stock = stockRepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getWarehouseId())
                     .map(existingStock -> {
                         existingStock.setQuantityOnHand(existingStock.getQuantityOnHand() + qty);
                         existingStock.setUpdatedAt(LocalDateTime.now());
@@ -159,7 +159,7 @@ public class StockMovementServiceImpl implements StockMovementService {
                     .orElseThrow(() -> new ResourceNotFoundException("Destination warehouse not found"));
 
             // Get source stock
-            Stock sourceStock = stockRepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+            Stock sourceStock = stockRepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getWarehouseId())
                     .orElseThrow(() -> new ResourceNotFoundException("Source stock record not found"));
 
             if (sourceStock.getQuantityOnHand() < qty) {
@@ -167,7 +167,7 @@ public class StockMovementServiceImpl implements StockMovementService {
             }
 
             // Get destination stock
-            Stock destinationStock = stockRepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getToWarehouseId())
+            Stock destinationStock = stockRepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getToWarehouseId())
                     .orElseGet(() -> Stock.builder()
                             .Products(product)
                             .warehouses(toWarehouse)
@@ -263,17 +263,17 @@ public class StockMovementServiceImpl implements StockMovementService {
         StockMovement movement = stockMovementRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Stock movement not found with id: " + id));
 
-        Products product = productRepo.findById(dto.getProduct_id())
+        Products product = productRepo.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        warehouses warehouse = warehouseRepo.findById(dto.getWarehouse_id())
+        warehouses warehouse = warehouseRepo.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
         movement.setProducts(product);
         movement.setWarehouses(warehouse);
-        movement.setMovementType(dto.getMovement_type().toUpperCase());
+        movement.setMovementType(dto.getMovementType().toUpperCase());
         movement.setQuantity(dto.getQuantity());
-        movement.setReferenceNo(dto.getReference_no());
+        movement.setReferenceNo(dto.getReferenceNo());
         movement.setRemarks(dto.getRemarks());
 
         stockMovementRepo.save(movement);

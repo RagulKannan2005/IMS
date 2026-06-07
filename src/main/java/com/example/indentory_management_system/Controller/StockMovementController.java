@@ -23,7 +23,7 @@ public class StockMovementController {
     private final StockMovementService stockMovementService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('STAFF') and (#dto.movement_type == 'IN' or #dto.movement_type == 'OUT'))")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('STAFF') and (#dto.movementType == 'IN' or #dto.movementType == 'OUT'))")
     public ResponseEntity<StockMovementResponseDto> createMovement(@Valid @RequestBody StockMovementRequestDto dto) {
         return ResponseEntity.ok(stockMovementService.createMovement(dto));
     }

@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.JwtService;
+import com.example.indentory_management_system.Service.UserService;
 import com.example.indentory_management_system.dto.AuthRequest;
 import com.example.indentory_management_system.dto.AuthResponse;
+import com.example.indentory_management_system.dto.UserRequestdto;
+import com.example.indentory_management_system.dto.UserResponsedto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +35,31 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponsedto> register(@Valid @RequestBody UserRequestdto dto) {
+        return ResponseEntity.status(201).body(userService.createUser(dto));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getUsername(),
-                        authRequest.getPassword()
-                )
-        );
+        System.out.println("Login attempt - Email: " + authRequest.getEmail() + ", Password: " + authRequest.getPassword());
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authRequest.getEmail(),
+                            authRequest.getPassword()
+                    )
+            );
+            System.out.println("Authentication successful for: " + authRequest.getEmail());
+        } catch (Exception e) {
+            System.out.println("Authentication failed for: " + authRequest.getEmail() + " due to: " + e.getMessage());
+            throw e;
+        }
 
-        Users user = userRepository.findByUsername(authRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + authRequest.getUsername()));
+        Users user = userRepository.findByEmail(authRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + authRequest.getEmail()));
 
         Map<String, Object> claims = new HashMap<>();
         Long supplierId = null;
@@ -53,7 +69,7 @@ public class AuthController {
         }
         claims.put("role", user.getRole());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
         final String token = jwtService.generateToken(userDetails, claims);
 
         final String role = userDetails.getAuthorities().stream()
@@ -67,6 +83,9 @@ public class AuthController {
                 .username(userDetails.getUsername())
                 .role(role)
                 .supplierId(supplierId)
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
                 .build();
 
         return ResponseEntity.ok(authResponse);

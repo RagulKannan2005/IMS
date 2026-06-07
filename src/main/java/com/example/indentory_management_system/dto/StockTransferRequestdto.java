@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class StockTransferRequestdto {
 
-    private Long product_id;
+    private Long productId;
     private Long fromWarehouseId;
     private Long toWarehouseId;
     private Integer quantityOnHand;

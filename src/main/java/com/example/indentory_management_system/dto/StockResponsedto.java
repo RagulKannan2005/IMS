@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class StockResponsedto {
 
     private Long id;
-    private String productname;
-    private String warehousename;
+    private String productName;
+    private String warehouseName;
     private Integer quantityOnHand;
 
 }

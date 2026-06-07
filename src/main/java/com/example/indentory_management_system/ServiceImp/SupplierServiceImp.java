@@ -34,7 +34,7 @@ public class SupplierServiceImp implements SupplierService {
         Supplier supplier = Supplier.builder()
                 .supplierName(dto.getSupplierName())
                 .contactPerson(dto.getContactPerson())
-                .supplier_email(dto.getSupplier_email())
+                .supplier_email(dto.getSupplierEmail())
                 .supplierPhone(dto.getSupplierPhone())
                 .address(dto.getAddress())
                 .status(dto.isStatus())
@@ -57,7 +57,7 @@ public class SupplierServiceImp implements SupplierService {
 
         supplier.setSupplierName(dto.getSupplierName());
         supplier.setContactPerson(dto.getContactPerson());
-        supplier.setSupplier_email(dto.getSupplier_email());
+        supplier.setSupplier_email(dto.getSupplierEmail());
         supplier.setSupplierPhone(dto.getSupplierPhone());
         supplier.setAddress(dto.getAddress());
         supplier.setStatus(dto.isStatus());
@@ -125,7 +125,7 @@ public class SupplierServiceImp implements SupplierService {
                 .id(s.getId())
                 .supplierName(s.getSupplierName())
                 .contactPerson(s.getContactPerson())
-                .supplier_email(s.getSupplier_email())
+                .supplierEmail(s.getSupplier_email())
                 .supplierPhone(s.getSupplierPhone())
                 .address(s.getAddress())
                 .status(s.isStatus())

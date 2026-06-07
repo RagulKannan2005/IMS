@@ -1,1 +1,14 @@
-<p>maindashboard works!</p>
+@if (authService.userRole() === 'ADMIN') {
+  <app-admin-dashboard class="fade-in"></app-admin-dashboard>
+} @else if (authService.userRole() === 'MANAGER') {
+  <app-manager-dashboard class="fade-in"></app-manager-dashboard>
+} @else if (authService.userRole() === 'STAFF') {
+  <app-staff-dashboard class="fade-in"></app-staff-dashboard>
+} @else if (authService.userRole() === 'SUPPLIER') {
+  <app-supplier-dashboard class="fade-in"></app-supplier-dashboard>
+} @else {
+  <div style="text-align: center; padding: 48px; background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--card-border);">
+    <h2 style="color: var(--error); margin-bottom: 8px;">Access Denied</h2>
+    <p style="color: var(--text-secondary);">No valid user session or role found. Please log in again.</p>
+  </div>
+}

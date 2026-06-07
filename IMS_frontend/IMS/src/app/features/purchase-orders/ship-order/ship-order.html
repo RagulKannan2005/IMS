@@ -1,0 +1,66 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header">
+    <h2 class="panel-title" style="font-size: 20px;">Dispatch Order Shipment</h2>
+    <span class="status-pill warning" style="text-transform: uppercase;">
+      {{ purchaseOrder?.status || 'APPROVED' }}
+    </span>
+  </div>
+
+  <div class="po-details-card" *ngIf="purchaseOrder">
+    <div class="detail-row">
+      <div><strong>PO Number:</strong> <code>{{ purchaseOrder.poNumber }}</code></div>
+      <div><strong>Total Amount:</strong> {{ purchaseOrder.totalAmount | currency }}</div>
+      <div><strong>Expected Delivery:</strong> {{ purchaseOrder.expectedDeliveryDate | date:'mediumDate' }}</div>
+    </div>
+  </div>
+
+  <form [formGroup]="shipForm" (ngSubmit)="submit()" class="ship-form" style="margin-top: 24px; max-width: 500px;">
+    <!-- Carrier Name -->
+    <div class="form-group">
+      <label for="carrierName">Shipping Carrier <span class="required">*</span></label>
+      <input
+        type="text"
+        id="carrierName"
+        formControlName="carrierName"
+        class="form-control"
+        placeholder="e.g. FedEx, DHL, UPS"
+        [class.invalid]="shipForm.get('carrierName')?.touched && shipForm.get('carrierName')?.invalid">
+      <small class="error-msg" *ngIf="shipForm.get('carrierName')?.touched && shipForm.get('carrierName')?.invalid">
+        Carrier name is required.
+      </small>
+    </div>
+
+    <!-- Tracking Number -->
+    <div class="form-group">
+      <label for="trackingNumber">Tracking Number / Waybill <span class="required">*</span></label>
+      <input
+        type="text"
+        id="trackingNumber"
+        formControlName="trackingNumber"
+        class="form-control"
+        placeholder="e.g. 1Z999AA10123456784"
+        [class.invalid]="shipForm.get('trackingNumber')?.touched && shipForm.get('trackingNumber')?.invalid">
+      <small class="error-msg" *ngIf="shipForm.get('trackingNumber')?.touched && shipForm.get('trackingNumber')?.invalid">
+        Tracking number is required.
+      </small>
+    </div>
+
+    <!-- Remarks -->
+    <div class="form-group">
+      <label for="remarks">Shipment Remarks</label>
+      <textarea
+        id="remarks"
+        formControlName="remarks"
+        class="form-control"
+        rows="4"
+        placeholder="Add shipping conditions or courier notes..."></textarea>
+    </div>
+
+    <div class="form-actions" style="margin-top: 30px; display: flex; gap: 16px;">
+      <button type="submit" class="btn primary-btn" [disabled]="shipForm.invalid || submitting">
+        {{ submitting ? 'Marking as Shipped...' : 'Mark Order as Shipped' }}
+      </button>
+      <a routerLink="/supplier/orders" class="btn secondary-btn">Cancel</a>
+    </div>
+  </form>
+</div>

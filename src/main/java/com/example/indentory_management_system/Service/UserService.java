@@ -8,4 +8,5 @@ public interface UserService {
     List<UserResponsedto> getUserAllusers();
     UserResponsedto updateuser(Long id, UserRequestdto userRequestdto);
     UserResponsedto deleteuser(Long id);
+    com.example.indentory_management_system.Entity.Users findByEmail(String email);
 }

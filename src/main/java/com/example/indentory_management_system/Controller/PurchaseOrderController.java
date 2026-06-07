@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/purrchaseorder")
+@RequestMapping("/api/v1/purchase-orders")
 @RequiredArgsConstructor
 public class PurchaseOrderController {
     private final PurchaseOrderService purchaseorderservice;

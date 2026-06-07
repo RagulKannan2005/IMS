@@ -2,10 +2,17 @@ package com.example.indentory_management_system.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Exception.ResourceNotFoundException;
+import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Service.ProductService;
+import com.example.indentory_management_system.Service.PurchaseOrderService;
 import com.example.indentory_management_system.Service.SupplierService;
 import com.example.indentory_management_system.dto.*;
+
 import java.util.*;
 
 import jakarta.validation.Valid;
@@ -13,10 +20,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/supplier")
+@RequestMapping("/api/v1/suppliers")
 public class SupplierController {
     
     private final SupplierService supplierService;
+    private final ProductService productService;
+    private final PurchaseOrderService purchaseOrderService;
+    private final UserRepository userRepository;
 
     @PostMapping("/addsupplier")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -65,5 +75,29 @@ public class SupplierController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
     public ResponseEntity<List<SupplierResponsedto>> getSuppliersByName(@PathVariable String name){
         return ResponseEntity.ok(supplierService.getSuppliersByName(name));
+    }
+
+    @GetMapping("/my-products")
+    @PreAuthorize("hasRole('SUPPLIER')")
+    public ResponseEntity<List<ProductResponsedto>> getMyProducts(Authentication authentication) {
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getSupplier() == null) {
+            throw new ResourceNotFoundException("No supplier profile associated with this user");
+        }
+        return ResponseEntity.ok(productService.getProductsBySupplierId(user.getSupplier().getId()));
+    }
+
+    @GetMapping("/my-orders")
+    @PreAuthorize("hasRole('SUPPLIER')")
+    public ResponseEntity<List<PurchaseOrderResponsedto>> getMyOrders(Authentication authentication) {
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getSupplier() == null) {
+            throw new ResourceNotFoundException("No supplier profile associated with this user");
+        }
+        return ResponseEntity.ok(purchaseOrderService.findBySupplierId(user.getSupplier().getId()));
     }
 }

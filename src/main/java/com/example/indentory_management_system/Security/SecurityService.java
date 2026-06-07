@@ -30,7 +30,7 @@ public class SecurityService {
             return null;
         }
         String username = ((UserDetails) principal).getUsername();
-        return userRepository.findByUsername(username).orElse(null);
+        return userRepository.findByEmail(username).orElse(null);
     }
 
     public boolean isProductOwner(Authentication authentication, Long productId) {

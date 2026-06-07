@@ -1,0 +1,87 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header">
+    <h2 class="panel-title" style="font-size: 20px;">Receive Purchase Order</h2>
+    <span class="status-pill warning" style="text-transform: uppercase;">
+      {{ purchaseOrder?.status || 'PENDING' }}
+    </span>
+  </div>
+
+  <div class="po-details-card" *ngIf="purchaseOrder">
+    <div class="detail-row">
+      <div><strong>PO Number:</strong> <code>{{ purchaseOrder.poNumber }}</code></div>
+      <div><strong>Supplier:</strong> {{ purchaseOrder.supplierName }}</div>
+      <div><strong>Ordered Date:</strong> {{ purchaseOrder.orderedAt | date:'mediumDate' }}</div>
+    </div>
+  </div>
+
+  <form [formGroup]="receiveForm" (ngSubmit)="submit()" class="receive-form">
+    <!-- Select Warehouse -->
+    <div class="form-group" style="max-width: 400px; margin-top: 20px;">
+      <label for="warehouseId">Destination Warehouse <span class="required">*</span></label>
+      <select id="warehouseId" formControlName="warehouseId" class="form-control">
+        <option value="">-- Select Warehouse --</option>
+        <option *ngFor="let w of warehouses" [value]="w.id">{{ w.name }} ({{ w.warehouseCode }})</option>
+      </select>
+      <small class="error-msg" *ngIf="receiveForm.get('warehouseId')?.touched && receiveForm.get('warehouseId')?.invalid">
+        Warehouse is required.
+      </small>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="actions-bar" style="margin: 20px 0; display: flex; gap: 12px;">
+      <button type="button" class="btn secondary-btn" (click)="fillFullQuantities()">Receive Full Quantities</button>
+      <button type="button" class="btn secondary-btn" (click)="clearQuantities()">Clear Quantities</button>
+    </div>
+
+    <!-- Table of items -->
+    <div class="table-container" style="margin-top: 20px;">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Qty Ordered</th>
+            <th>Qty Already Received</th>
+            <th>Qty to Receive <span class="required">*</span></th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="items">
+          <tr *ngFor="let item of itemsFormArray.controls; let i = index" [formGroupName]="i">
+            <td style="font-weight: 600;">{{ item.get('productName')?.value }}</td>
+            <td>{{ item.get('quantityOrdered')?.value }}</td>
+            <td>{{ item.get('quantityAlreadyReceived')?.value }}</td>
+            <td>
+              <input
+                type="number"
+                formControlName="quantityReceived"
+                class="form-control"
+                style="max-width: 120px;"
+                [class.invalid]="item.get('quantityReceived')?.touched && item.get('quantityReceived')?.invalid">
+              <div class="error-wrapper" *ngIf="item.get('quantityReceived')?.touched && item.get('quantityReceived')?.invalid">
+                <small class="error-msg" *ngIf="item.get('quantityReceived')?.errors?.['required']">Required</small>
+                <small class="error-msg" *ngIf="item.get('quantityReceived')?.errors?.['min']">Min 0</small>
+                <small class="error-msg" *ngIf="item.get('quantityReceived')?.errors?.['max']">
+                  Max {{ item.get('quantityOrdered')?.value - item.get('quantityAlreadyReceived')?.value }}
+                </small>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill" 
+                [class.success]="item.get('quantityAlreadyReceived')?.value + item.get('quantityReceived')?.value === item.get('quantityOrdered')?.value"
+                [class.warning]="item.get('quantityAlreadyReceived')?.value + item.get('quantityReceived')?.value < item.get('quantityOrdered')?.value">
+                {{ item.get('quantityAlreadyReceived')?.value + item.get('quantityReceived')?.value === item.get('quantityOrdered')?.value ? 'FULFILLED' : 'PARTIAL' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions" style="margin-top: 30px; display: flex; gap: 16px;">
+      <button type="submit" class="btn primary-btn" [disabled]="receiveForm.invalid || submitting">
+        {{ submitting ? 'Processing...' : 'Confirm Inbound Receipt' }}
+      </button>
+      <a routerLink="/purchase-orders" class="btn secondary-btn">Cancel</a>
+    </div>
+  </form>
+</div>

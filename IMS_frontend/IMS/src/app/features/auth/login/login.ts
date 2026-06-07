@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } 
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
-
+import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -33,31 +33,41 @@ export class Login {
 
   constructor(
     private router: Router,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private authService:AuthService
   ) {}
 
   submit() {
-    console.log('Form Value:', this.loginform.value);
-    console.log('Form Valid:', this.loginform.valid);
+    if(this.loginform.valid){
 
-    if (this.loginform.valid) {
-      console.log('Login Successful');
-
-      const email = this.loginform.value.email;
-      const password = this.loginform.value.password;
-
-      console.log(email);
-      console.log(password);
-      this.router.navigate(['/dashboard']);
-
-    } else {
+      this.authService.loginuser(this.loginform.value)
+      .subscribe({
+        next: (res: any) => {
+          console.log('Login Successful');
+          this.authService.login({
+            username: res.username,
+            email: res.email,
+            role: res.role,
+            firstName: res.firstName,
+            lastName: res.lastName,
+            token: res.token
+          });
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          console.log('Login Failed');
+          console.log(err);
+        }
+      });
+    }else {
       console.log('Login Failed');
 
       console.log('email Errors:',
-        this.loginform.get('email')?.errors);
-
+        this.loginform.get('email')?.errors
+      );
       console.log('Password Errors:',
-        this.loginform.get('password')?.errors);
+        this.loginform.get('password')?.errors
+      );
 
       this.loginform.markAllAsTouched();
     }

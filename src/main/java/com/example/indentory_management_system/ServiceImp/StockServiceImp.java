@@ -29,13 +29,13 @@ public class StockServiceImp implements StockService {
 
     @Override
     public StockResponsedto addStock(StockRequestdto dto) {
-        Products product = productrepo.findById(dto.getProduct_id())
+        Products product = productrepo.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
+        warehouses warehouse = warehouserepo.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        Stock stock = stockrepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+        Stock stock = stockrepo.findByProductsIdAndWarehousesId(dto.getProductId(), dto.getWarehouseId())
                 .map(existingStock -> {
                     existingStock.setQuantityOnHand(existingStock.getQuantityOnHand() + dto.getQuantityOnHand());
                     existingStock.setUpdatedAt(LocalDateTime.now());
@@ -57,9 +57,9 @@ public class StockServiceImp implements StockService {
     public StockResponsedto updateStock(Long id, StockRequestdto dto) {
         Stock stock = stockrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Stock not found"));
-        Products product = productrepo.findById(dto.getProduct_id())
+        Products product = productrepo.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
+        warehouses warehouse = warehouserepo.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
         stock.setProducts(product);
         stock.setWarehouses(warehouse);
@@ -91,16 +91,16 @@ public class StockServiceImp implements StockService {
 
         Stock sourceStock = stockrepo
                 .findByProductsIdAndWarehousesId(
-                        dto.getProduct_id(),
+                        dto.getProductId(),
                         fromWarehouseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Source stock not found"));
 
         Stock destinationStock = stockrepo
                 .findByProductsIdAndWarehousesId(
-                        dto.getProduct_id(),
+                        dto.getProductId(),
                         toWarehouseId)
                 .orElseGet(() -> {
-                    Products product = productrepo.findById(dto.getProduct_id())
+                    Products product = productrepo.findById(dto.getProductId())
                             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
                     warehouses destinationWarehouse = warehouserepo.findById(toWarehouseId)
                             .orElseThrow(() -> new ResourceNotFoundException("Destination warehouse not found"));
@@ -138,8 +138,8 @@ public class StockServiceImp implements StockService {
     private StockResponsedto toDto(Stock stock) {
         return StockResponsedto.builder()
                 .id(stock.getId())
-                .productname(stock.getProducts().getName())
-                .warehousename(stock.getWarehouses().getName())
+                .productName(stock.getProducts().getName())
+                .warehouseName(stock.getWarehouses().getName())
                 .quantityOnHand(stock.getQuantityOnHand())
                 .build();
     }

@@ -1,0 +1,132 @@
+<!-- Header Title -->
+<div style="margin-bottom: 24px;">
+  <h1 style="font-size: 24px; color: var(--text-primary); margin-bottom: 4px;">Supplier Dashboard Portal</h1>
+  <p style="font-size: 13px; color: var(--text-secondary);">Manage your supplied products, view purchase orders, and post shipment/delivery updates.</p>
+</div>
+
+<!-- KPI Grid -->
+<div class="dashboard-grid">
+  @for (stat of stats(); track stat.title) {
+    <div class="kpi-card">
+      <div class="kpi-details">
+        <span class="kpi-title">{{ stat.title }}</span>
+        <span class="kpi-value">{{ stat.value }}</span>
+        <span class="kpi-subtext">{{ stat.subtext }}</span>
+      </div>
+      <div class="kpi-icon-wrapper" [style.background-color]="stat.color">
+        @if (stat.icon === 'products') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+        } @else if (stat.icon === 'orders') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+        } @else if (stat.icon === 'shipments') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        } @else if (stat.icon === 'stock') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Main Panels -->
+<div class="panel-grid">
+  <!-- Left Panel: Dispatched Orders -->
+  <div class="dashboard-panel">
+    <div class="panel-header">
+      <h2 class="panel-title">My Purchase Orders</h2>
+      <button class="status-pill success" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--accent-primary);">View Invoice History</button>
+    </div>
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>PO Number</th>
+            <th>Issue Date</th>
+            <th>Total Value</th>
+            <th>Dispatch Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (dispatchedOrders().length === 0) {
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">No orders found</td>
+            </tr>
+          } @else {
+            @for (ord of dispatchedOrders(); track ord.id) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-primary);">{{ ord.poNumber }}</td>
+                <td>{{ ord.orderedAt | date:'mediumDate' }}</td>
+                <td style="font-weight: 700;">{{ ord.totalAmount | currency }}</td>
+                <td>
+                  <span class="status-pill" 
+                        [class.success]="ord.status === 'RECEIVED' || ord.status === 'SHIPPED'" 
+                        [class.warning]="ord.status === 'PENDING' || ord.status === 'APPROVED'">
+                    {{ ord.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right Panel: Products & Updates -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- Quick Actions -->
+    <div class="dashboard-panel">
+      <h2 class="panel-title" style="margin-bottom: 16px;">Shipment Control</h2>
+      <div class="quick-actions-list">
+        <button class="quick-btn" style="border-color: var(--accent-secondary);">
+          <!-- Truck Icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+          Mark Order as Shipped
+        </button>
+        <button class="quick-btn" style="border-color: var(--accent-primary);">
+          <!-- Plus Icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Propose Product Update
+        </button>
+      </div>
+    </div>
+
+    <!-- My Supplied Products -->
+    <div class="dashboard-panel">
+      <h2 class="panel-title" style="margin-bottom: 16px;">Supplied Product Catalog</h2>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto;">
+        @if (myProductsList().length === 0) {
+          <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px;">No products registered</div>
+        } @else {
+          @for (prod of myProductsList(); track prod.id) {
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--card-border);">
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">{{ prod.name }}</span>
+                <span style="font-size: 11px; color: var(--text-muted);">SKU: {{ prod.sku }}</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: block;">{{ prod.sellingPrice | currency }}</span>
+                <span class="status-pill" [class.success]="prod.isActive" [class.danger]="!prod.isActive" style="padding: 2px 6px; font-size: 9px; margin-top: 2px;">
+                  {{ prod.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                </span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -26,7 +26,7 @@ public class IndentoryManagementSystemApplication {
 						.firstName("Admin")
 						.lastName("User")
 						.email("admin@ims.com")
-						.password(passwordEncoder.encode("admin123"))
+						.password(passwordEncoder.encode("Raguladmin@7"))
 						.phone_number("1234567890")
 						.role("ADMIN")
 						.build());
@@ -40,7 +40,7 @@ public class IndentoryManagementSystemApplication {
 						.firstName("Manager")
 						.lastName("User")
 						.email("manager@ims.com")
-						.password(passwordEncoder.encode("manager123"))
+						.password(passwordEncoder.encode("Manager@1234"))
 						.phone_number("0987654321")
 						.role("MANAGER")
 						.build());
@@ -59,6 +59,19 @@ public class IndentoryManagementSystemApplication {
 						.role("STAFF")
 						.build());
 				System.out.println("Bootstrap: staff user created.");
+			}
+			if(userRepository.findByUsername("supplier").isEmpty()){
+				// Seed Supplier
+				userRepository.save(Users.builder()
+						.username("supplier")
+						.firstName("Supplier")
+						.lastName("User")
+						.email("supplier@ims.com")
+						.password(passwordEncoder.encode("Supplier@123"))
+						.phone_number("2233445566")
+						.role("SUPPLIER")
+						.build());
+				System.out.println("Bootstrap: supplier user created.");
 			}
 		};
 	}

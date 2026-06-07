@@ -155,8 +155,8 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
             int qtyToReceive = item.getQuantityReceived() > 0 ? item.getQuantityReceived() : item.getQuantityOrdered();
             
             StockRequestdto stockRequest = StockRequestdto.builder()
-                    .product_id(item.getProduct().getId())
-                    .warehouse_id(defaultWarehouse.getId())
+                    .productId(item.getProduct().getId())
+                    .warehouseId(defaultWarehouse.getId())
                     .quantityOnHand(qtyToReceive)
                     .build();
             stockService.addStock(stockRequest);

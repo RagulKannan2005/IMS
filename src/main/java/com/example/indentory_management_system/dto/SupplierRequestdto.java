@@ -13,7 +13,7 @@ public class SupplierRequestdto {
     private String contactPerson;
 
     @NotBlank(message = "supplier_email is required")
-    private String supplier_email;
+    private String supplierEmail;
 
     @NotBlank(message = "supplierPhone is required")
     private String supplierPhone;

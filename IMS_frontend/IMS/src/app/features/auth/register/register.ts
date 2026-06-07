@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } 
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -11,12 +12,17 @@ import { ThemeService } from '../../../core/services/theme.service';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register {
+
+ 
+
+
+
   registerForm = new FormGroup({
     username: new FormControl('', [
       Validators.required,
@@ -39,7 +45,7 @@ export class Register {
       Validators.maxLength(12),
       Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/)
     ]),
-    phone_number: new FormControl('', [
+    phoneNumber: new FormControl('', [
       Validators.required,
       Validators.pattern(/^\+?[0-9\s-]{10,15}$/)
     ]),
@@ -53,7 +59,8 @@ export class Register {
 
   constructor(
     private router: Router,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private authService: AuthService
   ) {
     // Dynamically adjust validation for supplierId when role is changed
     this.registerForm.get('role')?.valueChanges.subscribe(role => {
@@ -74,11 +81,18 @@ export class Register {
 
     if (this.registerForm.valid) {
       console.log('Registration Request successfully generated!');
-      // Here you will integrate the backend API post call to /api/v1/auth/register or similar endpoint.
-      // E.g., this.authService.register(this.registerForm.value).subscribe(...)
-      
-      // Navigate to login after successful register
-      this.router.navigate(['/login']);
+      this.authService.register(this.registerForm.value)
+        .subscribe({
+          next: (response) => {
+            console.log('Register Response:', response);
+            alert('Registration successful');
+            this.router.navigate(['/login']);
+          },
+          error: (error) => {
+            console.error('Register Error:', error);
+            alert('Registration failed');
+          }
+        });
     } else {
       console.log('Registration Form is Invalid');
       this.registerForm.markAllAsTouched();

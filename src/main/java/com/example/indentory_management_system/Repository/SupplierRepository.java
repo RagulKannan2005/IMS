@@ -23,4 +23,5 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     @Query("SELECT s FROM Supplier s WHERE s.supplierName LIKE %:keyword%")
     List<Supplier> findSuppliersByName(String keyword);
 
+    long countByStatus(boolean status);
 }

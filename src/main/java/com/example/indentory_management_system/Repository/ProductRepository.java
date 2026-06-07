@@ -18,4 +18,11 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
     List<Products> findByCategoryName(String name);
 
     List<Products> findBySupplierId(Long supplierId);
+
+    @Query("SELECT p FROM Products p WHERE p.stockQuantity <= p.reorderLevel")
+    List<Products> findLowStockProducts();
+
+    long countByIsActive(boolean isActive);
+
+    long countBySupplierId(Long supplierId);
 }

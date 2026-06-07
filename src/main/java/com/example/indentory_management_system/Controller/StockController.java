@@ -49,7 +49,7 @@ public class StockController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<List<StockResponsedto>> transferStock(@Valid @RequestBody StockTransferRequestdto dto) {
         StockRequestdto serviceDto = new StockRequestdto();
-        serviceDto.setProduct_id(dto.getProduct_id());
+        serviceDto.setProductId(dto.getProductId());
         serviceDto.setQuantityOnHand(dto.getQuantityOnHand());
         return ResponseEntity
                 .ok(stockService.transferStock(dto.getFromWarehouseId(), dto.getToWarehouseId(), serviceDto));

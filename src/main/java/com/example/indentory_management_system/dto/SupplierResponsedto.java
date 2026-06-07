@@ -14,7 +14,7 @@ public class SupplierResponsedto {
     private Long id;
     private String supplierName;
     private String contactPerson;
-    private String supplier_email;
+    private String supplierEmail;
     private String supplierPhone;
     private String address;
     private boolean status;

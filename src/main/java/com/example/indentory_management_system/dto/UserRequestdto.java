@@ -22,7 +22,7 @@ public class UserRequestdto {
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    private String phone_number;
+    private String phoneNumber;
 
     @NotBlank(message = "Role is required and must be either 'ADMIN', 'MANAGER', 'STAFF', or 'SUPPLIER'")
     private String role;

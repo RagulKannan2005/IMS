@@ -1,0 +1,112 @@
+<nav class="navbar">
+  <!-- Left Side: Search Bar -->
+  <div class="nav-left">
+    <div class="nav-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" placeholder="Search inventory, orders, suppliers...">
+    </div>
+  </div>
+
+  <!-- Right Side: Controls -->
+  <div class="nav-right">
+
+
+    <!-- Theme Toggler -->
+    <button class="nav-icon-btn" (click)="themeService.toggleTheme()" aria-label="Toggle Theme">
+      @if (themeService.theme() === 'dark') {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+      }
+    </button>
+
+    <!-- Notification Bell -->
+    <div style="position: relative;">
+      <button class="nav-icon-btn" (click)="toggleNotifications()" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+        </svg>
+        @if (unreadCount() > 0) {
+          <span class="badge">{{ unreadCount() }}</span>
+        }
+      </button>
+
+      <!-- Notifications Dropdown Overlay -->
+      @if (showNotifications()) {
+        <div class="dropdown-menu" style="width: 320px; right: 0; max-height: 400px; overflow-y: auto;">
+          <div style="padding: 10px 14px; font-weight: 700; font-size: 13px; border-bottom: 1px solid var(--card-border); color: var(--text-primary); display: flex; justify-content: space-between; align-items: center;">
+            <span>Notifications</span>
+            @if (unreadCount() > 0) {
+              <button (click)="markAllAsRead()" style="background: none; border: none; color: var(--accent-primary); font-size: 11px; font-weight: 600; cursor: pointer; padding: 0;">
+                Mark all as read
+              </button>
+            }
+          </div>
+          @if (notifications().length === 0) {
+            <div style="padding: 20px 14px; text-align: center; color: var(--text-muted); font-size: 12px;">
+              No notifications
+            </div>
+          } @else {
+            @for (n of notifications(); track n.id) {
+              <div 
+                (click)="!n.isRead && markAsRead(n.id)"
+                [style.cursor]="n.isRead ? 'default' : 'pointer'"
+                [style.background]="n.isRead ? 'transparent' : 'rgba(20, 184, 166, 0.05)'"
+                style="padding: 12px 14px; border-bottom: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; position: relative; transition: var(--transition);"
+              >
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-primary); padding-right: 12px;">
+                  <span>{{ n.title }}</span>
+                  <span style="font-size: 10px; color: var(--text-muted); font-weight: 400;">{{ n.createdAt | date:'shortTime' }}</span>
+                </div>
+                <p style="font-size: 11px; color: var(--text-secondary); margin: 0; line-height: 1.4;">{{ n.message }}</p>
+                @if (!n.isRead) {
+                  <span style="position: absolute; right: 10px; top: 16px; width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-primary);"></span>
+                }
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- User Profile Menu -->
+    <div style="position: relative;">
+      @if (authService.currentUser(); as user) {
+        <div class="profile-menu" (click)="toggleProfileMenu()">
+          <div class="avatar">
+            {{ user.firstName[0] }}{{ user.lastName[0] }}
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="profile-role">{{ user.role }}</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: var(--text-muted); margin-left: 4px;">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+
+        <!-- Profile Dropdown Overlay -->
+        @if (showProfileMenu()) {
+          <div class="dropdown-menu" style="right: 0;">
+            <div style="padding: 10px 14px; border-bottom: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">{{ user.firstName }} {{ user.lastName }}</span>
+              <span style="font-size: 11px; color: var(--text-muted);">{{ user.email }}</span>
+            </div>
+            <button class="dropdown-item" (click)="logout()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; color: var(--error);">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+              </svg>
+              <span style="color: var(--error);">Log Out</span>
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</nav>
