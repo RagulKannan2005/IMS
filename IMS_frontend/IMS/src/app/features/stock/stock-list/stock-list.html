@@ -1,0 +1,229 @@
+<div class="stock-management fade-in">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+    <div>
+      <h1 style="font-size: 24px; color: var(--text-primary); margin-bottom: 4px;">Stock Directory</h1>
+      <p style="font-size: 13px; color: var(--text-secondary);">Real-time inventory levels across all warehouse locations.</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn secondary" (click)="openTransferModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; margin-right: 6px;">
+          <polyline points="16 3 21 3 21 8"></polyline>
+          <line x1="4" y1="14" x2="21" y2="3"></line>
+          <polyline points="8 21 3 21 3 16"></polyline>
+          <line x1="20" y1="10" x2="3" y2="21"></line>
+        </svg>
+        Transfer Stock
+      </button>
+      <button class="primary-btn" (click)="openInitModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Initialize Stock
+      </button>
+    </div>
+  </div>
+
+  <!-- Stock Table Panel -->
+  <div class="dashboard-panel">
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Warehouse</th>
+            <th>Quantity on Hand</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (stock of enrichedStocks(); track stock.id) {
+            <tr>
+              <td>
+                <div style="font-weight: 600; color: var(--text-primary);">{{ stock.productName }}</div>
+                <code style="font-size: 11px; color: var(--text-muted);">{{ stock.sku }}</code>
+              </td>
+              <td>{{ stock.warehouseName }}</td>
+              <td>
+                <span style="font-weight: 600; font-size: 14px;" [style.color]="stock.quantityOnHand <= stock.reorderLevel ? 'var(--error)' : 'var(--success)'">
+                  {{ stock.quantityOnHand | number }} units
+                </span>
+              </td>
+              <td>
+                @if (stock.quantityOnHand <= 0) {
+                  <span class="status-pill danger">Out of Stock</span>
+                } @else if (stock.quantityOnHand <= stock.reorderLevel) {
+                  <span class="status-pill warning">Low Stock</span>
+                } @else {
+                  <span class="status-pill success">Optimal</span>
+                }
+              </td>
+              <td style="text-align: right;">
+                <button class="action-btn" (click)="openTransferModal(stock)" title="Transfer From Here">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+                    <path d="M5 9l4-4 4 4"></path>
+                    <path d="M9 5v14"></path>
+                    <path d="M19 15l-4 4-4-4"></path>
+                    <path d="M15 19V5"></path>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 40px 0; color: var(--text-secondary);">
+                No stock records found. Click Initialize Stock to add inventory.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Initialize Stock Modal -->
+  @if (showInitModal()) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 style="font-size: 18px; margin: 0; color: var(--text-primary);">Initialize Stock Level</h2>
+          <button class="close-btn" (click)="closeInitModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        
+        <form [formGroup]="initForm" (ngSubmit)="saveInitStock()">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Product</label>
+              <select formControlName="productId" class="form-control">
+                <option [ngValue]="null" disabled>Select Product</option>
+                @for (prod of products(); track prod.id) {
+                  <option [ngValue]="prod.id">{{ prod.name }} ({{ prod.sku }})</option>
+                }
+              </select>
+              @if(initForm.get('productId')?.invalid && initForm.get('productId')?.touched) {
+                <span class="error-msg">Product is required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Warehouse</label>
+              <select formControlName="warehouseId" class="form-control">
+                <option [ngValue]="null" disabled>Select Warehouse</option>
+                @for (wh of warehouses(); track wh.id) {
+                  <option [ngValue]="wh.id">{{ wh.name }}</option>
+                }
+              </select>
+              @if(initForm.get('warehouseId')?.invalid && initForm.get('warehouseId')?.touched) {
+                <span class="error-msg">Warehouse is required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Initial Quantity On Hand</label>
+              <input type="number" formControlName="quantityOnHand" class="form-control" min="0">
+              @if(initForm.get('quantityOnHand')?.invalid && initForm.get('quantityOnHand')?.touched) {
+                <span class="error-msg">Quantity cannot be negative</span>
+              }
+            </div>
+            
+            <div class="alert info" style="margin-top: 16px; font-size: 13px;">
+              <strong>Note:</strong> Initializing stock creates a base inventory record. For routine additions, consider using Purchase Orders or Stock Movements.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn secondary" (click)="closeInitModal()">Cancel</button>
+            <button type="submit" class="btn primary">Initialize Stock</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Transfer Stock Modal -->
+  @if (showTransferModal()) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 style="font-size: 18px; margin: 0; color: var(--text-primary);">Transfer Stock</h2>
+          <button class="close-btn" (click)="closeTransferModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        
+        <form [formGroup]="transferForm" (ngSubmit)="saveTransferStock()">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Product</label>
+              <select formControlName="productId" class="form-control">
+                <option [ngValue]="null" disabled>Select Product to Transfer</option>
+                @for (prod of products(); track prod.id) {
+                  <option [ngValue]="prod.id">{{ prod.name }} ({{ prod.sku }})</option>
+                }
+              </select>
+              @if(transferForm.get('productId')?.invalid && transferForm.get('productId')?.touched) {
+                <span class="error-msg">Product is required</span>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>From Warehouse</label>
+                <select formControlName="fromWarehouseId" class="form-control">
+                  <option [ngValue]="null" disabled>Source Warehouse</option>
+                  @for (wh of warehouses(); track wh.id) {
+                    <option [ngValue]="wh.id">{{ wh.name }}</option>
+                  }
+                </select>
+                @if(transferForm.get('fromWarehouseId')?.invalid && transferForm.get('fromWarehouseId')?.touched) {
+                  <span class="error-msg">Source is required</span>
+                }
+              </div>
+
+              <div class="form-group" style="display: flex; align-items: center; justify-content: center; margin-top: 18px; flex: 0 0 30px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </div>
+
+              <div class="form-group">
+                <label>To Warehouse</label>
+                <select formControlName="toWarehouseId" class="form-control">
+                  <option [ngValue]="null" disabled>Destination Warehouse</option>
+                  @for (wh of warehouses(); track wh.id) {
+                    <option [ngValue]="wh.id">{{ wh.name }}</option>
+                  }
+                </select>
+                @if(transferForm.get('toWarehouseId')?.invalid && transferForm.get('toWarehouseId')?.touched) {
+                  <span class="error-msg">Destination is required</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Transfer Quantity</label>
+              <input type="number" formControlName="quantityOnHand" class="form-control" min="1">
+              @if(transferForm.get('quantityOnHand')?.invalid && transferForm.get('quantityOnHand')?.touched) {
+                <span class="error-msg">Quantity must be at least 1</span>
+              }
+            </div>
+            
+            @if(transferForm.get('fromWarehouseId')?.value === transferForm.get('toWarehouseId')?.value && transferForm.get('fromWarehouseId')?.value !== null) {
+              <div class="alert warning" style="margin-top: 12px;">
+                Source and Destination warehouses cannot be the same.
+              </div>
+            }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn secondary" (click)="closeTransferModal()">Cancel</button>
+            <button type="submit" class="btn primary" [disabled]="transferForm.get('fromWarehouseId')?.value === transferForm.get('toWarehouseId')?.value">Execute Transfer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

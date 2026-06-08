@@ -62,13 +62,11 @@ export class Register {
     public themeService: ThemeService,
     private authService: AuthService
   ) {
-    // Dynamically adjust validation for supplierId when role is changed
+    // The backend automatically creates a new supplier if a user is registered with role SUPPLIER
+    // and no supplierId is provided. Thus, we keep supplierId optional.
     this.registerForm.get('role')?.valueChanges.subscribe(role => {
       const supplierIdCtrl = this.registerForm.get('supplierId');
-      if (role === 'SUPPLIER') {
-        supplierIdCtrl?.setValidators([Validators.required, Validators.min(1)]);
-      } else {
-        supplierIdCtrl?.clearValidators();
+      if (role !== 'SUPPLIER') {
         supplierIdCtrl?.setValue(null);
       }
       supplierIdCtrl?.updateValueAndValidity();

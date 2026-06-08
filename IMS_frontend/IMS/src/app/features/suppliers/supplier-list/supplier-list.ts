@@ -100,7 +100,8 @@ export class SupplierListComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Update failed', err);
-          this.errorMessage.set(err.error?.message || 'Failed to update supplier.');
+          const msg = err.error?.error || err.error?.message || 'Failed to update supplier.';
+          this.errorMessage.set(msg);
         }
       });
     } else {
@@ -111,7 +112,8 @@ export class SupplierListComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Creation failed', err);
-          this.errorMessage.set(err.error?.message || 'Failed to create supplier.');
+          const msg = err.error?.error || err.error?.message || 'Failed to create supplier. (Check if email/phone already exists)';
+          this.errorMessage.set(msg);
         }
       });
     }

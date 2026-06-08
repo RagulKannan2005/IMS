@@ -89,7 +89,7 @@ export const routes: Routes = [
       },
       { 
         path: 'stock', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/stock/stock-list/stock-list').then(c => c.StockListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'MANAGER', 'STAFF'], title: 'Stock Levels' } 
       },
@@ -107,7 +107,7 @@ export const routes: Routes = [
       },
       { 
         path: 'stock-movements', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/stock-movements/stock-movement-list/stock-movement-list').then(c => c.StockMovementListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'STAFF'], title: 'Stock Movement Logs' } 
       },

@@ -75,6 +75,18 @@ public class UserServiceImp implements UserService {
             supplier.setUser(saved);
             supplierrepo.save(supplier);
             saved.setSupplier(supplier);
+        } else if ("SUPPLIER".equalsIgnoreCase(dto.getRole())) {
+            Supplier newSupplier = Supplier.builder()
+                    .supplierName(dto.getFirstName() + " " + dto.getLastName())
+                    .contactPerson(dto.getFirstName() + " " + dto.getLastName())
+                    .supplier_email(dto.getEmail())
+                    .supplierPhone(dto.getPhoneNumber() != null ? dto.getPhoneNumber() : "0000000000")
+                    .address("Address Not Provided")
+                    .status(true)
+                    .user(saved)
+                    .build();
+            supplierrepo.save(newSupplier);
+            saved.setSupplier(newSupplier);
         }
 
         return toDto(saved);

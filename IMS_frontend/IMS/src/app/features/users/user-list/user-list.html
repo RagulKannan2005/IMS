@@ -177,7 +177,7 @@
             </div>
 
             <div class="form-group" *ngIf="userForm.get('role')?.value === 'SUPPLIER'">
-              <label for="supplierId">Associated Supplier ID <span class="required">*</span></label>
+              <label for="supplierId">Associated Supplier ID (Optional)</label>
               <input type="number" id="supplierId" formControlName="supplierId" class="form-control" placeholder="e.g. 1">
               <small class="error-msg" *ngIf="userForm.get('supplierId')?.touched && userForm.get('supplierId')?.invalid">
                 Supplier ID mapping is required.
