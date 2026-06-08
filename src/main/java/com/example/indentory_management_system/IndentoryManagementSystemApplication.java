@@ -25,7 +25,7 @@ public class IndentoryManagementSystemApplication {
 		return args -> {
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				// Seed Admin
-				Users adminUser = userRepository.save(Users.builder()
+				userRepository.save(Users.builder()
 						.username("admin")
 						.firstName("Admin")
 						.lastName("User")
@@ -35,8 +35,11 @@ public class IndentoryManagementSystemApplication {
 						.role("ADMIN")
 						.build());
 				System.out.println("Bootstrap: admin user created.");
+			}
 
-				// Seed default Warehouse for Admin
+			// Get the admin user to associate with warehouses
+			userRepository.findByUsername("admin").ifPresent(adminUser -> {
+				// 1. Seed default Warehouse for Admin if not exists
 				if(warehouseRepository.findBywarehouseCode("WH-MAIN").isEmpty()) {
 					warehouseRepository.save(warehouses.builder()
 							.name("Main Central Hub")
@@ -50,8 +53,16 @@ public class IndentoryManagementSystemApplication {
 							.build());
 					System.out.println("Bootstrap: default warehouse created.");
 				}
-			}
-			
+
+				// 2. Migrate any old warehouses that have no owner
+				warehouseRepository.findAll().forEach(w -> {
+					if (w.getUser() == null) {
+						w.setUser(adminUser);
+						warehouseRepository.save(w);
+						System.out.println("Bootstrap: Migrated old warehouse " + w.getWarehouseCode() + " to admin ownership.");
+					}
+				});
+			});
 			if (userRepository.findByUsername("manager").isEmpty()) {
 				// Seed Manager
 				userRepository.save(Users.builder()

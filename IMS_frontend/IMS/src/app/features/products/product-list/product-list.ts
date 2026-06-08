@@ -16,7 +16,7 @@ import { ProductResponseDto, CategoryResponseDto, SupplierResponseDto, ProductRe
 export class ProductListComponent implements OnInit {
   products = signal<ProductResponseDto[]>([]);
   categories = signal<CategoryResponseDto[]>([]);
-  filteredSuppliers = signal<SupplierResponseDto[]>([]);
+  suppliers = signal<SupplierResponseDto[]>([]);
   
   showModal = signal<boolean>(false);
   isEditing = signal<boolean>(false);
@@ -41,14 +41,14 @@ export class ProductListComponent implements OnInit {
       reorderQuantity: [50, [Validators.required, Validators.min(0)]],
       active_status: ['Active', Validators.required],
       category: ['', Validators.required],
-      supplierId: [{ value: null, disabled: true }, Validators.required]
+      supplierId: [null]
     });
   }
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadCategories();
-    this.setupCategoryListener();
+    this.loadSuppliers();
   }
 
   loadProducts(): void {
@@ -65,18 +65,10 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-  setupCategoryListener(): void {
-    this.productForm.get('category')?.valueChanges.subscribe(categoryName => {
-      if (categoryName) {
-        this.productForm.get('supplierId')?.enable();
-        this.supplierService.getSuppliersByCategory(categoryName).subscribe({
-          next: (data) => this.filteredSuppliers.set(data),
-          error: (err) => console.error('Failed to load filtered suppliers', err)
-        });
-      } else {
-        this.productForm.get('supplierId')?.disable();
-        this.filteredSuppliers.set([]);
-      }
+  loadSuppliers(): void {
+    this.supplierService.getAllSuppliers().subscribe({
+      next: (data) => this.suppliers.set(data.filter(s => s.status)),
+      error: (err) => console.error('Failed to load suppliers', err)
     });
   }
 
@@ -124,7 +116,7 @@ export class ProductListComponent implements OnInit {
       return;
     }
 
-    const dto: ProductRequestDto = this.productForm.value;
+    const dto: ProductRequestDto = this.productForm.getRawValue();
 
     if (this.isEditing() && this.editingProductId()) {
       this.productService.updateProduct(this.editingProductId()!, dto).subscribe({

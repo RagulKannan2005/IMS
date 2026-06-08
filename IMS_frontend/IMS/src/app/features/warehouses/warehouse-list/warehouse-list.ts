@@ -61,7 +61,8 @@ export class WarehouseListComponent implements OnInit {
     if (manager) {
       this.warehouseForm.patchValue({
         managerName: manager.firstName + ' ' + manager.lastName,
-        email: manager.email
+        email: manager.email,
+        contactNumber: manager.phoneNumber
       });
     }
   }

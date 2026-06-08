@@ -123,6 +123,18 @@ public class DashboardServiceImp implements DashboardService {
                     .build()));
         });
 
+        // 5. Warehouses
+        warehouseRepository.findAll().forEach(w -> {
+            LocalDateTime time = w.getCreatedDate() != null ? w.getCreatedDate().atStartOfDay() : LocalDateTime.now();
+            String actor = w.getUser() != null ? w.getUser().getUsername() : "admin";
+            tempAudits.add(new TempAudit(time, AuditLogResponseDto.builder()
+                    .user(actor)
+                    .action("Registered Warehouse")
+                    .target(w.getName() + " (" + w.getWarehouseCode() + ")")
+                    .status("active".equalsIgnoreCase(w.getIsActive()) ? "success" : "warning")
+                    .build()));
+        });
+
         // Sort by timestamp desc, limit 5, and format relative time
         List<AuditLogResponseDto> auditLogs = tempAudits.stream()
                 .sorted(Comparator.comparing((TempAudit ta) -> ta.timestamp).reversed())

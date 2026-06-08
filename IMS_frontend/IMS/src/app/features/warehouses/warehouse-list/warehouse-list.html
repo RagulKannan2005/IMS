@@ -153,7 +153,7 @@
 
             <div class="form-group">
               <label for="contactNumber">Contact Number <span class="required">*</span></label>
-              <input type="text" id="contactNumber" formControlName="contactNumber" class="form-control" placeholder="e.g. 1234567890">
+              <input type="text" id="contactNumber" formControlName="contactNumber" class="form-control" placeholder="Auto-filled from selection" readonly>
               <small class="error-msg" *ngIf="warehouseForm.get('contactNumber')?.touched && warehouseForm.get('contactNumber')?.invalid">
                 Enter a valid phone number.
               </small>
