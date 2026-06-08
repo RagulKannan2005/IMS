@@ -25,4 +25,5 @@ public interface SupplierService {
 
     List<SupplierResponsedto> getSuppliersByName(String name);
 
+    List<SupplierResponsedto> getSuppliersByCategory(String categoryName);
 }

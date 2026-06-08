@@ -1,0 +1,176 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header">
+    <div>
+      <h2 class="panel-title" style="font-size: 20px;">Suppliers Directory</h2>
+      <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+        Manage business supplier records, contact information, and operating status.
+      </p>
+    </div>
+    @if (authService.userRole() === 'ADMIN' || authService.userRole() === 'MANAGER') {
+      <button class="btn primary-btn" (click)="openCreateModal()" style="display: flex; align-items: center; gap: 8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>Add New Supplier</span>
+      </button>
+    }
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container" style="margin-top: 24px;">
+    @if (loading()) {
+      <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+        Loading suppliers database...
+      </div>
+    } @else {
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Supplier Name</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            @if (authService.userRole() === 'ADMIN' || authService.userRole() === 'MANAGER') {
+              <th style="text-align: right;">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @if (suppliers().length === 0) {
+            <tr>
+              <td [attr.colspan]="(authService.userRole() === 'ADMIN' || authService.userRole() === 'MANAGER') ? 7 : 6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                No suppliers found.
+              </td>
+            </tr>
+          } @else {
+            @for (supplier of suppliers(); track supplier.id) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-secondary);">#{{ supplier.id }}</td>
+                <td style="font-weight: 700; color: var(--text-primary);">{{ supplier.supplierName }}</td>
+                <td>{{ supplier.contactPerson }}</td>
+                <td><code>{{ supplier.supplierEmail }}</code></td>
+                <td>{{ supplier.supplierPhone }}</td>
+                <td>
+                  <span class="status-pill" [class.success]="supplier.status" [class.danger]="!supplier.status">
+                    {{ supplier.status ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                @if (authService.userRole() === 'ADMIN' || authService.userRole() === 'MANAGER') {
+                  <td style="text-align: right;">
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                      <button (click)="openEditModal(supplier)" class="icon-btn-edit" aria-label="Edit Supplier">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                        </svg>
+                      </button>
+                      <button (click)="deleteSupplier(supplier.id)" class="icon-btn-delete" aria-label="Delete Supplier">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+<!-- Modal Overlay for Create / Edit -->
+@if (showModal()) {
+  <div class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ isEditMode() ? 'Edit Supplier' : 'Create New Supplier' }}</h3>
+        <button class="modal-close" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        @if (errorMessage()) {
+          <div class="alert-danger">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <form [formGroup]="supplierForm" (ngSubmit)="submit()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="supplierName">Supplier Name <span class="required">*</span></label>
+              <input type="text" id="supplierName" formControlName="supplierName" class="form-control" placeholder="e.g. Global Supplies Inc">
+              <small class="error-msg" *ngIf="supplierForm.get('supplierName')?.touched && supplierForm.get('supplierName')?.invalid">
+                Supplier name is required.
+              </small>
+            </div>
+            
+            <div class="form-group">
+              <label for="contactPerson">Contact Person <span class="required">*</span></label>
+              <input type="text" id="contactPerson" formControlName="contactPerson" class="form-control" placeholder="e.g. Jane Doe">
+              <small class="error-msg" *ngIf="supplierForm.get('contactPerson')?.touched && supplierForm.get('contactPerson')?.invalid">
+                Contact person is required.
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="supplierEmail">Email Address <span class="required">*</span></label>
+              <input type="email" id="supplierEmail" formControlName="supplierEmail" class="form-control" placeholder="e.g. contact@supplier.com">
+              <small class="error-msg" *ngIf="supplierForm.get('supplierEmail')?.touched && supplierForm.get('supplierEmail')?.invalid">
+                Enter a valid email address.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="supplierPhone">Phone Number <span class="required">*</span></label>
+              <input type="text" id="supplierPhone" formControlName="supplierPhone" class="form-control" placeholder="e.g. +1234567890">
+              <small class="error-msg" *ngIf="supplierForm.get('supplierPhone')?.touched && supplierForm.get('supplierPhone')?.invalid">
+                Enter a valid phone number.
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label for="address">Business Address <span class="required">*</span></label>
+              <input type="text" id="address" formControlName="address" class="form-control" placeholder="e.g. 123 Industrial Park Way">
+              <small class="error-msg" *ngIf="supplierForm.get('address')?.touched && supplierForm.get('address')?.invalid">
+                Address is required.
+              </small>
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+              <label for="status">Operating Status</label>
+              <select id="status" formControlName="status" class="form-control">
+                <option [ngValue]="true">Active</option>
+                <option [ngValue]="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="userId">Linked User ID (Optional)</label>
+              <input type="number" id="userId" formControlName="userId" class="form-control" placeholder="e.g. 5">
+              <small class="help-text" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                Link this profile to a registered user account to grant portal access.
+              </small>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button" class="btn secondary-btn" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn primary-btn" [disabled]="supplierForm.invalid">
+              {{ isEditMode() ? 'Update Supplier' : 'Register Supplier' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

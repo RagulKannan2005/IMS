@@ -55,4 +55,8 @@ export class SupplierService {
   getMyOrders(): Observable<PurchaseOrderResponseDto[]> {
     return this.http.get<PurchaseOrderResponseDto[]>(`${this.apiUrl}/my-orders`);
   }
+
+  getSuppliersByCategory(categoryName: string): Observable<SupplierResponseDto[]> {
+    return this.http.get<SupplierResponseDto[]>(`${this.apiUrl}/category/${categoryName}`);
+  }
 }

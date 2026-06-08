@@ -15,6 +15,10 @@ export class WarehouseService {
     return this.http.post<WarehouseResponseDto>(`${this.apiUrl}/addwarehouse`, dto);
   }
 
+  getAllWarehouses(): Observable<WarehouseResponseDto[]> {
+    return this.http.get<WarehouseResponseDto[]>(`${this.apiUrl}/getallwarehouses`);
+  }
+
   getWarehouseByCode(code: string): Observable<WarehouseResponseDto> {
     return this.http.get<WarehouseResponseDto>(`${this.apiUrl}/warehouse_code/${code}`);
   }

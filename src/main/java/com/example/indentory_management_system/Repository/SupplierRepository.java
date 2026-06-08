@@ -24,4 +24,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     List<Supplier> findSuppliersByName(String keyword);
 
     long countByStatus(boolean status);
+
+    @Query("SELECT DISTINCT s FROM Supplier s JOIN s.products p JOIN p.categories c WHERE c.name = :categoryName")
+    List<Supplier> findByCategoryName(String categoryName);
 }

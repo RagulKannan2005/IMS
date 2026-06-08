@@ -19,4 +19,5 @@ public class warehousesResponsedto {
     private String isActive;
     private LocalDate createdDate;
     private LocalDate updatedDate;
+    private Long userId;
 }

@@ -3,7 +3,7 @@ package com.example.indentory_management_system.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -44,20 +44,20 @@ public class Supplier {
     private boolean status;
 
     @Column(nullable=false)
-    private LocalDate createDate;
+    private LocalDateTime createDate;
 
     @Column(nullable=false)
-    private LocalDate updateDate;
+    private LocalDateTime updateDate;
     
     @PrePersist
     public void prePersist() {
-        this.createDate = LocalDate.now();
-        this.updateDate = LocalDate.now();
+        this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updateDate = LocalDate.now();
+        this.updateDate = LocalDateTime.now();
     }
 
     @OneToOne(fetch = FetchType.LAZY)

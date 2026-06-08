@@ -77,6 +77,12 @@ public class SupplierController {
         return ResponseEntity.ok(supplierService.getSuppliersByName(name));
     }
 
+    @GetMapping("/category/{categoryName}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
+    public ResponseEntity<List<SupplierResponsedto>> getSuppliersByCategory(@PathVariable String categoryName) {
+        return ResponseEntity.ok(supplierService.getSuppliersByCategory(categoryName));
+    }
+
     @GetMapping("/my-products")
     @PreAuthorize("hasRole('SUPPLIER')")
     public ResponseEntity<List<ProductResponsedto>> getMyProducts(Authentication authentication) {

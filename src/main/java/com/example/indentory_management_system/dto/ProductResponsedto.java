@@ -22,4 +22,5 @@ public class ProductResponsedto {
     private boolean isActive;
     private Long supplierId;
     private String supplierName;
+    private String categoryName;
 }

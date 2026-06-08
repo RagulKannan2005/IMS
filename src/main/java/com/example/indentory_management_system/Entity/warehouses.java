@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.example.indentory_management_system.Entity.Users;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -41,6 +43,10 @@ public class warehouses {
 
     @Column(nullable = false,name = "updated_date")
     private LocalDate updatedDate;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private Users user;
     
     @PrePersist
     public void prePersist() {

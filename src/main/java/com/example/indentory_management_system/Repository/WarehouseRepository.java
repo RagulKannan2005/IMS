@@ -21,4 +21,6 @@ public interface WarehouseRepository extends JpaRepository<warehouses, Long> {
 
     @Query("SELECT w FROM warehouses w WHERE w.name = :name")
     List<warehouses> findbywarehousename(String name);
+
+    List<warehouses> findByUserId(Long userId);
 }

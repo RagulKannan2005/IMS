@@ -77,6 +77,7 @@ export interface ProductResponseDto {
   isActive: boolean;
   supplierId: number | null;
   supplierName: string | null;
+  categoryName?: string;
 }
 
 export interface PriceUpdateRequestDto {

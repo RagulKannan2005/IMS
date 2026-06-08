@@ -19,5 +19,7 @@ public class warehousesRequestdto {
     @NotBlank(message = "Email is required and must be unique")
     private String email;
     
+    private Long userId;
+    
     
 }

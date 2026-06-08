@@ -7,7 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Entity.Supplier;
+import com.example.indentory_management_system.Entity.warehouses;
 import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Repository.SupplierRepository;
+import com.example.indentory_management_system.Repository.WarehouseRepository;
 
 @SpringBootApplication
 public class IndentoryManagementSystemApplication {
@@ -17,11 +21,11 @@ public class IndentoryManagementSystemApplication {
 	}
 
 	@Bean
-	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository) {
 		return args -> {
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				// Seed Admin
-				userRepository.save(Users.builder()
+				Users adminUser = userRepository.save(Users.builder()
 						.username("admin")
 						.firstName("Admin")
 						.lastName("User")
@@ -31,6 +35,21 @@ public class IndentoryManagementSystemApplication {
 						.role("ADMIN")
 						.build());
 				System.out.println("Bootstrap: admin user created.");
+
+				// Seed default Warehouse for Admin
+				if(warehouseRepository.findBywarehouseCode("WH-MAIN").isEmpty()) {
+					warehouseRepository.save(warehouses.builder()
+							.name("Main Central Hub")
+							.warehouseCode("WH-MAIN")
+							.capacity(5000)
+							.managerName("Admin User")
+							.contactNumber("1234567890")
+							.email("admin@ims.com")
+							.isActive("active")
+							.user(adminUser)
+							.build());
+					System.out.println("Bootstrap: default warehouse created.");
+				}
 			}
 			
 			if (userRepository.findByUsername("manager").isEmpty()) {
@@ -62,7 +81,7 @@ public class IndentoryManagementSystemApplication {
 			}
 			if(userRepository.findByUsername("supplier").isEmpty()){
 				// Seed Supplier
-				userRepository.save(Users.builder()
+				Users supplierUser = userRepository.save(Users.builder()
 						.username("supplier")
 						.firstName("Supplier")
 						.lastName("User")
@@ -72,6 +91,19 @@ public class IndentoryManagementSystemApplication {
 						.role("SUPPLIER")
 						.build());
 				System.out.println("Bootstrap: supplier user created.");
+
+				// Seed actual Supplier business record
+				Supplier supplierRecord = Supplier.builder()
+						.supplierName("Global Supplies Inc.")
+						.contactPerson("Supplier User")
+						.supplier_email("supplier@ims.com")
+						.supplierPhone("2233445566")
+						.address("123 Logistics Way")
+						.status(true)
+						.user(supplierUser)
+						.build();
+				supplierRepository.save(supplierRecord);
+				System.out.println("Bootstrap: supplier business record created.");
 			}
 		};
 	}

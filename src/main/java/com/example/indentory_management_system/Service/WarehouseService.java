@@ -19,4 +19,8 @@ public interface WarehouseService {
     public void deleteById(Long id);
 
     public warehousesResponsedto updatewarehouse(Long id, warehousesRequestdto w);
+
+    public List<warehousesResponsedto> getAllWarehouses();
+
+    public List<warehousesResponsedto> getWarehousesByUser(Long userId);
 }

@@ -114,7 +114,7 @@ public class DashboardServiceImp implements DashboardService {
 
         // 4. Suppliers
         supplierRepository.findAll().forEach(s -> {
-            LocalDateTime time = s.getCreateDate() != null ? s.getCreateDate().atStartOfDay() : LocalDateTime.now();
+            LocalDateTime time = s.getCreateDate() != null ? s.getCreateDate() : LocalDateTime.now();
             tempAudits.add(new TempAudit(time, AuditLogResponseDto.builder()
                     .user("admin")
                     .action("Registered Vendor")

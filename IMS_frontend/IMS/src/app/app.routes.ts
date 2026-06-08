@@ -10,6 +10,8 @@ import { ReceiveOrder } from './features/purchase-orders/receive-order/receive-o
 import { ShipOrder } from './features/purchase-orders/ship-order/ship-order';
 import { AccessDenied } from './features/auth/access-denied/access-denied';
 import { UserListComponent } from './features/users/user-list/user-list';
+import { SupplierListComponent } from './features/suppliers/supplier-list/supplier-list';
+import { WarehouseListComponent } from './features/warehouses/warehouse-list/warehouse-list';
 
 // Simple reusable placeholder component to keep routes valid and testable
 @Component({
@@ -69,19 +71,19 @@ export const routes: Routes = [
       },
       { 
         path: 'products', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/products/product-list/product-list').then(c => c.ProductListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'MANAGER', 'STAFF'], title: 'Product Catalog' } 
       },
       { 
         path: 'suppliers', 
-        component: Placeholder, 
+        component: SupplierListComponent, 
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'MANAGER'], title: 'Suppliers Directory' } 
       },
       { 
         path: 'warehouses', 
-        component: Placeholder, 
+        component: WarehouseListComponent, 
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'MANAGER', 'STAFF'], title: 'Warehouse Locations' } 
       },

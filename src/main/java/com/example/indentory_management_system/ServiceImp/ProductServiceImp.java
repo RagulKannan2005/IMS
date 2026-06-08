@@ -192,6 +192,7 @@ public class ProductServiceImp implements ProductService {
                 .isActive(product.isActive())
                 .supplierId(product.getSupplier() != null ? product.getSupplier().getId() : null)
                 .supplierName(product.getSupplier() != null ? product.getSupplier().getSupplierName() : null)
+                .categoryName(product.getCategories() != null ? product.getCategories().getName() : null)
                 .build();
     }
 

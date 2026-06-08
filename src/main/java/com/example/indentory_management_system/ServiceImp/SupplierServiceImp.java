@@ -120,6 +120,14 @@ public class SupplierServiceImp implements SupplierService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<SupplierResponsedto> getSuppliersByCategory(String categoryName) {
+        List<Supplier> suppliers = supplierrepo.findByCategoryName(categoryName);
+        return suppliers.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private SupplierResponsedto toDto(Supplier s) {
         return SupplierResponsedto.builder()
                 .id(s.getId())

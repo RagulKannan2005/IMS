@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import com.example.indentory_management_system.Service.WarehouseService;
 import com.example.indentory_management_system.dto.warehousesRequestdto;
 import com.example.indentory_management_system.dto.warehousesResponsedto;
+import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Exception.ResourceNotFoundException;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +23,16 @@ import lombok.RequiredArgsConstructor;
 public class WarehouseController {
     
     private final WarehouseService warehouseService;
+    private final UserRepository userRepository;
 
     @PostMapping("/addwarehouse")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<warehousesResponsedto> addwarehouses(@Valid @RequestBody warehousesRequestdto dto){
+    public ResponseEntity<warehousesResponsedto> addwarehouses(@Valid @RequestBody warehousesRequestdto dto, Authentication authentication){
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        dto.setUserId(user.getId());
+        
         warehousesResponsedto added = warehouseService.addwarehouses(dto);
         return ResponseEntity.ok(added);
     }
@@ -59,7 +69,14 @@ public class WarehouseController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<warehousesResponsedto> updatewarehouse(
             @PathVariable Long id,
-            @Valid @RequestBody warehousesRequestdto w) {
+            @Valid @RequestBody warehousesRequestdto w,
+            Authentication authentication) {
+        
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        w.setUserId(user.getId());
+
         return ResponseEntity.ok(warehouseService.updatewarehouse(id, w));
     }
 
@@ -68,5 +85,16 @@ public class WarehouseController {
     public ResponseEntity<warehousesResponsedto> deleteById(@PathVariable Long id) {
         warehouseService.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getallwarehouses")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
+    public ResponseEntity<List<warehousesResponsedto>> getAllWarehouses(Authentication authentication) {
+        String email = authentication.getName();
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        // Return only warehouses owned by this user
+        return ResponseEntity.ok(warehouseService.getWarehousesByUser(user.getId()));
     }
 }
