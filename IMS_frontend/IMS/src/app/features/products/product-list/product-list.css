@@ -278,3 +278,44 @@
 .btn.secondary:hover {
   background: var(--border-color);
 }
+
+/* Filter Bar Styles */
+.filter-bar {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+.filter-select, .filter-input {
+  background: var(--background);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus, .filter-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  outline: none;
+}

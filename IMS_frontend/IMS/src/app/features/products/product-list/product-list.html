@@ -14,6 +14,37 @@
     </button>
   </div>
 
+  <!-- Cascading Filter Bar -->
+  <div class="dashboard-panel filter-bar" style="margin-bottom: 24px; padding: 16px 24px;">
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+      <div class="filter-group">
+        <label class="filter-label">1. Supplier</label>
+        <select class="form-control filter-select" [(ngModel)]="selectedSupplierId">
+          <option value="ALL">All Suppliers</option>
+          <option value="INTERNAL">Internal Only (No Supplier)</option>
+          @for (sup of suppliers(); track sup.id) {
+            <option [value]="sup.id">{{ sup.supplierName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">2. Category</label>
+        <select class="form-control filter-select" [(ngModel)]="selectedCategory">
+          <option value="ALL">All Categories</option>
+          @for (cat of categories(); track cat.id) {
+            <option [value]="cat.name">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group" style="flex: 1; min-width: 250px;">
+        <label class="filter-label">3. Search Products</label>
+        <input type="text" class="form-control filter-input" placeholder="Search by name or SKU..." [(ngModel)]="searchQuery">
+      </div>
+    </div>
+  </div>
+
   <!-- Product Table Panel -->
   <div class="dashboard-panel">
     <div class="table-container">
@@ -30,7 +61,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (prod of products(); track prod.id) {
+          @for (prod of filteredProducts(); track prod.id) {
             <tr>
               <td><code>{{ prod.sku }}</code></td>
               <td style="font-weight: 600; color: var(--text-primary);">

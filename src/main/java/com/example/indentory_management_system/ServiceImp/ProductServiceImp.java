@@ -37,7 +37,7 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Category not found with name: " + dto.getCategory()));
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByUsername(username)
+        Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
         Supplier supplier = null;

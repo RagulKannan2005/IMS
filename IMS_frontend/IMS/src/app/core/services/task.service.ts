@@ -13,7 +13,7 @@ export interface DailyTask {
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/tasks';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/tasks';
 
   constructor(private http: HttpClient) {}
 

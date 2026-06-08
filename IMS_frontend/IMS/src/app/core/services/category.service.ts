@@ -7,7 +7,7 @@ import { CategoryRequestDto, CategoryResponseDto } from '../../shared/models/int
   providedIn: 'root'
 })
 export class CategoryService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/categories';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/categories';
 
   constructor(private http: HttpClient) {}
 

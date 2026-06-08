@@ -7,7 +7,7 @@ import { WarehouseRequestDto, WarehouseResponseDto } from '../../shared/models/i
   providedIn: 'root'
 })
 export class WarehouseService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/warehouses';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/warehouses';
 
   constructor(private http: HttpClient) {}
 

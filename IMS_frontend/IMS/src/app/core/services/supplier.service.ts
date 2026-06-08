@@ -12,7 +12,7 @@ import {
   providedIn: 'root'
 })
 export class SupplierService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/suppliers';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/suppliers';
 
   constructor(private http: HttpClient) {}
 

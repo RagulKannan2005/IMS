@@ -7,7 +7,7 @@ import { StockMovementRequestDto, StockMovementResponseDto } from '../../shared/
   providedIn: 'root'
 })
 export class StockMovementService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/stock-movements';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/stock-movements';
 
   constructor(private http: HttpClient) {}
 

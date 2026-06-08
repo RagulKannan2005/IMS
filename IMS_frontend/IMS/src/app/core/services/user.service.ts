@@ -7,7 +7,7 @@ import { UserRequestDto, UserResponseDto } from '../../shared/models/interfaces'
   providedIn: 'root'
 })
 export class UserService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/users';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/users';
 
   constructor(private http: HttpClient) {}
 

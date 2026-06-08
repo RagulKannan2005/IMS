@@ -16,7 +16,7 @@ export interface NotificationResponseDto {
   providedIn: 'root'
 })
 export class NotificationService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/notifications';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/notifications';
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { SupplierService } from '../../../core/services/supplier.service';
@@ -9,7 +9,7 @@ import { ProductResponseDto, CategoryResponseDto, SupplierResponseDto, ProductRe
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.css']
 })
@@ -17,6 +17,40 @@ export class ProductListComponent implements OnInit {
   products = signal<ProductResponseDto[]>([]);
   categories = signal<CategoryResponseDto[]>([]);
   suppliers = signal<SupplierResponseDto[]>([]);
+  
+  // Filtering state
+  selectedSupplierId = signal<number | 'INTERNAL' | 'ALL'>('ALL');
+  selectedCategory = signal<string>('ALL');
+  searchQuery = signal<string>('');
+
+  filteredProducts = computed(() => {
+    let filtered = this.products();
+
+    // 1. Filter by Supplier
+    const supplierFilter = this.selectedSupplierId();
+    if (supplierFilter === 'INTERNAL') {
+      filtered = filtered.filter(p => p.supplierId === null);
+    } else if (supplierFilter !== 'ALL') {
+      filtered = filtered.filter(p => p.supplierId === Number(supplierFilter));
+    }
+
+    // 2. Filter by Category
+    const categoryFilter = this.selectedCategory();
+    if (categoryFilter !== 'ALL') {
+      filtered = filtered.filter(p => p.categoryName === categoryFilter);
+    }
+
+    // 3. Filter by Search Query (Name or SKU)
+    const query = this.searchQuery().toLowerCase().trim();
+    if (query) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.sku.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  });
   
   showModal = signal<boolean>(false);
   isEditing = signal<boolean>(false);

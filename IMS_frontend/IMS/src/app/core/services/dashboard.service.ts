@@ -53,7 +53,7 @@ export interface SupplierDashboardDto {
   providedIn: 'root'
 })
 export class DashboardService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/dashboards';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/dashboards';
 
   constructor(private http: HttpClient) {}
 

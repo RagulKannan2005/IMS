@@ -12,6 +12,8 @@ import com.example.indentory_management_system.Entity.warehouses;
 import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Repository.SupplierRepository;
 import com.example.indentory_management_system.Repository.WarehouseRepository;
+import com.example.indentory_management_system.Entity.Categories;
+import com.example.indentory_management_system.Repository.CategoriesRepository;
 
 @SpringBootApplication
 public class IndentoryManagementSystemApplication {
@@ -21,7 +23,7 @@ public class IndentoryManagementSystemApplication {
 	}
 
 	@Bean
-	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository) {
+	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository, CategoriesRepository categoriesRepository) {
 		return args -> {
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				// Seed Admin
@@ -62,6 +64,29 @@ public class IndentoryManagementSystemApplication {
 						System.out.println("Bootstrap: Migrated old warehouse " + w.getWarehouseCode() + " to admin ownership.");
 					}
 				});
+
+				// 3. Seed default categories if none exist
+				if (categoriesRepository.count() == 0) {
+					categoriesRepository.save(Categories.builder()
+							.name("Electronics")
+							.description("Electronic devices and accessories")
+							.active_status("active")
+							.user(adminUser)
+							.build());
+					categoriesRepository.save(Categories.builder()
+							.name("Office Supplies")
+							.description("Stationery and office equipment")
+							.active_status("active")
+							.user(adminUser)
+							.build());
+					categoriesRepository.save(Categories.builder()
+							.name("Furniture")
+							.description("Desks, chairs, and storage")
+							.active_status("active")
+							.user(adminUser)
+							.build());
+					System.out.println("Bootstrap: Default categories seeded.");
+				}
 			});
 			if (userRepository.findByUsername("manager").isEmpty()) {
 				// Seed Manager
@@ -84,7 +109,7 @@ public class IndentoryManagementSystemApplication {
 						.firstName("Staff")
 						.lastName("User")
 						.email("staff@ims.com")
-						.password(passwordEncoder.encode("staff123"))
+						.password(passwordEncoder.encode("Staff@123456"))
 						.phone_number("1122334455")
 						.role("STAFF")
 						.build());

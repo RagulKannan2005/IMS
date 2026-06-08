@@ -16,7 +16,7 @@ export interface UserSession {
 export class AuthService {
   private readonly SESSION_KEY = 'ims-session';
 
-  private  apiUrl= "http://localhost:8083/api/v1/auth";
+  private  apiUrl= "http://localhost:8082/api/v1/auth";
 
   
   // Current session signal

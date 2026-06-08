@@ -7,7 +7,7 @@ import { ProductRequestDto, ProductResponseDto, StockAdjustmentRequest } from '.
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly apiUrl = 'http://localhost:8083/api/v1/products';
+  private readonly apiUrl = 'http://localhost:8082/api/v1/products';
 
   constructor(private http: HttpClient) {}
 

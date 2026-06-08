@@ -12,8 +12,8 @@ import {
   providedIn: 'root'
 })
 export class PurchaseOrderService {
-  private readonly poApiUrl = 'http://localhost:8083/api/v1/purchase-orders';
-  private readonly itemApiUrl = 'http://localhost:8083/api/v1/purchaseorderitems';
+  private readonly poApiUrl = 'http://localhost:8082/api/v1/purchase-orders';
+  private readonly itemApiUrl = 'http://localhost:8082/api/v1/purchaseorderitems';
 
   constructor(private http: HttpClient) {}
 

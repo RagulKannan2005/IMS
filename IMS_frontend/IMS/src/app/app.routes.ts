@@ -138,7 +138,7 @@ export const routes: Routes = [
       // Supplier Portal Routes
       { 
         path: 'supplier/products', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/suppliers/supplier-product-list/supplier-product-list').then(c => c.SupplierProductListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['SUPPLIER'], title: 'My Supplied Products' } 
       },

@@ -1,0 +1,52 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+      <h2 class="panel-title" style="font-size: 20px; color: var(--text-primary);">My Supplied Products</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">A complete catalog of all products you supply to the inventory.</p>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Product Name</th>
+          <th>Category</th>
+          <th>Selling Price</th>
+          <th>Stock Qty</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (myProductsList().length === 0) {
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+              No products registered yet. Add products from your Dashboard.
+            </td>
+          </tr>
+        } @else {
+          @for (prod of myProductsList(); track prod.id) {
+            <tr>
+              <td style="font-weight: 600; color: var(--text-primary);">{{ prod.sku }}</td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <span style="font-weight: 500;">{{ prod.name }}</span>
+                  <span style="font-size: 11px; color: var(--text-muted);">{{ prod.description || 'No description' }}</span>
+                </div>
+              </td>
+              <td>{{ prod.categoryName }}</td>
+              <td style="font-weight: 600;">{{ prod.sellingPrice | currency }}</td>
+              <td>{{ prod.stockQuantity }}</td>
+              <td>
+                <span class="status-pill" [class.success]="prod.isActive" [class.danger]="!prod.isActive">
+                  {{ prod.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                </span>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
