@@ -1,0 +1,133 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header">
+    <h2 class="panel-title">Create Purchase Order</h2>
+    <div class="header-actions">
+      <button class="btn btn-outline" routerLink="/purchase-orders">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+      </button>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <div *ngIf="error" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle"></i> {{ error }}
+    </div>
+    <div *ngIf="success" class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ success }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #poForm="ngForm">
+      
+      <!-- Supplier Selection -->
+      <div class="form-group">
+        <label for="supplier">Supplier</label>
+        <select 
+          id="supplier" 
+          name="supplierId" 
+          class="form-control" 
+          [(ngModel)]="selectedSupplierId" 
+          (change)="onSupplierChange()"
+          required>
+          <option [ngValue]="null" disabled>Select a Supplier</option>
+          <option *ngFor="let supplier of suppliers" [ngValue]="supplier.id">
+            {{ supplier.supplierName }}
+          </option>
+        </select>
+        <div *ngIf="loading && !selectedSupplierId" class="small-text text-muted mt-1">Loading suppliers...</div>
+      </div>
+
+      <!-- Product Selection -->
+      <div class="form-group" *ngIf="selectedSupplierId">
+        <label for="product">Product</label>
+        <select 
+          id="product" 
+          name="product" 
+          class="form-control" 
+          [(ngModel)]="selectedProduct" 
+          (ngModelChange)="onProductChange($event)"
+          required>
+          <option [ngValue]="null" disabled>Select a Product</option>
+          <option *ngFor="let sp of supplierProducts" [ngValue]="sp">
+            {{ sp.productName }} (SKU: {{ sp.productSku }})
+          </option>
+        </select>
+        <div *ngIf="loading && selectedSupplierId && supplierProducts.length === 0" class="small-text text-muted mt-1">Loading products...</div>
+        <div *ngIf="!loading && selectedSupplierId && supplierProducts.length === 0" class="small-text text-danger mt-1">This supplier has no products.</div>
+      </div>
+
+      <!-- Order Details -->
+      <div class="order-details-grid" *ngIf="selectedProduct">
+        
+        <!-- Stock Info -->
+        <div class="info-card mb-3">
+          <div class="info-label">Supplier Available Stock</div>
+          <div class="info-value text-primary font-weight-bold">
+            {{ selectedProduct.availableQuantity }}
+          </div>
+        </div>
+
+        <div class="info-card mb-3">
+          <div class="info-label">Unit Cost</div>
+          <div class="info-value">
+            {{ selectedProduct.unitPrice | currency }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="quantity">Quantity to Order</label>
+          <input 
+            type="number" 
+            id="quantity" 
+            name="quantity" 
+            class="form-control" 
+            [(ngModel)]="orderForm.quantity" 
+            min="1" 
+            [max]="selectedProduct.availableQuantity"
+            required>
+          <small class="text-danger" *ngIf="orderForm.quantity > selectedProduct.availableQuantity">
+            Cannot exceed supplier's available stock!
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="deliveryDate">Expected Delivery Date</label>
+          <input 
+            type="date" 
+            id="deliveryDate" 
+            name="deliveryDate" 
+            class="form-control" 
+            [(ngModel)]="orderForm.expectedDeliveryDate" 
+            required>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="selectedProduct">
+        <label for="remarks">Remarks (Optional)</label>
+        <textarea 
+          id="remarks" 
+          name="remarks" 
+          class="form-control" 
+          [(ngModel)]="orderForm.remarks" 
+          rows="3" 
+          placeholder="Any special instructions for the supplier...">
+        </textarea>
+      </div>
+
+      <!-- Total & Submit -->
+      <div class="submit-section" *ngIf="selectedProduct">
+        <div class="total-amount">
+          Total Amount: <span>{{ (selectedProduct.unitPrice * orderForm.quantity) | currency }}</span>
+        </div>
+        
+        <button 
+          type="submit" 
+          class="btn btn-primary" 
+          [disabled]="poForm.invalid || submitting || orderForm.quantity > selectedProduct.availableQuantity || orderForm.quantity <= 0">
+          <i class="fas fa-spinner fa-spin" *ngIf="submitting"></i>
+          <span *ngIf="!submitting">Place Order</span>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

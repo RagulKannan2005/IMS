@@ -7,10 +7,12 @@ import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { ProductResponseDto, PurchaseOrderResponseDto, CategoryResponseDto, ProductRequestDto } from '../../../shared/models/interfaces';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-supplier-dashboard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './supplier-dashboard.html',
   styleUrl: './supplier-dashboard.css'
 })
@@ -24,20 +26,18 @@ export class SupplierDashboard implements OnInit {
   productForm: FormGroup;
 
   stats = computed(() => {
-    const data = this.dashboardData();
-    if (!data) {
-      return [
-        { title: 'My Supplied Products', value: '...', subtext: 'Products catalog registered', icon: 'products', color: '#6366f1' },
-        { title: 'Active Orders', value: '...', subtext: 'Total assigned purchase orders', icon: 'orders', color: '#f59e0b' },
-        { title: 'Shipped Orders', value: '...', subtext: 'Fulfilled shipments count', icon: 'shipments', color: '#10b981' },
-        { title: 'Pending Dispatch', value: '...', subtext: 'Awaiting shipping logistics', icon: 'stock', color: '#06b6d4' }
-      ];
-    }
+    const productsCount = this.myProductsList().length;
+    const orders = this.dispatchedOrders();
+    
+    const pendingCount = orders.filter(o => o.status === 'ORDERED' || o.status === 'PENDING').length;
+    const acceptedCount = orders.filter(o => o.status === 'ACCEPTED').length;
+    const shippedCount = orders.filter(o => o.status === 'SHIPPED').length;
+
     return [
-      { title: 'My Supplied Products', value: `${data.myProducts} Items`, subtext: 'Products catalog registered', icon: 'products', color: '#6366f1' },
-      { title: 'Active Orders', value: `${data.myOrders} Orders`, subtext: 'Total assigned purchase orders', icon: 'orders', color: '#f59e0b' },
-      { title: 'Shipped Orders', value: `${data.shippedOrders} Orders`, subtext: 'Fulfilled shipments count', icon: 'shipments', color: '#10b981' },
-      { title: 'Pending Dispatch', value: `${data.pendingOrders} Orders`, subtext: 'Awaiting shipping logistics', icon: 'stock', color: '#06b6d4' }
+      { title: 'My Supplied Products', value: `${productsCount} Items`, subtext: 'Products catalog registered', icon: 'products', color: '#6366f1' },
+      { title: 'Pending Orders', value: `${pendingCount} Orders`, subtext: 'Awaiting your acceptance', icon: 'orders', color: '#f59e0b' },
+      { title: 'Accepted Orders', value: `${acceptedCount} Orders`, subtext: 'Ready to be shipped', icon: 'stock', color: '#0ea5e9' },
+      { title: 'Shipped Orders', value: `${shippedCount} Orders`, subtext: 'Fulfilled shipments count', icon: 'shipments', color: '#10b981' }
     ];
   });
 
@@ -144,7 +144,22 @@ export class SupplierDashboard implements OnInit {
 
         this.closeModal();
       },
-      error: (err) => console.error('Failed to add product', err)
+      error: (err) => {
+        console.error('Failed to add product', err);
+        // Show error message from backend if available
+        let errorMsg = 'Failed to add product. ';
+        if (err.error) {
+          if (typeof err.error === 'string') {
+            errorMsg += err.error;
+          } else if (err.error.error) {
+             errorMsg += err.error.error;
+          } else if (Object.keys(err.error).length > 0) {
+             // For validation errors mapped to field names
+             errorMsg += 'Validation failed: ' + JSON.stringify(err.error);
+          }
+        }
+        alert(errorMsg);
+      }
     });
   }
 }

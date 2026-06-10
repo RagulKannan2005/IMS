@@ -43,6 +43,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public UserResponsedto createUser(UserRequestdto dto) {
         Users creator = getAuthenticatedUser();
         
@@ -57,6 +58,9 @@ public class UserServiceImp implements UserService {
         if (dto.getSupplierId() != null) {
             supplier = supplierrepo.findById(dto.getSupplierId())
                     .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + dto.getSupplierId()));
+            if (supplier.getUser() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This supplier profile is already associated with another user.");
+            }
         }
 
         Users user = Users.builder()
@@ -130,6 +134,9 @@ public class UserServiceImp implements UserService {
         if (userRequestdto.getSupplierId() != null) {
             supplier = supplierrepo.findById(userRequestdto.getSupplierId())
                     .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + userRequestdto.getSupplierId()));
+            if (supplier.getUser() != null && !supplier.getUser().getId().equals(id)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This supplier profile is already associated with another user.");
+            }
         }
 
         if (user.getSupplier() != null && !user.getSupplier().equals(supplier)) {

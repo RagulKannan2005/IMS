@@ -31,9 +31,11 @@ export class StaffDashboard implements OnInit {
 
   dailyTasks = signal<DailyTask[]>([]);
 
-  movements = computed<StockMovementResponseDto[]>(() => {
-    return this.dashboardData()?.stockMovementsToday || [];
-  });
+  movements = computed(() => this.dashboardData()?.stockMovementsToday || []);
+
+  lowStockProducts = computed(() => this.dashboardData()?.lowStockProducts || []);
+  totalInternalProducts = computed(() => this.dashboardData()?.totalInternalProducts || 0);
+  recentInternalProducts = computed(() => this.dashboardData()?.recentInternalProducts || []);
 
   constructor(
     private dashboardService: DashboardService,

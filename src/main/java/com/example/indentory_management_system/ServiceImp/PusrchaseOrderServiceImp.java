@@ -19,6 +19,7 @@ import com.example.indentory_management_system.Service.StockService;
 import com.example.indentory_management_system.dto.PurchaseOrderRequestdto;
 import com.example.indentory_management_system.dto.PurchaseOrderResponsedto;
 import com.example.indentory_management_system.dto.StockRequestdto;
+import com.example.indentory_management_system.Service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final StockService stockService;
+    private final NotificationService notificationService;
 
     @Override
     public PurchaseOrderResponsedto addPurchaseOrder(PurchaseOrderRequestdto dto) {
@@ -54,6 +56,14 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .build();
 
         PurchaseOrder savedOrder = purchaseorderrepo.save(order);
+        
+        // Notify supplier if they have an associated user account
+        if (supplier.getUser() != null) {
+            String title = "New Purchase Order: " + savedOrder.getPoNumber();
+            String message = "You have received a new purchase order for " + savedOrder.getTotalAmount() + ". Expected delivery: " + savedOrder.getExpectedDeliveryDate();
+            notificationService.createNotification(supplier.getUser().getEmail(), title, message);
+        }
+        
         return toDto(savedOrder);
     }
 
@@ -140,8 +150,8 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
 
-        if ("RECEIVED".equalsIgnoreCase(order.getStatus())) {
-            throw new RuntimeException("Purchase order is already RECEIVED");
+        if (!"SHIPPED".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Purchase order must be SHIPPED before it can be RECEIVED");
         }
 
         order.setStatus("RECEIVED");
@@ -181,6 +191,45 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         order.setStatus(status);
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
         return toDto(updatedOrder);
+    }
+
+    @Override
+    public PurchaseOrderResponsedto acceptOrder(Long id) {
+        PurchaseOrder order = purchaseorderrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+
+        if (!"ORDERED".equalsIgnoreCase(order.getStatus()) && !"PENDING".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Purchase order must be ORDERED or PENDING to accept.");
+        }
+
+        order.setStatus("ACCEPTED");
+        return toDto(purchaseorderrepo.save(order));
+    }
+
+    @Override
+    public PurchaseOrderResponsedto rejectOrder(Long id) {
+        PurchaseOrder order = purchaseorderrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+
+        if (!"ORDERED".equalsIgnoreCase(order.getStatus()) && !"PENDING".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Purchase order must be ORDERED or PENDING to reject.");
+        }
+
+        order.setStatus("REJECTED");
+        return toDto(purchaseorderrepo.save(order));
+    }
+
+    @Override
+    public PurchaseOrderResponsedto shipOrder(Long id) {
+        PurchaseOrder order = purchaseorderrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+
+        if (!"ACCEPTED".equalsIgnoreCase(order.getStatus())) {
+            throw new RuntimeException("Purchase order must be ACCEPTED to ship.");
+        }
+
+        order.setStatus("SHIPPED");
+        return toDto(purchaseorderrepo.save(order));
     }
 
     private PurchaseOrderResponsedto toDto(PurchaseOrder order) {

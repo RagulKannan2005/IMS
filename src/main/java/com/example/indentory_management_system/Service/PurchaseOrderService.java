@@ -27,5 +27,11 @@ public interface PurchaseOrderService {
 
     PurchaseOrderResponsedto receivePurchaseOrder(Long id);
 
+    PurchaseOrderResponsedto acceptOrder(Long id);
+
+    PurchaseOrderResponsedto rejectOrder(Long id);
+
+    PurchaseOrderResponsedto shipOrder(Long id);
+
     PurchaseOrderResponsedto updateStatus(Long id, String status);
 }

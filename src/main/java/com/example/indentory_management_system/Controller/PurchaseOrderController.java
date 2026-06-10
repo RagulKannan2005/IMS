@@ -83,4 +83,22 @@ public class PurchaseOrderController {
     public PurchaseOrderResponsedto updateStatus(@PathVariable Long id, @RequestParam String status) {
         return purchaseorderservice.updateStatus(id, status);
     }
+
+    @PutMapping("/{id}/accept")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isSupplierForOrder(authentication, #id))")
+    public PurchaseOrderResponsedto acceptOrder(@PathVariable Long id) {
+        return purchaseorderservice.acceptOrder(id);
+    }
+
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isSupplierForOrder(authentication, #id))")
+    public PurchaseOrderResponsedto rejectOrder(@PathVariable Long id) {
+        return purchaseorderservice.rejectOrder(id);
+    }
+
+    @PutMapping("/{id}/ship")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isSupplierForOrder(authentication, #id))")
+    public PurchaseOrderResponsedto shipOrder(@PathVariable Long id) {
+        return purchaseorderservice.shipOrder(id);
+    }
 }

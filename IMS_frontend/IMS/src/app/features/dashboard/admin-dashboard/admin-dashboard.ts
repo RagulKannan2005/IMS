@@ -35,6 +35,9 @@ export class AdminDashboard implements OnInit {
 
   systemStats = computed(() => this.dashboardData()?.platformStatus || []);
 
+  totalInternalProducts = computed(() => this.dashboardData()?.totalInternalProducts || 0);
+  recentInternalProducts = computed(() => this.dashboardData()?.recentInternalProducts || []);
+
   constructor(private dashboardService: DashboardService) {}
 
   ngOnInit(): void {

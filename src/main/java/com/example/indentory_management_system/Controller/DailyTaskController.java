@@ -25,13 +25,13 @@ public class DailyTaskController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<DailyTask> createTask(@RequestBody DailyTask task) {
         return ResponseEntity.ok(dailyTaskRepository.save(task));
     }
 
     @PutMapping("/{id}/toggle")
-    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<DailyTask> toggleTask(@PathVariable Long id) {
         return dailyTaskRepository.findById(id).map(task -> {
             task.setDone(!task.isDone());

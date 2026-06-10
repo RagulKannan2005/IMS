@@ -34,6 +34,7 @@ public class ProductRequestdto {
     private int reorderQuantity;
 
     @NotBlank(message = "Active status is required")
+    @com.fasterxml.jackson.annotation.JsonProperty("active_status")
     private String active_status;
 
     @NotBlank(message = "Category name is required")

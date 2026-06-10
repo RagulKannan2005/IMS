@@ -30,13 +30,12 @@ export class ManagerDashboard implements OnInit {
     ];
   });
 
-  lowStockProducts = computed<ProductResponseDto[]>(() => {
-    return this.dashboardData()?.lowStockProducts || [];
-  });
+  lowStockProducts = computed(() => this.dashboardData()?.lowStockProducts || []);
 
-  recentOrders = computed<any[]>(() => {
-    return this.dashboardData()?.recentOrders || [];
-  });
+  recentOrders = computed(() => this.dashboardData()?.recentOrders || []);
+
+  totalInternalProducts = computed(() => this.dashboardData()?.totalInternalProducts || 0);
+  recentInternalProducts = computed(() => this.dashboardData()?.recentInternalProducts || []);
 
   constructor(private dashboardService: DashboardService) {}
 

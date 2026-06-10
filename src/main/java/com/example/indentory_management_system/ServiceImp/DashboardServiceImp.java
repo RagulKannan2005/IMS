@@ -73,6 +73,12 @@ public class DashboardServiceImp implements DashboardService {
                 .map(this::toProductDto)
                 .collect(Collectors.toList());
 
+        Long totalInternalProducts = productRepository.countBySupplierId(null);
+
+        List<ProductSummaryDto> recentInternalProducts = productRepository.findTop5BySupplierIsNullOrderByCreatedDateDesc().stream()
+                .map(this::toProductSummaryDto)
+                .collect(Collectors.toList());
+
         // Assemble audit logs on the fly
         List<TempAudit> tempAudits = new ArrayList<>();
 
@@ -186,6 +192,8 @@ public class DashboardServiceImp implements DashboardService {
                 .totalWarehouses(totalWarehouses)
                 .totalPurchaseOrders(totalPurchaseOrders)
                 .lowStockProducts(lowStock)
+                .totalInternalProducts(totalInternalProducts)
+                .recentInternalProducts(recentInternalProducts)
                 .auditLogs(auditLogs)
                 .platformStatus(platformStatus)
                 .build();
@@ -201,6 +209,12 @@ public class DashboardServiceImp implements DashboardService {
                 .map(this::toProductDto)
                 .collect(Collectors.toList());
 
+        Long totalInternalProducts = productRepository.countBySupplierId(null);
+
+        List<ProductSummaryDto> recentInternalProducts = productRepository.findTop5BySupplierIsNullOrderByCreatedDateDesc().stream()
+                .map(this::toProductSummaryDto)
+                .collect(Collectors.toList());
+
         List<PurchaseOrderResponsedto> recentOrders = purchaseOrderRepository.findAll().stream()
                 .sorted(Comparator.comparing(PurchaseOrder::getOrderedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(5)
@@ -212,6 +226,8 @@ public class DashboardServiceImp implements DashboardService {
                 .incomingShipments(incomingShipments)
                 .activeSuppliers(activeSuppliers)
                 .lowStockProducts(lowStock)
+                .totalInternalProducts(totalInternalProducts)
+                .recentInternalProducts(recentInternalProducts)
                 .recentOrders(recentOrders)
                 .build();
     }
@@ -235,10 +251,23 @@ public class DashboardServiceImp implements DashboardService {
                 .map(this::toMovementDto)
                 .collect(Collectors.toList());
 
+        List<ProductResponsedto> lowStock = productRepository.findLowStockProducts().stream()
+                .map(this::toProductDto)
+                .collect(Collectors.toList());
+
+        Long totalInternalProducts = productRepository.countBySupplierId(null);
+
+        List<ProductSummaryDto> recentInternalProducts = productRepository.findTop5BySupplierIsNullOrderByCreatedDateDesc().stream()
+                .map(this::toProductSummaryDto)
+                .collect(Collectors.toList());
+
         return StaffDashboardDto.builder()
                 .stockInToday(stockIn)
                 .stockOutToday(stockOut)
                 .stockMovementsToday(movementDtos)
+                .lowStockProducts(lowStock)
+                .totalInternalProducts(totalInternalProducts)
+                .recentInternalProducts(recentInternalProducts)
                 .build();
     }
 
@@ -256,7 +285,8 @@ public class DashboardServiceImp implements DashboardService {
         long myProducts = productRepository.countBySupplierId(supplierId);
         long myOrders = purchaseOrderRepository.countBySupplierId(supplierId);
         long shippedOrders = purchaseOrderRepository.countBySupplierIdAndStatus(supplierId, "SHIPPED");
-        long pendingOrders = purchaseOrderRepository.countBySupplierIdAndStatus(supplierId, "PENDING");
+        long pendingOrders = purchaseOrderRepository.countBySupplierIdAndStatus(supplierId, "PENDING") + 
+                             purchaseOrderRepository.countBySupplierIdAndStatus(supplierId, "ORDERED");
 
         return SupplierDashboardDto.builder()
                 .myProducts(myProducts)
@@ -311,6 +341,15 @@ public class DashboardServiceImp implements DashboardService {
                 .orderedAt(order.getOrderedAt())
                 .expectedDeliveryDate(order.getExpectedDeliveryDate())
                 .remarks(order.getRemarks())
+                .build();
+    }
+
+    private ProductSummaryDto toProductSummaryDto(Products product) {
+        return ProductSummaryDto.builder()
+                .id(product.getId())
+                .sku(product.getSku())
+                .name(product.getName())
+                .stockQuantity(product.getStockQuantity())
                 .build();
     }
 }

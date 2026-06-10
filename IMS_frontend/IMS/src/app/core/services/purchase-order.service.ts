@@ -72,6 +72,18 @@ export class PurchaseOrderService {
     return this.http.post<PurchaseOrderResponseDto>(`${this.poApiUrl}/${id}/status`, {}, { params });
   }
 
+  acceptOrder(id: number): Observable<PurchaseOrderResponseDto> {
+    return this.http.put<PurchaseOrderResponseDto>(`${this.poApiUrl}/${id}/accept`, {});
+  }
+
+  rejectOrder(id: number): Observable<PurchaseOrderResponseDto> {
+    return this.http.put<PurchaseOrderResponseDto>(`${this.poApiUrl}/${id}/reject`, {});
+  }
+
+  shipOrder(id: number): Observable<PurchaseOrderResponseDto> {
+    return this.http.put<PurchaseOrderResponseDto>(`${this.poApiUrl}/${id}/ship`, {});
+  }
+
   /* ========================================================================
      PURCHASE ORDER ITEM ENDPOINTS
      ======================================================================== */

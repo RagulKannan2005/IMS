@@ -1,7 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProductResponseDto, StockMovementResponseDto } from '../../shared/models/interfaces';
+import { ProductResponseDto, StockMovementResponseDto, PurchaseOrderResponseDto } from '../../shared/models/interfaces';
+
+export interface ProductSummaryDto {
+  id: number;
+  sku: string;
+  name: string;
+  stockQuantity: number;
+}
 
 export interface AuditLogResponseDto {
   user: string;
@@ -24,6 +31,8 @@ export interface AdminDashboardDto {
   totalWarehouses: number;
   totalPurchaseOrders: number;
   lowStockProducts: ProductResponseDto[];
+  totalInternalProducts: number;
+  recentInternalProducts: ProductSummaryDto[];
   auditLogs: AuditLogResponseDto[];
   platformStatus: SystemHealthDto[];
 }
@@ -33,13 +42,18 @@ export interface ManagerDashboardDto {
   incomingShipments: number;
   activeSuppliers: number;
   lowStockProducts: ProductResponseDto[];
-  recentOrders: any[]; // Or PurchaseOrderResponseDto[]
+  totalInternalProducts: number;
+  recentInternalProducts: ProductSummaryDto[];
+  recentOrders: PurchaseOrderResponseDto[];
 }
 
 export interface StaffDashboardDto {
   stockInToday: number;
   stockOutToday: number;
   stockMovementsToday: StockMovementResponseDto[];
+  lowStockProducts: ProductResponseDto[];
+  totalInternalProducts: number;
+  recentInternalProducts: ProductSummaryDto[];
 }
 
 export interface SupplierDashboardDto {

@@ -12,5 +12,7 @@ public class ManagerDashboardDto {
     private long incomingShipments;
     private long activeSuppliers;
     private List<ProductResponsedto> lowStockProducts;
+    private Long totalInternalProducts;
+    private List<ProductSummaryDto> recentInternalProducts;
     private List<PurchaseOrderResponsedto> recentOrders;
 }

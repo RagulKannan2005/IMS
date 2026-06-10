@@ -10,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.indentory_management_system.Entity.Products;
 import com.example.indentory_management_system.Entity.PurchaseOrder;
 import com.example.indentory_management_system.Entity.PurchaseOrderItem;
+import com.example.indentory_management_system.Entity.SupplierProduct;
 import com.example.indentory_management_system.Exception.ResourceNotFoundException;
 import com.example.indentory_management_system.Repository.ProductRepository;
 import com.example.indentory_management_system.Repository.PurchaseOrderRepository;
 import com.example.indentory_management_system.Repository.PurchaseOrderItemRepository;
+import com.example.indentory_management_system.Repository.SupplierProductRepository;
 import com.example.indentory_management_system.Service.PurchaseOrderItemService;
 import com.example.indentory_management_system.dto.PurchaseOrderItemRequestdto;
 import com.example.indentory_management_system.dto.PurchaseOrderItemResponsedto;
@@ -27,6 +29,7 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final ProductRepository productRepository;
+    private final SupplierProductRepository supplierProductRepository;
 
     @Override
     @Transactional
@@ -43,6 +46,13 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
 
         Products product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + dto.getProductId()));
+
+        SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(purchaseOrder.getSupplier().getId(), product.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Supplier does not supply this product"));
+
+        if (dto.getQuantityOrdered() > supplierProduct.getAvailableQuantity()) {
+            throw new IllegalArgumentException("Quantity ordered exceeds supplier's available quantity (" + supplierProduct.getAvailableQuantity() + ")");
+        }
 
         BigDecimal totalCost = BigDecimal.valueOf(dto.getQuantityOrdered()).multiply(dto.getUnitCost());
 
@@ -77,6 +87,13 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
 
         Products product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + dto.getProductId()));
+
+        SupplierProduct supplierProduct = supplierProductRepository.findBySupplierIdAndProductId(purchaseOrder.getSupplier().getId(), product.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Supplier does not supply this product"));
+
+        if (dto.getQuantityOrdered() > supplierProduct.getAvailableQuantity()) {
+            throw new IllegalArgumentException("Quantity ordered exceeds supplier's available quantity (" + supplierProduct.getAvailableQuantity() + ")");
+        }
 
         BigDecimal totalCost = BigDecimal.valueOf(dto.getQuantityOrdered()).multiply(dto.getUnitCost());
 

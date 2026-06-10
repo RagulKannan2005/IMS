@@ -11,4 +11,7 @@ public class StaffDashboardDto {
     private long stockInToday;
     private long stockOutToday;
     private List<StockMovementResponseDto> stockMovementsToday;
+    private List<ProductResponsedto> lowStockProducts;
+    private Long totalInternalProducts;
+    private List<ProductSummaryDto> recentInternalProducts;
 }

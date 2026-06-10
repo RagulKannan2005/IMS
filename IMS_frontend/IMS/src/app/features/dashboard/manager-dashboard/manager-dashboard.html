@@ -38,39 +38,75 @@
 
 <!-- Main Panels -->
 <div class="panel-grid">
-  <!-- Left Panel: Low Stock Alerts -->
-  <div class="dashboard-panel">
-    <div class="panel-header">
-      <h2 class="panel-title" style="color: var(--error);">Critical Low Stock Alerts</h2>
-      <button class="status-pill danger" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--error);">Reorder Selected</button>
-    </div>
-    <div class="table-container">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>Product Name</th>
-            <th>SKU</th>
-            <th>Min Limit</th>
-            <th>Current Stock</th>
-            <th>Alert Level</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (prod of lowStockProducts(); track prod.sku) {
+  <!-- Left Panel: Low Stock Alerts & Internal Products -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- Critical Low Stock Alerts -->
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h2 class="panel-title" style="color: var(--error);">Critical Low Stock Alerts</h2>
+        <button class="status-pill danger" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--error);">Reorder Selected</button>
+      </div>
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
             <tr>
-              <td style="font-weight: 600; color: var(--text-primary);">{{ prod.name }}</td>
-              <td><code>{{ prod.sku }}</code></td>
-              <td>{{ prod.reorderLevel }} units</td>
-              <td style="font-weight: 700;">{{ prod.stockQuantity }} units</td>
-              <td>
-                <span class="status-pill" [class.danger]="prod.stockQuantity === 0" [class.warning]="prod.stockQuantity > 0">
-                  {{ prod.stockQuantity === 0 ? 'OUT OF STOCK' : 'LOW STOCK' }}
-                </span>
-              </td>
+              <th>Product Name</th>
+              <th>SKU</th>
+              <th>Min Limit</th>
+              <th>Current Stock</th>
+              <th>Alert Level</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (prod of lowStockProducts(); track prod.sku) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-primary);">{{ prod.name }}</td>
+                <td><code>{{ prod.sku }}</code></td>
+                <td>{{ prod.reorderLevel }} units</td>
+                <td style="font-weight: 700;">{{ prod.stockQuantity }} units</td>
+                <td>
+                  <span class="status-pill" [class.danger]="prod.stockQuantity === 0" [class.warning]="prod.stockQuantity > 0">
+                    {{ prod.stockQuantity === 0 ? 'OUT OF STOCK' : 'LOW STOCK' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Internal Products -->
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Recent Internal Products ({{ totalInternalProducts() }} Total)</h2>
+        <a routerLink="/products" class="status-pill success" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--accent-primary); text-decoration: none;">View All Products</a>
+      </div>
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>SKU</th>
+              <th>Current Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (recentInternalProducts().length === 0) {
+              <tr>
+                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">No internal products found.</td>
+              </tr>
+            }
+            @for (prod of recentInternalProducts(); track prod.sku) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-primary);">{{ prod.name }}</td>
+                <td><code>{{ prod.sku }}</code></td>
+                <td style="font-weight: 700;">{{ prod.stockQuantity }} units</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

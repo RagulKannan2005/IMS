@@ -43,39 +43,74 @@
 
 <!-- Main Panels -->
 <div class="panel-grid">
-  <!-- Left Panel: Audit Logs -->
-  <div class="dashboard-panel">
-    <div class="panel-header">
-      <h2 class="panel-title">System Audit Log</h2>
-      <button class="status-pill success" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--accent-primary);">View All</button>
-    </div>
-    <div class="table-container">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Action</th>
-            <th>Target</th>
-            <th>Time</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (log of auditLogs(); track log.time) {
+  <!-- Left Panel: Audit Logs & Internal Products -->
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">System Audit Log</h2>
+        <button class="status-pill success" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--accent-primary);">View All</button>
+      </div>
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
             <tr>
-              <td style="font-weight: 600; color: var(--text-primary);">{{ log.user }}</td>
-              <td>{{ log.action }}</td>
-              <td><code>{{ log.target }}</code></td>
-              <td>{{ log.time }}</td>
-              <td>
-                <span class="status-pill" [class.success]="log.status === 'success'" [class.warning]="log.status === 'warning'">
-                  {{ log.status }}
-                </span>
-              </td>
+              <th>User</th>
+              <th>Action</th>
+              <th>Target</th>
+              <th>Time</th>
+              <th>Status</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (log of auditLogs(); track log.time) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-primary);">{{ log.user }}</td>
+                <td>{{ log.action }}</td>
+                <td><code>{{ log.target }}</code></td>
+                <td>{{ log.time }}</td>
+                <td>
+                  <span class="status-pill" [class.success]="log.status === 'success'" [class.warning]="log.status === 'warning'">
+                    {{ log.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Internal Products -->
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Recent Internal Products ({{ totalInternalProducts() }} Total)</h2>
+        <a routerLink="/products" class="status-pill success" style="background: none; border: none; font-size: 11px; cursor: pointer; color: var(--accent-primary); text-decoration: none;">View All Products</a>
+      </div>
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>SKU</th>
+              <th>Current Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (recentInternalProducts().length === 0) {
+              <tr>
+                <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">No internal products found.</td>
+              </tr>
+            }
+            @for (prod of recentInternalProducts(); track prod.sku) {
+              <tr>
+                <td style="font-weight: 600; color: var(--text-primary);">{{ prod.name }}</td>
+                <td><code>{{ prod.sku }}</code></td>
+                <td style="font-weight: 700;">{{ prod.stockQuantity }} units</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 

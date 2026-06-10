@@ -113,9 +113,15 @@ export const routes: Routes = [
       },
       { 
         path: 'purchase-orders', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/purchase-orders/po-list/po-list').then(c => c.PurchaseOrderListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['ADMIN', 'MANAGER'], title: 'Purchase Orders' } 
+      },
+      { 
+        path: 'purchase-orders/create', 
+        loadComponent: () => import('./features/purchase-orders/create-po/create-po').then(c => c.CreatePurchaseOrderComponent),
+        canActivate: [roleGuard], 
+        data: { roles: ['ADMIN', 'MANAGER'], title: 'Create Purchase Order' } 
       },
       { 
         path: 'purchase-orders/receive/:id', 
@@ -144,9 +150,15 @@ export const routes: Routes = [
       },
       { 
         path: 'supplier/orders', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/suppliers/supplier-orders-list/supplier-orders-list').then(c => c.SupplierOrderListComponent),
         canActivate: [roleGuard], 
         data: { roles: ['SUPPLIER'], title: 'My Purchase Orders' } 
+      },
+      { 
+        path: 'supplier/orders/:id', 
+        loadComponent: () => import('./features/suppliers/supplier-order-details/supplier-order-details').then(c => c.SupplierOrderDetailsComponent),
+        canActivate: [roleGuard], 
+        data: { roles: ['SUPPLIER'], title: 'Order Details' } 
       },
       { 
         path: 'supplier/orders/ship/:id', 

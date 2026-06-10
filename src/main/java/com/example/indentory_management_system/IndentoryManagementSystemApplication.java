@@ -23,7 +23,7 @@ public class IndentoryManagementSystemApplication {
 	}
 
 	@Bean
-	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository, CategoriesRepository categoriesRepository) {
+	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder, SupplierRepository supplierRepository, WarehouseRepository warehouseRepository, CategoriesRepository categoriesRepository, com.example.indentory_management_system.Repository.ProductRepository productRepository, com.example.indentory_management_system.Repository.SupplierProductRepository supplierProductRepository) {
 		return args -> {
 			if (userRepository.findByUsername("admin").isEmpty()) {
 				// Seed Admin
@@ -138,8 +138,70 @@ public class IndentoryManagementSystemApplication {
 						.status(true)
 						.user(supplierUser)
 						.build();
-				supplierRepository.save(supplierRecord);
+				supplierRecord = supplierRepository.save(supplierRecord);
 				System.out.println("Bootstrap: supplier business record created.");
+			} else {
+				// Heal broken supplier mapping if necessary
+				Users supplierUser = userRepository.findByUsername("supplier").get();
+				
+				// We do not use supplierUser.getSupplier() to avoid LazyInitializationException
+				boolean supplierExists = false;
+				for (Supplier s : supplierRepository.findAll()) {
+					if (s.getUser() != null && s.getUser().getId().equals(supplierUser.getId())) {
+						supplierExists = true;
+						break;
+					}
+				}
+
+				if (!supplierExists) {
+					Supplier supplierRecord = Supplier.builder()
+							.supplierName("Global Supplies Inc.")
+							.contactPerson("Supplier User")
+							.supplier_email("supplier@ims.com")
+							.supplierPhone("2233445566")
+							.address("123 Logistics Way")
+							.status(true)
+							.user(supplierUser)
+							.build();
+					try {
+					    supplierRepository.save(supplierRecord);
+					    System.out.println("Bootstrap: Healed missing supplier business record for existing supplier user.");
+					} catch(Exception e) {
+					    System.out.println("Bootstrap: Could not heal supplier record due to duplicate constraints.");
+					}
+				}
+			}
+
+			// Add a product and supplier product if none exist
+			if (productRepository.count() == 0 && supplierRepository.count() > 0 && categoriesRepository.count() > 0) {
+				Supplier supplier = supplierRepository.findAll().get(0);
+				Categories category = categoriesRepository.findAll().get(0);
+				
+				com.example.indentory_management_system.Entity.Products product = com.example.indentory_management_system.Entity.Products.builder()
+						.sku("SKU-1001")
+						.name("Office Chair")
+						.description("Ergonomic office chair")
+						.categories(category)
+						.costPrice(50.0)
+						.sellingPrice(150.0)
+						.stockQuantity(75)
+						.reorderLevel(10)
+						.reorderQuantity(20)
+						.supplier(supplier)
+						.isActive(true)
+						.build();
+				
+				product = productRepository.save(product);
+				
+				com.example.indentory_management_system.Entity.SupplierProduct supplierProduct = com.example.indentory_management_system.Entity.SupplierProduct.builder()
+						.supplier(supplier)
+						.product(product)
+						.availableQuantity(100)
+						.unitPrice(java.math.BigDecimal.valueOf(45.0))
+						.build();
+						
+				supplierProductRepository.save(supplierProduct);
+				System.out.println("Bootstrap: seeded Product and SupplierProduct.");
 			}
 		};
 	}

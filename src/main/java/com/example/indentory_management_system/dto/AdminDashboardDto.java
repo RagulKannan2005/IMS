@@ -14,6 +14,8 @@ public class AdminDashboardDto {
     private long totalWarehouses;
     private long totalPurchaseOrders;
     private List<ProductResponsedto> lowStockProducts;
+    private Long totalInternalProducts;
+    private List<ProductSummaryDto> recentInternalProducts;
     private List<AuditLogResponseDto> auditLogs;
     private List<SystemHealthDto> platformStatus;
 }

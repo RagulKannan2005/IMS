@@ -83,6 +83,31 @@ export class ProductListComponent implements OnInit {
     this.loadProducts();
     this.loadCategories();
     this.loadSuppliers();
+
+    // Listen to SKU changes for real-time auto-fill
+    this.productForm.get('sku')?.valueChanges.subscribe(skuValue => {
+      if (!skuValue || this.isEditing()) return;
+      
+      const existingProduct = this.products().find(p => p.sku === skuValue.trim());
+      if (existingProduct) {
+        // Auto-fill and switch to edit mode
+        this.isEditing.set(true);
+        this.editingProductId.set(existingProduct.id);
+        
+        this.productForm.patchValue({
+          name: existingProduct.name,
+          description: existingProduct.description,
+          costPrice: existingProduct.costPrice,
+          sellingPrice: existingProduct.sellingPrice,
+          stockQuantity: existingProduct.stockQuantity,
+          reorderLevel: existingProduct.reorderLevel,
+          reorderQuantity: existingProduct.reorderQuantity,
+          active_status: existingProduct.isActive ? 'Active' : 'Inactive',
+          category: existingProduct.categoryName || '',
+          supplierId: existingProduct.supplierId
+        }, { emitEvent: false }); // Prevent recursive triggering just in case
+      }
+    });
   }
 
   loadProducts(): void {

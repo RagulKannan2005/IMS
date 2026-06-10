@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,22 @@ import com.example.indentory_management_system.Entity.PurchaseOrder;
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Long> {
     Optional<PurchaseOrder> findByPoNumber(String poNumber);
 
+    @EntityGraph(attributePaths = {"supplier", "user"})
+    List<PurchaseOrder> findAll();
+
+    @EntityGraph(attributePaths = {"supplier", "user"})
     @Query("SELECT p FROM PurchaseOrder p WHERE p.supplier.id = :supplierId")
     List<PurchaseOrder> findBySupplierId(@Param("supplierId") Long supplierId);
 
+    @EntityGraph(attributePaths = {"supplier", "user"})
     @Query("SELECT p FROM PurchaseOrder p WHERE p.status = :status")
     List<PurchaseOrder> findByStatus(@Param("status") String status);
 
+    @EntityGraph(attributePaths = {"supplier", "user"})
     @Query("SELECT p FROM PurchaseOrder p WHERE p.user.id = :userId")
     List<PurchaseOrder> findByUserId(@Param("userId") Long userId);
 
+    @EntityGraph(attributePaths = {"supplier", "user"})
     @Query("SELECT p FROM PurchaseOrder p WHERE p.orderedAt BETWEEN :start AND :end")
     List<PurchaseOrder> findByOrderedAtBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
