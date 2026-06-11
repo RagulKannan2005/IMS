@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-create-po',
@@ -35,7 +36,8 @@ export class CreatePurchaseOrderComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private poService: PurchaseOrderService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -110,16 +112,8 @@ export class CreatePurchaseOrderComponent implements OnInit {
     this.success = '';
     this.submitting = true;
 
-    // We assume the user ID is retrieved from local storage or auth service. Hardcoding to 1 for now if needed,
-    // or typically the backend should figure out createdBy via JWT. But the DTO expects createdBy.
-    const currentUserStr = localStorage.getItem('user');
-    let createdBy = 1; // Default
-    if (currentUserStr) {
-        try {
-            const userObj = JSON.parse(currentUserStr);
-            createdBy = userObj.id || 1;
-        } catch (e) {}
-    }
+    // Retrieve user ID from AuthService session
+    let createdBy = this.authService.currentUser()?.id || 1;
 
     const totalAmount = this.selectedProduct.unitPrice * this.orderForm.quantity;
 

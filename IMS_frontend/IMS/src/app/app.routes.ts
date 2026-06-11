@@ -124,6 +124,12 @@ export const routes: Routes = [
         data: { roles: ['ADMIN', 'MANAGER'], title: 'Create Purchase Order' } 
       },
       { 
+        path: 'purchase-orders/:id', 
+        loadComponent: () => import('./features/purchase-orders/po-details/po-details').then(c => c.PurchaseOrderDetailsComponent),
+        canActivate: [roleGuard], 
+        data: { roles: ['ADMIN', 'MANAGER'], title: 'Purchase Order Details' } 
+      },
+      { 
         path: 'purchase-orders/receive/:id', 
         component: ReceiveOrder, 
         canActivate: [roleGuard], 

@@ -70,7 +70,7 @@
         }
 
         @if(loginform.get('password')?.touched && loginform.get('password')?.errors?.['maxlength']) {
-          <small class="error-msg">Maximum 12 characters allowed</small>
+          <small class="error-msg">Maximum 13 characters allowed</small>
         }
 
         @if(loginform.get('password')?.touched && loginform.get('password')?.errors?.['pattern']) {

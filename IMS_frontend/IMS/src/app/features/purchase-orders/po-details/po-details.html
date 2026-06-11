@@ -1,0 +1,92 @@
+<div class="dashboard-panel fade-in">
+  <div class="panel-header">
+    <h2 class="panel-title">Purchase Order Details</h2>
+    <div class="header-actions">
+      <button class="btn btn-outline" routerLink="/purchase-orders">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+      </button>
+      <button *ngIf="order?.status === 'SHIPPED'" class="btn btn-success" [routerLink]="['/purchase-orders/receive', order?.id]">
+        <i class="fas fa-box-open"></i> Receive Shipment
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading order details...</p>
+  </div>
+
+  <div *ngIf="!loading && order" class="order-details-container">
+    <div class="info-card">
+      <h3>Order Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">PO Number:</span>
+          <span class="value fw-medium">{{ order.poNumber }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Supplier:</span>
+          <span class="value">{{ order.supplierName || 'Unknown Supplier' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Status:</span>
+          <span class="status-pill" [ngClass]="getStatusClass(order.status)">
+            {{ order.status }}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="label">Order Date:</span>
+          <span class="value">{{ order.orderedAt | date:'mediumDate' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Expected Delivery:</span>
+          <span class="value">{{ order.expectedDeliveryDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Total Amount:</span>
+          <span class="value fw-bold text-primary">{{ order.totalAmount | currency:'USD' }}</span>
+        </div>
+      </div>
+      
+      <div class="remarks-section" *ngIf="order.remarks">
+        <h4>Remarks:</h4>
+        <p>{{ order.remarks }}</p>
+      </div>
+    </div>
+
+    <div class="items-card mt-4">
+      <h3>Ordered Products</h3>
+      <div *ngIf="items.length === 0" class="empty-state">
+        <p>No items found for this order.</p>
+      </div>
+      
+      <div *ngIf="items.length > 0" class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Unit Cost</th>
+              <th>Ordered Qty</th>
+              <th>Received Qty</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items">
+              <td class="fw-medium">{{ item.productName }}</td>
+              <td>{{ item.unitCost | currency:'USD' }}</td>
+              <td>{{ item.quantityOrdered }}</td>
+              <td>
+                <span [class.text-success]="item.quantityReceived >= item.quantityOrdered" 
+                      [class.text-warning]="item.quantityReceived > 0 && item.quantityReceived < item.quantityOrdered">
+                  {{ item.quantityReceived }}
+                </span>
+              </td>
+              <td class="fw-bold">{{ (item.unitCost * item.quantityOrdered) | currency:'USD' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

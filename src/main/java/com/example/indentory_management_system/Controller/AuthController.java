@@ -83,6 +83,7 @@ public class AuthController {
                 .username(userDetails.getUsername())
                 .role(role)
                 .supplierId(supplierId)
+                .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())

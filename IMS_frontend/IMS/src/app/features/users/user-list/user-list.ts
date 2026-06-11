@@ -117,7 +117,7 @@ export class UserListComponent implements OnInit {
 
   canModifyUser(user: UserResponseDto): boolean {
     const actorRole = this.authService.userRole();
-    const actorId = this.authService.currentUser()?.email; // our security mapping stores email as principal username
+    const actorId = this.authService.currentUser()?.id; 
     
     if (actorRole === 'ADMIN') {
       return true;
@@ -126,7 +126,7 @@ export class UserListComponent implements OnInit {
       // Manager can edit only staff they created (which has createdById matching their own user id)
       // Since createdByUsername is their email or username, we can match
       const currentUsername = this.authService.currentUser()?.username;
-      return user.role === 'STAFF' && (user.createdByUsername === currentUsername || user.createdById === this.authService.currentUser()?.email as any);
+      return user.role === 'STAFF' && (user.createdByUsername === currentUsername || user.createdById === actorId);
     }
     return false;
   }

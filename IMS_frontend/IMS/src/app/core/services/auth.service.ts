@@ -7,6 +7,7 @@ export interface UserSession {
   role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'SUPPLIER';
   firstName: string;
   lastName: string;
+  id?: number;
   token?: string;
 }
 

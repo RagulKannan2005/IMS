@@ -50,6 +50,7 @@ export class Login {
             role: res.role,
             firstName: res.firstName,
             lastName: res.lastName,
+            id: res.id,
             token: res.token
           });
           this.router.navigate(['/dashboard']);
