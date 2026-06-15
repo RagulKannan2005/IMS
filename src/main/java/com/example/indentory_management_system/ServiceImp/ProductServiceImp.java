@@ -37,15 +37,18 @@ public class ProductServiceImp implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Category not found with name: " + dto.getCategory()));
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByUsername(username)
+        Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
         Supplier supplier = null;
-        if (dto.getSupplierId() != null) {
-            supplier = supplierRepository.findById(dto.getSupplierId())
-                    .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + dto.getSupplierId()));
-        } else if (currentUser.getSupplier() != null) {
+        if ("SUPPLIER".equalsIgnoreCase(currentUser.getRole())) {
+            if (currentUser.getSupplier() == null) {
+                throw new RuntimeException("You must create a Supplier profile before adding products.");
+            }
             supplier = currentUser.getSupplier();
+        } else {
+            // Admin/Manager creates Internal Products. Ignore any supplierId passed.
+            supplier = null;
         }
 
         Products products = Products.builder()
@@ -122,12 +125,8 @@ public class ProductServiceImp implements ProductService {
         product.setActive("active".equalsIgnoreCase(dto.getActive_status()));
         product.setCategories(category);
 
-        if (dto.getSupplierId() != null) {
-            Supplier supplier = supplierRepository.findById(dto.getSupplierId())
-                    .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + dto.getSupplierId()));
-            product.setSupplier(supplier);
-        }
-
+        // Supplier ownership is locked upon creation. 
+        // Do not allow changing the supplier during an update.
         Products updatedProduct = productrepo.save(product);
         return mapToResponseDto(updatedProduct);
     }

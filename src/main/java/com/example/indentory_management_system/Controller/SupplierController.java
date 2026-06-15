@@ -19,7 +19,7 @@ public class SupplierController {
     private final SupplierService supplierService;
 
     @PostMapping("/addsupplier")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('SUPPLIER')")
     public ResponseEntity<SupplierResponsedto> addSupplier(@Valid @RequestBody SupplierRequestdto dto){
         return ResponseEntity.ok(supplierService.addSupplier(dto));
     }

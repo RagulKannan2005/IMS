@@ -24,12 +24,22 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/newuser")
     public ResponseEntity<UserResponsedto> createUser(@Valid @RequestBody UserRequestdto dto) {
+        if ("SUPPLIER".equalsIgnoreCase(dto.getRole())) {
+            throw new RuntimeException("Admin cannot create Supplier accounts. Suppliers must self-register.");
+        }
+        UserResponsedto user = userService.createUser(dto);
+        return ResponseEntity.status(201).body(user);
+    }
+
+    @PostMapping("/registersupplier")
+    public ResponseEntity<UserResponsedto> registerSupplier(@Valid @RequestBody UserRequestdto dto) {
+        dto.setRole("SUPPLIER");
         UserResponsedto user = userService.createUser(dto);
         return ResponseEntity.status(201).body(user);
     }

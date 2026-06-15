@@ -23,7 +23,7 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryResponsedto createCategory(CategoryRequestdto dto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByUsername(username)
+        Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
         Categories category = Categories.builder()

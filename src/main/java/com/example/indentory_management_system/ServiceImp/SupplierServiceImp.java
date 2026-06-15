@@ -13,6 +13,7 @@ import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.SupplierService;
 import com.example.indentory_management_system.dto.SupplierRequestdto;
 import com.example.indentory_management_system.dto.SupplierResponsedto;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,10 +26,12 @@ public class SupplierServiceImp implements SupplierService {
 
     @Override
     public SupplierResponsedto addSupplier(SupplierRequestdto dto) {
-        Users user = null;
-        if (dto.getUserId() != null) {
-            user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        if (currentUser.getSupplier() != null) {
+            throw new RuntimeException("A Supplier profile already exists for this user.");
         }
 
         Supplier supplier = Supplier.builder()
@@ -38,7 +41,7 @@ public class SupplierServiceImp implements SupplierService {
                 .supplierPhone(dto.getSupplierPhone())
                 .address(dto.getAddress())
                 .status(dto.isStatus())
-                .user(user)
+                .user(currentUser)
                 .build();
         supplierrepo.save(supplier);
         return toDto(supplier);
@@ -49,11 +52,8 @@ public class SupplierServiceImp implements SupplierService {
         Supplier supplier = supplierrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
 
-        Users user = null;
-        if (dto.getUserId() != null) {
-            user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
-        }
+        // Do not allow changing the linked user ID during an update.
+        // The user ID was locked to the supplier upon creation.
 
         supplier.setSupplierName(dto.getSupplierName());
         supplier.setContactPerson(dto.getContactPerson());
@@ -61,7 +61,6 @@ public class SupplierServiceImp implements SupplierService {
         supplier.setSupplierPhone(dto.getSupplierPhone());
         supplier.setAddress(dto.getAddress());
         supplier.setStatus(dto.isStatus());
-        supplier.setUser(user);
 
         supplierrepo.save(supplier);
         return toDto(supplier);

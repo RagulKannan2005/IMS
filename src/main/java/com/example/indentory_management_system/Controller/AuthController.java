@@ -19,6 +19,7 @@ import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.JwtService;
 import com.example.indentory_management_system.dto.AuthRequest;
 import com.example.indentory_management_system.dto.AuthResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,17 +34,18 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
+    @Transactional(readOnly = true)
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authRequest.getUsername(),
+                        authRequest.getEmail(),
                         authRequest.getPassword()
                 )
         );
 
-        Users user = userRepository.findByUsername(authRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + authRequest.getUsername()));
+        Users user = userRepository.findByEmail(authRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + authRequest.getEmail()));
 
         Map<String, Object> claims = new HashMap<>();
         Long supplierId = null;
@@ -53,7 +55,7 @@ public class AuthController {
         }
         claims.put("role", user.getRole());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
         final String token = jwtService.generateToken(userDetails, claims);
 
         final String role = userDetails.getAuthorities().stream()

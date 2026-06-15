@@ -52,8 +52,8 @@ public class StockMovementServiceImpl implements StockMovementService {
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         } else {
             String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-            user = userRepo.findByUsername(currentUsername)
-                    .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+            user = userRepo.findByEmail(currentUsername)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
         }
 
         String type = dto.getMovement_type().toUpperCase();

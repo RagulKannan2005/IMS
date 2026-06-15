@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Optional;
 
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Repository.UserRepository;
@@ -19,7 +20,8 @@ public class IndentoryManagementSystemApplication {
 	@Bean
 	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			if (userRepository.findByUsername("admin").isEmpty()) {
+			Optional<Users> adminOpt = userRepository.findByUsername("admin");
+			if (adminOpt.isEmpty()) {
 				// Seed Admin
 				userRepository.save(Users.builder()
 						.username("admin")
@@ -31,6 +33,12 @@ public class IndentoryManagementSystemApplication {
 						.role("ADMIN")
 						.build());
 				System.out.println("Bootstrap: admin user created.");
+			} else {
+				Users admin = adminOpt.get();
+				admin.setPassword(passwordEncoder.encode("admin123"));
+				admin.setEmail("admin@ims.com");
+				userRepository.save(admin);
+				System.out.println("Bootstrap: admin user password reset to 'admin123'.");
 			}
 			
 			if (userRepository.findByUsername("manager").isEmpty()) {

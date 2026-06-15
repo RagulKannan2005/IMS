@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -11,13 +12,13 @@ public class PurchaseOrderRequestdto {
     @NotBlank(message = "PO Number is required")
     private String poNumber;
 
-    @NotBlank(message = "Supplier ID is required")
+    @NotNull(message = "Supplier ID is required")
     private Long supplierId;
 
-    @NotBlank(message = "Created By is required")
+    @NotNull(message = "Created By is required")
     private Long createdBy;
 
-    @NotBlank(message = "Total Amount is required")
+    @NotNull(message = "Total Amount is required")
     private BigDecimal totalAmount;
 
     @NotBlank(message = "Status is required")
@@ -25,7 +26,7 @@ public class PurchaseOrderRequestdto {
 
     private LocalDate orderedAt;
 
-    @NotBlank(message = "Expected Delivery Date is required")
+    @NotNull(message = "Expected Delivery Date is required")
     private LocalDate expectedDeliveryDate;
 
     private String remarks;
