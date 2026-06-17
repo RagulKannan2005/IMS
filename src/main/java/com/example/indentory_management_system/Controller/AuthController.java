@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.JwtService;
+import com.example.indentory_management_system.Service.UserService;
 import com.example.indentory_management_system.dto.AuthRequest;
 import com.example.indentory_management_system.dto.AuthResponse;
+import com.example.indentory_management_system.dto.UserRequestdto;
+import com.example.indentory_management_system.dto.UserResponsedto;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
@@ -33,6 +36,13 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<UserResponsedto> register(@Valid @RequestBody UserRequestdto dto) {
+        UserResponsedto user = userService.createUser(dto);
+        return ResponseEntity.status(201).body(user);
+    }
 
     @Transactional(readOnly = true)
     @PostMapping("/login")

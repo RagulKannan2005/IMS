@@ -1,1 +1,43 @@
-<p>register works!</p>
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <label for="username">username</label>
+    <br>
+    <input type="text" formControlName="username" id="username">
+    <br>
+    <label for="firstname">first name</label>
+    <br>
+    <input type="text" formControlName="firstName" id="firstname">
+    <br>
+    <label for="lastname">last name</label>
+    <br>
+    <input type="text" formControlName="lastName" id="lastname">
+    <br>
+    <label for="email">email</label>
+    <br>
+    <input type="text" formControlName="email" id="email">
+    <br>
+    <label for="password">password</label>
+    <br>
+    <input type="password" formControlName="password" id="password">
+    <br>
+    <!--
+    <label for="confirmPassword">confirm password</label>
+    <br>
+    <input type="password" id="confirmPassword">
+    <br>
+    -->
+    <label for="phone_number">phone number</label>
+    <br>
+    <input type="text" formControlName="phone_number" id="phone_number">
+    <br>
+    <label for="role">role</label>
+    <br>
+    <select formControlName="role" id="role">
+        <option value="">Choose role</option>
+        <option value="ADMIN">admin</option>
+        <option value="SUPPLIER">supplier</option>
+    </select>
+    <br>
+    <button type="submit">register</button>
+    <br>
+    <span>already have an account ? <a routerLink="/login">login</a></span>
+</form>
