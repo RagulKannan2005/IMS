@@ -72,7 +72,7 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public List<ProductResponsedto> getAllProducts() {
-        return productrepo.findAll().stream()
+        return productrepo.findAllWithDetails().stream()
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
@@ -83,6 +83,11 @@ public class ProductServiceImp implements ProductService {
                 .filter(Products::isActive)
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long productcount(Long userId) {
+        return productrepo.findByProductcount(userId);
     }
 
     @Override

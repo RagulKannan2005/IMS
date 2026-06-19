@@ -8,4 +8,5 @@ public interface UserService {
     List<UserResponsedto> getUserAllusers();
     UserResponsedto updateuser(Long id, UserRequestdto userRequestdto);
     UserResponsedto deleteuser(Long id);
+    UserResponsedto getbyUsername(String username);
 }

@@ -107,6 +107,13 @@ public class UserServiceImp implements UserService {
         return toDto(user);
     }
 
+    @Override
+    public UserResponsedto getbyUsername(String username) {
+        Users user = userrepo.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + username));
+        return toDto(user);
+    }
+
     private UserResponsedto toDto(Users s) {
         return UserResponsedto.builder()
                 .id(s.getId())

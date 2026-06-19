@@ -1,0 +1,123 @@
+<div class="products-container">
+  <div class="header-section">
+    <div>
+      <h2 class="page-title">Inventory Products</h2>
+      <p class="page-subtitle">Manage your product catalog, pricing, and stock levels.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary">
+        <span class="icon">⬇️</span> Export
+      </button>
+      <button class="btn btn-primary">
+        <span class="icon">➕</span> Add Product
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search products by name or SKU...">
+      </div>
+      <div class="filter-actions">
+        <button class="filter-btn">Filters <span class="icon">⚙️</span></button>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your products...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="error-state">
+        <div class="error-icon">⚠️</div>
+        <h3>Oops! Something went wrong</h3>
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn-primary" (click)="ngOnInit()">Try Again</button>
+      </div>
+    } @else if (products.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>No products found</h3>
+        <p>You haven't added any products to your inventory yet.</p>
+        <button class="btn btn-primary">Add Your First Product</button>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product Info</th>
+              <th>SKU</th>
+              <th>Pricing</th>
+              <th>Stock Level</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products; track product.id) {
+              <tr class="table-row">
+                <td class="id-cell">#{{ product.id }}</td>
+                <td>
+                  <div class="product-info">
+                    <div class="product-avatar">
+                      {{ product.name?.charAt(0) || '?' }}
+                    </div>
+                    <div class="product-details">
+                      <span class="product-name">{{ product.name || 'Unnamed' }}</span>
+                      <span class="product-supplier">{{ product.supplierName || 'Internal' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="sku-cell"><code>{{ product.sku }}</code></td>
+                <td>
+                  <div class="pricing-info">
+                    <span class="selling-price">${{ (product.sellingPrice || 0).toFixed(2) }}</span>
+                    <span class="cost-price">Cost: ${{ (product.costPrice || 0).toFixed(2) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="stock-info">
+                    <span class="stock-qty" [class.low-stock]="product.stockQuantity <= product.reorderLevel">
+                      {{ product.stockQuantity }} in stock
+                    </span>
+                    <div class="stock-bar-bg">
+                      <div class="stock-bar-fill" 
+                           [style.width.%]="product.stockQuantity > 100 ? 100 : product.stockQuantity"
+                           [class.bg-danger]="product.stockQuantity <= product.reorderLevel"
+                           [class.bg-success]="product.stockQuantity > product.reorderLevel">
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="product.active" [class.inactive]="!product.active">
+                    {{ product.active ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn edit" title="Edit">✏️</button>
+                    <button class="action-btn delete" title="Delete">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="page-info">Showing 1 to {{ products.length }} of {{ products.length }} results</span>
+        <div class="page-controls">
+          <button class="page-btn disabled">Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn disabled">Next</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

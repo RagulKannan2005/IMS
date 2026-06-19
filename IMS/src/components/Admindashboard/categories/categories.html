@@ -1,0 +1,42 @@
+<div class="categotry_container">
+  <div class="header-section">
+    <div>
+      <h2>Manage Categories</h2>
+      <p>Manage your category catalog, pricing, and stock levels.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary"><span class="icon">⬇️</span> Export</button>
+      <button class="btn btn-primary"><span class="icon">➕</span> Add Category</button>
+    </div>
+  </div>
+  <div class="category-card">
+    <div class="card-header">
+      <h3>All Categories</h3>
+      <input type="text" placeholder="Search categories..." class="search-input" (keyup.enter)="searchCategory($event)"/>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Category Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let category of categories">
+            <td>{{category.name}}</td>
+            <td>{{category.description}}</td>
+            <td>{{category.isActive ? 'Active' : 'Inactive'}}</td>
+            <td>
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

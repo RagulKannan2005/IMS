@@ -7,7 +7,7 @@
     </div>
 
     <ul class="nav-links">
-      <li routerLink="/admin/dashboard" class="nav-item">
+      <li routerLink="/admin" class="nav-item">
         <span class="icon">🏠</span>
         <span class="text">Dashboard</span>
       </li>
@@ -20,8 +20,8 @@
         <span class="arrow">▼</span>
       </li>
       <ul class="dropdown" *ngIf="userMenu">
-        <li routerLink="/users">Users</li>
-        <li routerLink="/roles">Roles</li>
+        <li routerLink="/admin/users">Users</li>
+        <li routerLink="/admin/roles">Roles</li>
       </ul>
 
       <li (click)="toggleInventory()" class="nav-item has-dropdown" [class.active]="inventoryMenu">
@@ -32,18 +32,18 @@
         <span class="arrow">▼</span>
       </li>
       <ul class="dropdown" *ngIf="inventoryMenu">
-        <li routerLink="/products">Products</li>
-        <li routerLink="/categories">Categories</li>
-        <li routerLink="/stock">Stock</li>
-        <li routerLink="/stock-movements">Stock Movements</li>
+        <li routerLink="/admin/products">Products</li>
+        <li routerLink="/admin/categories">Categories</li>
+        <li routerLink="/admin/stock">Stock</li>
+        <li routerLink="/admin/stock-movements">Stock Movements</li>
       </ul>
 
-      <li routerLink="/warehouses" class="nav-item">
+      <li routerLink="/admin/warehouses" class="nav-item">
         <span class="icon">🏢</span>
         <span class="text">Warehouses</span>
       </li>
 
-      <li routerLink="/suppliers" class="nav-item">
+      <li routerLink="/admin/suppliers" class="nav-item">
         <span class="icon">🚚</span>
         <span class="text">Suppliers</span>
       </li>
@@ -56,17 +56,17 @@
         <span class="arrow">▼</span>
       </li>
       <ul class="dropdown" *ngIf="orderMenu">
-        <li routerLink="/purchase-orders">All Orders</li>
-        <li routerLink="/pending-orders">Pending Orders</li>
-        <li routerLink="/completed-orders">Completed Orders</li>
+        <li routerLink="/admin/purchase-orders">All Orders</li>
+        <li routerLink="/admin/pending-orders">Pending Orders</li>
+        <li routerLink="/admin/completed-orders">Completed Orders</li>
       </ul>
 
-      <li routerLink="/reports" class="nav-item">
+      <li routerLink="/admin/reports" class="nav-item">
         <span class="icon">📊</span>
         <span class="text">Reports</span>
       </li>
 
-      <li routerLink="/settings" class="nav-item">
+      <li routerLink="/admin/settings" class="nav-item">
         <span class="icon">⚙️</span>
         <span class="text">Settings</span>
       </li>
@@ -83,8 +83,8 @@
       </div>
       <div class="user-profile">
         <div class="user-info">
-          <span class="user-name">Admin</span>
-          <span class="user-role">Superuser</span>
+          <span class="user-name">{{user?.username}}</span>
+          <span class="user-role">{{user?.role}}</span>
         </div>
         <div class="avatar">A</div>
       </div>
@@ -92,45 +92,46 @@
 
     <!-- Dashboard Content Wrapper -->
     <div class="content-wrapper">
-      <div class="welcome-banner">
-        <h1>Welcome back, Admin</h1>
-        <p>Here is what's happening with your inventory today.</p>
-      </div>
+      <ng-container *ngIf="router.url === '/admin'">
+        <div class="welcome-banner">
+          <h1>Welcome back, {{user?.username}}</h1>
+          <p>Here is what's happening with your inventory today.</p>
+        </div>
 
-      <!-- Quick Stats Cards Example -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">📦</div>
-          <div class="stat-details">
-            <h3>Total Products</h3>
-            <p>1,248</p>
+        <!-- Quick Stats Cards Example -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">📦</div>
+            <div class="stat-details">
+              <h3>Total Products</h3>
+              <p>{{totalProducts}}</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">⚠️</div>
+            <div class="stat-details">
+              <h3>Low Stock Alerts</h3>
+              <p>12</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">🛒</div>
+            <div class="stat-details">
+              <h3>Pending Orders</h3>
+              <p>5</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">👥</div>
+            <div class="stat-details">
+              <h3>Active Suppliers</h3>
+              <p>34</p>
+            </div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">⚠️</div>
-          <div class="stat-details">
-            <h3>Low Stock Alerts</h3>
-            <p>12</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">🛒</div>
-          <div class="stat-details">
-            <h3>Pending Orders</h3>
-            <p>5</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(234, 179, 8, 0.2); color: #facc15;">👥</div>
-          <div class="stat-details">
-            <h3>Active Suppliers</h3>
-            <p>34</p>
-          </div>
-        </div>
-      </div>
+      </ng-container>
 
       <router-outlet></router-outlet>
     </div>
   </main>
-
 </div>

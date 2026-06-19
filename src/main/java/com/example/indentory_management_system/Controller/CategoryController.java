@@ -41,6 +41,11 @@ public class CategoryController {
         return categoryService.getbycategorydescription(description);
     }
 
+    @GetMapping("/categoryname/{name}")
+    public List<CategoryResponsedto> getByCategoryname(@PathVariable String name) {
+        return categoryService.getByCategoryname(name);
+    }
+
     @PutMapping("/updatecategory/{id}")
     public CategoryResponsedto updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestdto categoryRequestdto) {
         return categoryService.updateCategory(id, categoryRequestdto);

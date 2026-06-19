@@ -39,6 +39,14 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
+    public List<CategoryResponsedto> getByCategoryname(String name) {
+        List<Categories> categories = categoriesRepository.findByNameContainingIgnoreCase(name);
+        return categories.stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<CategoryResponsedto> getAllCategories() {
         List<Categories> categories = categoriesRepository.findAll();
         return categories.stream()

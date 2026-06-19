@@ -9,7 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +24,6 @@ import com.example.indentory_management_system.dto.AuthRequest;
 import com.example.indentory_management_system.dto.AuthResponse;
 import com.example.indentory_management_system.dto.UserRequestdto;
 import com.example.indentory_management_system.dto.UserResponsedto;
-import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,55 +33,62 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
-    private final UserService userService;
+        private final AuthenticationManager authenticationManager;
+        private final UserDetailsService userDetailsService;
+        private final UserRepository userRepository;
+        private final JwtService jwtService;
+        private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponsedto> register(@Valid @RequestBody UserRequestdto dto) {
-        UserResponsedto user = userService.createUser(dto);
-        return ResponseEntity.status(201).body(user);
-    }
-
-    @Transactional(readOnly = true)
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequest.getEmail(),
-                        authRequest.getPassword()
-                )
-        );
-
-        Users user = userRepository.findByEmail(authRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + authRequest.getEmail()));
-
-        Map<String, Object> claims = new HashMap<>();
-        Long supplierId = null;
-        if (user.getSupplier() != null) {
-            supplierId = user.getSupplier().getId();
-            claims.put("supplierId", supplierId);
+        @PostMapping("/register")
+        public ResponseEntity<UserResponsedto> register(@Valid @RequestBody UserRequestdto dto) {
+                UserResponsedto user = userService.createUser(dto);
+                return ResponseEntity.status(201).body(user);
         }
-        claims.put("role", user.getRole());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
-        final String token = jwtService.generateToken(userDetails, claims);
+        @GetMapping("/currentuser")
+        public ResponseEntity<UserResponsedto> getcurrentuser(Authentication authentication) {
+               String username = authentication.getName();
 
-        final String role = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse("ROLE_EMPLOYEE")
-                .replace("ROLE_", "");
+               return ResponseEntity.ok(userService.getbyUsername(username));
+        }
 
-        AuthResponse authResponse = AuthResponse.builder()
-                .token(token)
-                .username(userDetails.getUsername())
-                .role(role)
-                .supplierId(supplierId)
-                .build();
 
-        return ResponseEntity.ok(authResponse);
-    }
+        @Transactional(readOnly = true)
+        @PostMapping("/login")
+        public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest) {
+                authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                authRequest.getEmail(),
+                                                authRequest.getPassword()));
+
+                Users user = userRepository.findByEmail(authRequest.getEmail())
+                                .orElseThrow(() -> new RuntimeException(
+                                                "User not found with email: " + authRequest.getEmail()));
+
+                Map<String, Object> claims = new HashMap<>();
+                Long supplierId = null;
+                if (user.getSupplier() != null) {
+                        supplierId = user.getSupplier().getId();
+                        claims.put("supplierId", supplierId);
+                }
+                claims.put("role", user.getRole());
+
+                final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
+                final String token = jwtService.generateToken(userDetails, claims);
+
+                final String role = userDetails.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .findFirst()
+                                .orElse("ROLE_EMPLOYEE")
+                                .replace("ROLE_", "");
+
+                AuthResponse authResponse = AuthResponse.builder()
+                                .id(user.getId())
+                                .token(token)
+                                .username(user.getUsername())
+                                .role(role)
+                                .build();
+
+                return ResponseEntity.ok(authResponse);
+        }
 }

@@ -22,62 +22,69 @@ public class ProductController {
 
     @PostMapping("/addproduct")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SUPPLIER')")
-    public ProductResponsedto addproduct(@Valid @RequestBody ProductRequestdto dto){
+    public ProductResponsedto addproduct(@Valid @RequestBody ProductRequestdto dto) {
         return productservice.createProduct(dto);
     }
 
     @GetMapping("/allproducts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
-    public ResponseEntity<List<ProductResponsedto>> getallproducts(){
+    public ResponseEntity<List<ProductResponsedto>> getallproducts() {
         return ResponseEntity.ok().body(productservice.getAllProducts());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
-    public ResponseEntity<ProductResponsedto> getbyid(@PathVariable Long id){
+    public ResponseEntity<ProductResponsedto> getbyid(@PathVariable Long id) {
         return ResponseEntity.ok().body(productservice.getByProductId(id));
     }
 
     @GetMapping("/activeproducts")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
-    public ResponseEntity<List<ProductResponsedto>> getactiveproducts(){
+    public ResponseEntity<List<ProductResponsedto>> getactiveproducts() {
         return ResponseEntity.ok().body(productservice.getActiveProducts());
+    }
+
+    @GetMapping("/user/{userId}/count")
+    public ResponseEntity<Long> getProductCountByUser(@PathVariable Long userId) {
+        Long count = productservice.productcount(userId);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping("/productname/{productname}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
-    public ResponseEntity<ProductResponsedto> getbyproductname(@PathVariable String productname){
+    public ResponseEntity<ProductResponsedto> getbyproductname(@PathVariable String productname) {
         return ResponseEntity.ok().body(productservice.getByProductName(productname));
     }
 
     @GetMapping("/productsku/{sku}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
-    public ResponseEntity<ProductResponsedto> getbyproductsku(@PathVariable String sku){
+    public ResponseEntity<ProductResponsedto> getbyproductsku(@PathVariable String sku) {
         return ResponseEntity.ok().body(productservice.getByProductSku(sku));
     }
 
     @GetMapping("/productcategory/{productcategory}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
-    public ResponseEntity<List<ProductResponsedto>> getbyproductcategory(@PathVariable String productcategory){
+    public ResponseEntity<List<ProductResponsedto>> getbyproductcategory(@PathVariable String productcategory) {
         return ResponseEntity.ok(productservice.findproductCategory(productcategory));
     }
-    
+
     @PutMapping("/updateproduct/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
-    public ResponseEntity<ProductResponsedto> updateproduct(@PathVariable Long id, @Valid @RequestBody ProductRequestdto dto){
+    public ResponseEntity<ProductResponsedto> updateproduct(@PathVariable Long id,
+            @Valid @RequestBody ProductRequestdto dto) {
         return ResponseEntity.ok().body(productservice.updateProduct(id, dto));
     }
 
     @DeleteMapping("/deleteproduct/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
-    public ResponseEntity<ProductResponsedto> deleteproduct(@PathVariable Long id){
+    public ResponseEntity<ProductResponsedto> deleteproduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(productservice.deleteProduct(id));
     }
 
     @PostMapping("/{id}/adjust-stock")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ProductResponsedto> adjustStock(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @Valid @RequestBody StockAdjustmentRequest request) {
         return ResponseEntity.ok().body(productservice.adjustStock(id, request));
     }

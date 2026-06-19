@@ -7,43 +7,53 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
 
 
-  private fb=inject(FormBuilder);
-  private authService=inject(Auth);
+  private fb = inject(FormBuilder);
+  private authService = inject(Auth);
 
-  loginForm=this.fb.group({
-    email:[''],
-    password:['']
+  loginForm = this.fb.group({
+    email: [''],
+    password: ['']
   })
-  constructor(private router:Router){}
+  constructor(private router: Router) { }
 
-  onSubmit(){
+
+  onSubmit() {
     this.authService.login(this.loginForm.value)
-    .subscribe({
-      next:(response: any)=>{
-        if(response.role==="ADMIN"){
-          this.router.navigate(['/admindashboard']);
+      .subscribe({
+        next: (response: any) => {
+          localStorage.setItem('token', response.token);
+          if (response.role === "ADMIN") {
+            localStorage.setItem('user',
+              JSON.stringify({
+                id: response.id,
+                username: response.username,
+                email: response.email,
+                role: response.role
+              }));
+
+            this.router.navigate(['/admin']);
+          }
+          else {
+            this.router.navigate(['/home']);
+          }
+          console.log('login successfull', response);
+          alert('login successfull');
+
+
+        },
+        error: (err) => {
+          console.log('login failed', err);
+          alert('login failed');
+          this.loginForm.reset();
         }
-        else{
-          this.router.navigate(['/home']);
-        }
-        console.log('login successfull',response);
-        alert('login successfull');
-        
-        
-      },
-      error:( err)=>{
-        console.log('login failed',err);
-        alert('login failed');
-        this.loginForm.reset();
-      }
-    })
-    
+      })
+
   }
 }

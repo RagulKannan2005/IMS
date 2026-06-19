@@ -15,4 +15,20 @@ export class Auth {
   login(user:any){
     return this.http.post(this.apiUrl + '/login',user);
   }
+  getuser(){
+      const user=localStorage.getItem('user');
+      return user? JSON.parse(user):null;    
+  }
+  getrole(){
+    return this.getuser().role;
+  }
+  getusername(){
+    return this.getuser().username;
+  }
+
+  getuserproducts(){
+      
+    return this.http.get(this.apiUrl + '/currentuser/products');
+  }
+  
 }
