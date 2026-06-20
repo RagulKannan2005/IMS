@@ -24,4 +24,7 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 
     @Query("SELECT COUNT(p) FROM Products p WHERE p.user.id = ?1")
     Long findByProductcount(Long id);
+
+    @Query("SELECT p FROM Products p LEFT JOIN FETCH p.categories LEFT JOIN FETCH p.supplier LEFT JOIN FETCH p.user WHERE p.user.id = ?1")
+    List<Products> findByUserIdWithDetails(Long userId);
 }

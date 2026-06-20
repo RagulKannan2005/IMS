@@ -17,6 +17,9 @@ import com.example.indentory_management_system.Repository.PurchaseOrderItemRepos
 import com.example.indentory_management_system.Service.PurchaseOrderItemService;
 import com.example.indentory_management_system.dto.PurchaseOrderItemRequestdto;
 import com.example.indentory_management_system.dto.PurchaseOrderItemResponsedto;
+import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +30,7 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -110,7 +114,18 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
     @Override
     @Transactional(readOnly = true)
     public List<PurchaseOrderItemResponsedto> getAllPurchaseOrderItems() {
-        return purchaseOrderItemRepository.findAll().stream()
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(currentUsername)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+
+        List<PurchaseOrderItem> items;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            items = purchaseOrderItemRepository.findAll();
+        } else {
+            items = purchaseOrderItemRepository.findByUserId(currentUser.getId());
+        }
+
+        return items.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }

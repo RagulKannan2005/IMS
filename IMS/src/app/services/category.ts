@@ -24,8 +24,8 @@ export class categoryservice {
     });
   }
 
-  addcategory(): Observable<any> {
-    return this.http.post(`${this.apiurl}/newcategory`, { headers: this.getAuthHeaders() });
+  addcategory(category: any): Observable<any> {
+    return this.http.post(`${this.apiurl}/newcategory`, category, { headers: this.getAuthHeaders() });
   }
   getCategoryByName(name: string): Observable<any> {
     return this.http.get(`${this.apiurl}/categoryname/${name}`, { headers: this.getAuthHeaders() });

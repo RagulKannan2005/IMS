@@ -72,14 +72,36 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public List<ProductResponsedto> getAllProducts() {
-        return productrepo.findAllWithDetails().stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        List<Products> products;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            products = productrepo.findAllWithDetails();
+        } else {
+            products = productrepo.findByUserIdWithDetails(currentUser.getId());
+        }
+
+        return products.stream()
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<ProductResponsedto> getActiveProducts() {
-        return productrepo.findAll().stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        List<Products> products;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            products = productrepo.findAllWithDetails();
+        } else {
+            products = productrepo.findByUserIdWithDetails(currentUser.getId());
+        }
+
+        return products.stream()
                 .filter(Products::isActive)
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());

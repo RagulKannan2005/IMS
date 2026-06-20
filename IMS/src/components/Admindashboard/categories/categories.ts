@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { categoryservice } from '../../../app/services/category';
 @Component({
   selector: 'app-categories',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './categories.html',
   styleUrl: './categories.css',
 })
@@ -34,8 +35,34 @@ export class Categories {
     });
   }
 
+  showform= false;
+  openform(){
+    this.showform=true;
+  }
+  closeform(){
+    this.showform=false;
+  }
+
   ngOnInit() {
     this.loadCategories();
+  }
+
+  newCategory:any={};
+  addCategory(){
+
+    console.log('newCategory',this.newCategory);
+    this.categoryService.addcategory(this.newCategory).subscribe({
+      next:(response:any)=>{
+        console.log('Category added',response);
+        this.closeform();
+        this.loadCategories();
+      },
+      error:(err)=>{
+        console.log('Failed to add category',err);
+        this.errormessage=err.error.message || 'Failed to add category';
+      }
+    });
+    
   }
 
   loadCategories() {

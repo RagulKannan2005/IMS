@@ -16,6 +16,9 @@ import com.example.indentory_management_system.Repository.WarehouseRepository;
 import com.example.indentory_management_system.Service.StockService;
 import com.example.indentory_management_system.dto.StockRequestdto;
 import com.example.indentory_management_system.dto.StockResponsedto;
+import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +29,7 @@ public class StockServiceImp implements StockService {
     private final StockRepository stockrepo;
     private final ProductRepository productrepo;
     private final WarehouseRepository warehouserepo;
+    private final UserRepository userRepository;
 
     @Override
     public StockResponsedto addStock(StockRequestdto dto) {
@@ -71,8 +75,18 @@ public class StockServiceImp implements StockService {
 
     @Override
     public List<StockResponsedto> getAllStocks() {
-        return stockrepo.findAll()
-                .stream().map(this::toDto).collect(Collectors.toList());
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Stock> stocks;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            stocks = stockrepo.findAll();
+        } else {
+            stocks = stockrepo.findByUserId(currentUser.getId());
+        }
+
+        return stocks.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     @Override

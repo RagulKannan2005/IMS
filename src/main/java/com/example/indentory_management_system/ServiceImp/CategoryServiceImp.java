@@ -48,7 +48,17 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<CategoryResponsedto> getAllCategories() {
-        List<Categories> categories = categoriesRepository.findAll();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        List<Categories> categories;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            categories = categoriesRepository.findAll();
+        } else {
+            categories = categoriesRepository.findByUserId(currentUser.getId());
+        }
+
         return categories.stream()
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
@@ -56,7 +66,17 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<CategoryResponsedto> getActiveCategories() {
-        List<Categories> categories = categoriesRepository.findByActiveStatusTrue();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        List<Categories> categories;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            categories = categoriesRepository.findByActiveStatusTrue();
+        } else {
+            categories = categoriesRepository.findByUserIdAndActiveStatusTrue(currentUser.getId());
+        }
+
         return categories.stream()
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());

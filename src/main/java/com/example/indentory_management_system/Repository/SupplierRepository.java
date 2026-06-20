@@ -23,4 +23,18 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     @Query("SELECT s FROM Supplier s WHERE s.supplierName LIKE %:keyword%")
     List<Supplier> findSuppliersByName(String keyword);
 
+    @Query("SELECT s FROM Supplier s WHERE s.user.id = :userId")
+    List<Supplier> findByUserId(Long userId);
+
+    @Query("SELECT s FROM Supplier s JOIN s.products p WHERE p.name LIKE %:productName% AND s.user.id = :userId")
+    List<Supplier> findSuppliersByProductNameAndUserId(String productName, Long userId);
+
+    @Query("SELECT s FROM Supplier s WHERE (s.supplierName LIKE %:keyword% OR s.contactPerson LIKE %:keyword%) AND s.user.id = :userId")
+    List<Supplier> searchSuppliersByUserId(String keyword, Long userId);
+
+    @Query("SELECT s FROM Supplier s WHERE s.status = :status AND s.user.id = :userId")
+    List<Supplier> findSuppliersByStatusAndUserId(boolean status, Long userId);
+
+    @Query("SELECT s FROM Supplier s WHERE s.supplierName LIKE %:keyword% AND s.user.id = :userId")
+    List<Supplier> findSuppliersByNameAndUserId(String keyword, Long userId);
 }

@@ -26,4 +26,13 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
 
     @Query("SELECT p FROM PurchaseOrder p WHERE p.orderedAt BETWEEN :start AND :end")
     List<PurchaseOrder> findByOrderedAtBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT p FROM PurchaseOrder p WHERE p.supplier.id = :supplierId AND p.user.id = :userId")
+    List<PurchaseOrder> findBySupplierIdAndUserId(@Param("supplierId") Long supplierId, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM PurchaseOrder p WHERE p.status = :status AND p.user.id = :userId")
+    List<PurchaseOrder> findByStatusAndUserId(@Param("status") String status, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM PurchaseOrder p WHERE p.orderedAt BETWEEN :start AND :end AND p.user.id = :userId")
+    List<PurchaseOrder> findByOrderedAtBetweenAndUserId(@Param("start") LocalDate start, @Param("end") LocalDate end, @Param("userId") Long userId);
 }

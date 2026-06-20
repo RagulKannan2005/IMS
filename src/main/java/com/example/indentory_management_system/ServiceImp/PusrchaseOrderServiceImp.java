@@ -11,6 +11,7 @@ import com.example.indentory_management_system.Entity.Supplier;
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Exception.ResourceNotFoundException;
 import com.example.indentory_management_system.Repository.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.example.indentory_management_system.Entity.PurchaseOrderItem;
 import com.example.indentory_management_system.Entity.warehouses;
 import com.example.indentory_management_system.Entity.Products;
@@ -97,24 +98,54 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
 
     @Override
     public List<PurchaseOrderResponsedto> getAllPurchaseOrders() {
-        return purchaseorderrepo.findAll()
-                .stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<PurchaseOrder> orders;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            orders = purchaseorderrepo.findAll();
+        } else {
+            orders = purchaseorderrepo.findByUserId(currentUser.getId());
+        }
+
+        return orders.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<PurchaseOrderResponsedto> findBySupplierId(Long supplierId) {
-        return purchaseorderrepo.findBySupplierId(supplierId)
-                .stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<PurchaseOrder> orders;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            orders = purchaseorderrepo.findBySupplierId(supplierId);
+        } else {
+            orders = purchaseorderrepo.findBySupplierIdAndUserId(supplierId, currentUser.getId());
+        }
+
+        return orders.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<PurchaseOrderResponsedto> findByStatus(String status) {
-        return purchaseorderrepo.findByStatus(status)
-                .stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<PurchaseOrder> orders;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            orders = purchaseorderrepo.findByStatus(status);
+        } else {
+            orders = purchaseorderrepo.findByStatusAndUserId(status, currentUser.getId());
+        }
+
+        return orders.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -129,8 +160,18 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
 
     @Override
     public List<PurchaseOrderResponsedto> findByOrderDateRange(LocalDate from, LocalDate to) {
-        return purchaseorderrepo.findByOrderedAtBetween(from, to)
-                .stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<PurchaseOrder> orders;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            orders = purchaseorderrepo.findByOrderedAtBetween(from, to);
+        } else {
+            orders = purchaseorderrepo.findByOrderedAtBetweenAndUserId(from, to, currentUser.getId());
+        }
+
+        return orders.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }

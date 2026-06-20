@@ -82,22 +82,52 @@ public class SupplierServiceImp implements SupplierService {
 
     @Override
     public List<SupplierResponsedto> getAllSuppliers() {
-        return supplierrepo.findAll()
-                .stream()
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Supplier> suppliers;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            suppliers = supplierrepo.findAll();
+        } else {
+            suppliers = supplierrepo.findByUserId(currentUser.getId());
+        }
+
+        return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<SupplierResponsedto> getSuppliersByProduct(String productname){
-        List<Supplier> suppliers = supplierrepo.findSuppliersByProductName(productname);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Supplier> suppliers;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            suppliers = supplierrepo.findSuppliersByProductName(productname);
+        } else {
+            suppliers = supplierrepo.findSuppliersByProductNameAndUserId(productname, currentUser.getId());
+        }
+
         return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
     @Override
     public List<SupplierResponsedto> searchSuppliers(String keyword){
-        List<Supplier> suppliers = supplierrepo.searchSuppliers(keyword);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Supplier> suppliers;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            suppliers = supplierrepo.searchSuppliers(keyword);
+        } else {
+            suppliers = supplierrepo.searchSuppliersByUserId(keyword, currentUser.getId());
+        }
+
         return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -105,7 +135,17 @@ public class SupplierServiceImp implements SupplierService {
 
     @Override
     public List<SupplierResponsedto> getSuppliersByStatus(boolean status){
-        List<Supplier> suppliers = supplierrepo.findSuppliersByStatus(status);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Supplier> suppliers;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            suppliers = supplierrepo.findSuppliersByStatus(status);
+        } else {
+            suppliers = supplierrepo.findSuppliersByStatusAndUserId(status, currentUser.getId());
+        }
+
         return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -113,7 +153,17 @@ public class SupplierServiceImp implements SupplierService {
 
     @Override
     public List<SupplierResponsedto> getSuppliersByName(String name){
-        List<Supplier> suppliers = supplierrepo.findSuppliersByName(name);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        List<Supplier> suppliers;
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            suppliers = supplierrepo.findSuppliersByName(name);
+        } else {
+            suppliers = supplierrepo.findSuppliersByNameAndUserId(name, currentUser.getId());
+        }
+
         return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

@@ -16,4 +16,7 @@ public interface StockMovementRepository extends JpaRepository<StockMovement, Lo
     List<StockMovement> findByMovementType(String movementType);
 
     List<StockMovement> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    @org.springframework.data.jpa.repository.Query("SELECT sm FROM StockMovement sm WHERE sm.products.user.id = :userId")
+    List<StockMovement> findByUserId(@org.springframework.data.repository.query.Param("userId") Long userId);
 }

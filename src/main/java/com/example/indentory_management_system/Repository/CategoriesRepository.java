@@ -21,4 +21,10 @@ public interface CategoriesRepository extends JpaRepository<Categories, Long> {
     List<Categories> findByDescriptionContainingIgnoreCase(String description);
 
     List<Categories> findByNameContainingIgnoreCase(String name);
+
+    @Query("SELECT c FROM Categories c WHERE c.user.id = ?1")
+    List<Categories> findByUserId(Long userId);
+
+    @Query("SELECT c FROM Categories c WHERE c.user.id = ?1 AND c.active_status = 'active'")
+    List<Categories> findByUserIdAndActiveStatusTrue(Long userId);
 }
