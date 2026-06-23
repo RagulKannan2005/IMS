@@ -102,12 +102,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<PurchaseOrder> orders;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            orders = purchaseorderrepo.findAll();
-        } else {
-            orders = purchaseorderrepo.findByUserId(currentUser.getId());
-        }
+        List<PurchaseOrder> orders = purchaseorderrepo.findByUserId(currentUser.getId());
 
         return orders.stream()
                 .map(this::toDto)
@@ -120,12 +115,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<PurchaseOrder> orders;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            orders = purchaseorderrepo.findBySupplierId(supplierId);
-        } else {
-            orders = purchaseorderrepo.findBySupplierIdAndUserId(supplierId, currentUser.getId());
-        }
+        List<PurchaseOrder> orders = purchaseorderrepo.findBySupplierIdAndUserId(supplierId, currentUser.getId());
 
         return orders.stream()
                 .map(this::toDto)
@@ -138,12 +128,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<PurchaseOrder> orders;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            orders = purchaseorderrepo.findByStatus(status);
-        } else {
-            orders = purchaseorderrepo.findByStatusAndUserId(status, currentUser.getId());
-        }
+        List<PurchaseOrder> orders = purchaseorderrepo.findByStatusAndUserId(status, currentUser.getId());
 
         return orders.stream()
                 .map(this::toDto)
@@ -164,12 +149,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<PurchaseOrder> orders;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            orders = purchaseorderrepo.findByOrderedAtBetween(from, to);
-        } else {
-            orders = purchaseorderrepo.findByOrderedAtBetweenAndUserId(from, to, currentUser.getId());
-        }
+        List<PurchaseOrder> orders = purchaseorderrepo.findByOrderedAtBetweenAndUserId(from, to, currentUser.getId());
 
         return orders.stream()
                 .map(this::toDto)

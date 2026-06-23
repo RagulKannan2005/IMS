@@ -118,12 +118,7 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         Users currentUser = userRepository.findByEmail(currentUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 
-        List<PurchaseOrderItem> items;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            items = purchaseOrderItemRepository.findAll();
-        } else {
-            items = purchaseOrderItemRepository.findByUserId(currentUser.getId());
-        }
+        List<PurchaseOrderItem> items = purchaseOrderItemRepository.findByUserId(currentUser.getId());
 
         return items.stream()
                 .map(this::toDto)

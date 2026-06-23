@@ -39,6 +39,9 @@ public class Users {
     @Column(nullable = false)
     private String role;
 
+    @Column(name = "created_by")
+    private String createdBy;
+
     @Column(nullable = false)
     private LocalDate created_at;
 

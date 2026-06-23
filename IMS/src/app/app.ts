@@ -4,7 +4,7 @@ import { Register } from '../components/register/register';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,Register],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

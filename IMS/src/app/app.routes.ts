@@ -6,7 +6,9 @@ import { DashboardHome } from '../components/Admindashboard/dashboard-home/dashb
 import { Products } from '../components/Admindashboard/products/products';
 import { adminGuard } from './guards/admin.guard';
 import { Categories } from '../components/Admindashboard/categories/categories';
-
+import { Stocks } from '../components/Admindashboard/stocks/stocks';
+import { Warehouse } from '../components/Admindashboard/warehouse/warehouse';
+import { Users } from '../components/Admindashboard/users/users';
 export const routes: Routes = [
   { path: '', redirectTo: 'register', pathMatch: 'full' },
   { path: 'register', component: Register },
@@ -18,7 +20,10 @@ export const routes: Routes = [
   canActivate: [adminGuard],
   children: [
     { path: 'products', component: Products },
-    { path: 'categories', component: Categories }
+    { path: 'categories', component: Categories },
+    {path:'stocks',component:Stocks},
+    {path:'warehouse',component:Warehouse},
+    {path:'users',component:Users}
   ]
 } 
 ];

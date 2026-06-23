@@ -1,0 +1,152 @@
+<div class="stock_container">
+  <div class="header-section">
+    <div>
+      <h2>Manage Stocks</h2>
+      <p>Manage your inventory levels, add new stock, or transfer stock between warehouses.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="openTransferForm()"><span class="icon">🔄</span> Transfer Stock</button>
+      <button class="btn btn-primary" (click)="openAddForm()"><span class="icon">➕</span> Add Stock</button>
+    </div>
+  </div>
+
+  @if (showAddForm) {
+    <div class="overlay" (click)="closeAddForm()"></div>
+    <div class="stock-form">
+      <div class="form-header">
+        <h3>Add Stock</h3>
+        <button (click)="closeAddForm()"><span class="icon">✖</span></button>
+      </div>
+      <form>
+        <div class="form-group">
+          <label>Product</label>
+          <select class="form-control" [(ngModel)]="newStock.product_id" name="product_id">
+            <option [ngValue]="null">Select Product</option>
+            <option *ngFor="let p of products" [value]="p.id">{{p.name}} ({{p.sku}})</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Warehouse</label>
+          <select class="form-control" [(ngModel)]="newStock.warehouse_id" name="warehouse_id">
+            <option [ngValue]="null">Select Warehouse</option>
+            <option *ngFor="let w of warehouses" [value]="w.id">{{w.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" placeholder="Quantity on Hand" class="form-control" [(ngModel)]="newStock.quantityOnHand" name="quantityOnHand">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" (click)="addStock()">Add Stock</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (showTransferForm) {
+    <div class="overlay" (click)="closeTransferForm()"></div>
+    <div class="stock-form">
+      <div class="form-header">
+        <h3>Transfer Stock</h3>
+        <button (click)="closeTransferForm()"><span class="icon">✖</span></button>
+      </div>
+      <form>
+        <div class="form-group">
+          <label>Product</label>
+          <select class="form-control" [(ngModel)]="transferData.product_id" name="transfer_product_id">
+            <option [ngValue]="null">Select Product</option>
+            <option *ngFor="let p of products" [value]="p.id">{{p.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>From Warehouse</label>
+          <select class="form-control" [(ngModel)]="transferData.fromWarehouseId" name="fromWarehouseId">
+            <option [ngValue]="null">Select Warehouse</option>
+            <option *ngFor="let w of warehouses" [value]="w.id">{{w.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>To Warehouse</label>
+          <select class="form-control" [(ngModel)]="transferData.toWarehouseId" name="toWarehouseId">
+            <option [ngValue]="null">Select Warehouse</option>
+            <option *ngFor="let w of warehouses" [value]="w.id">{{w.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Transfer Quantity</label>
+          <input type="number" placeholder="Quantity to transfer" class="form-control" [(ngModel)]="transferData.quantityOnHand" name="transferQuantity">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" (click)="transferStock()">Transfer Stock</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (showUpdateForm) {
+    <div class="overlay" (click)="closeUpdateForm()"></div>
+    <div class="stock-form">
+      <div class="form-header">
+        <h3>Update Stock</h3>
+        <button (click)="closeUpdateForm()"><span class="icon">✖</span></button>
+      </div>
+      <form>
+        <div class="form-group">
+          <label>Product</label>
+          <select class="form-control" [(ngModel)]="updateData.product_id" name="update_product_id" [disabled]="true">
+            <option [ngValue]="null">Select Product</option>
+            <option *ngFor="let p of products" [value]="p.id">{{p.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Warehouse</label>
+          <select class="form-control" [(ngModel)]="updateData.warehouse_id" name="update_warehouse_id" [disabled]="true">
+            <option [ngValue]="null">Select Warehouse</option>
+            <option *ngFor="let w of warehouses" [value]="w.id">{{w.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" placeholder="Quantity on Hand" class="form-control" [(ngModel)]="updateData.quantityOnHand" name="updateQuantity">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" (click)="updateStock()">Update Stock</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="stock-card">
+    <div class="card-header">
+      <h3>All Stocks</h3>
+      <input type="text" placeholder="Search stocks..." class="search-input" (input)="searchStock($event)"/>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Warehouse</th>
+            <th>Quantity On Hand</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stock of filteredStocks">
+            <td>{{stock.productname}}</td>
+            <td>{{stock.warehousename}}</td>
+            <td>
+              <span class="quantity-badge" [ngClass]="{'low-stock': stock.quantityOnHand < 10}">
+                {{stock.quantityOnHand}}
+              </span>
+            </td>
+            <td>
+              <button class="edit-btn" (click)="openUpdateForm(stock)">Update</button>
+              <button class="delete-btn" (click)="deleteStock(stock.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

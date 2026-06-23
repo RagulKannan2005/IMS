@@ -32,6 +32,8 @@ public class UserServiceImp implements UserService {
                     .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with ID: " + dto.getSupplierId()));
         }
 
+        String createdBy = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+
         Users user = Users.builder()
                 .username(dto.getUsername())
                 .firstName(dto.getFirstName())
@@ -40,6 +42,7 @@ public class UserServiceImp implements UserService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .phone_number(dto.getPhone_number())
                 .role(dto.getRole())
+                .createdBy(createdBy)
                 .build();
         Users saved = userrepo.save(user);
 
@@ -54,8 +57,34 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<UserResponsedto> getUserAllusers() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = (auth != null) ? auth.getName() : null;
+        if (currentUsername == null) {
+            return java.util.Collections.emptyList();
+        }
+
         return userrepo.findAll()
-                .stream().map(this::toDto).collect(Collectors.toList());
+                .stream()
+                .filter(user -> {
+                    // Show users created by the current user
+                    if (currentUsername.equals(user.getCreatedBy())) {
+                        return true;
+                    }
+                    // Show the user itself
+                    if (currentUsername.equals(user.getUsername())) {
+                        return true;
+                    }
+                    // For the default "admin" user, also show system-seeded or legacy users (createdBy is null, empty, or anonymousUser)
+                    if ("admin".equals(currentUsername) && 
+                            (user.getCreatedBy() == null || 
+                             user.getCreatedBy().trim().isEmpty() || 
+                             "anonymousUser".equals(user.getCreatedBy()))) {
+                        return true;
+                    }
+                    return false;
+                })
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -124,6 +153,7 @@ public class UserServiceImp implements UserService {
                 .email(s.getEmail())
                 .phone_number(s.getPhone_number())
                 .role(s.getRole())
+                .createdBy(s.getCreatedBy())
                 .supplierId(s.getSupplier() != null ? s.getSupplier().getId() : null)
                 .build();
     }

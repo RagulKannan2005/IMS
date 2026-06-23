@@ -79,12 +79,7 @@ public class StockServiceImp implements StockService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Stock> stocks;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            stocks = stockrepo.findAll();
-        } else {
-            stocks = stockrepo.findByUserId(currentUser.getId());
-        }
+        List<Stock> stocks = stockrepo.findByUserId(currentUser.getId());
 
         return stocks.stream().map(this::toDto).collect(Collectors.toList());
     }

@@ -1,10 +1,11 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../app/services/product';
 
 @Component({
   selector: 'app-products',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './products.html',
   styleUrl: './products.css',
 })
@@ -12,9 +13,21 @@ export class Products {
   products: any[] = [];
   isLoading = true;
   errorMessage = '';
+  newproduct: any = {};
 
   productsService = inject(ProductService);
   cdr = inject(ChangeDetectorRef);
+
+
+  showform=false;
+  openform(){
+    this.showform=true;
+    
+  }
+  closeform(){
+    this.showform=false;
+  }
+  addProduct(){}
 
   ngOnInit() {
     console.log('Products component initializing...');

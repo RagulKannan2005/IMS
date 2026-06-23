@@ -52,12 +52,7 @@ public class CategoryServiceImp implements CategoryService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
-        List<Categories> categories;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            categories = categoriesRepository.findAll();
-        } else {
-            categories = categoriesRepository.findByUserId(currentUser.getId());
-        }
+        List<Categories> categories = categoriesRepository.findByUserId(currentUser.getId());
 
         return categories.stream()
                 .map(this::mapToResponseDto)
@@ -70,12 +65,7 @@ public class CategoryServiceImp implements CategoryService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
-        List<Categories> categories;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            categories = categoriesRepository.findByActiveStatusTrue();
-        } else {
-            categories = categoriesRepository.findByUserIdAndActiveStatusTrue(currentUser.getId());
-        }
+        List<Categories> categories = categoriesRepository.findByUserIdAndActiveStatusTrue(currentUser.getId());
 
         return categories.stream()
                 .map(this::mapToResponseDto)

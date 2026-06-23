@@ -86,12 +86,7 @@ public class SupplierServiceImp implements SupplierService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Supplier> suppliers;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            suppliers = supplierrepo.findAll();
-        } else {
-            suppliers = supplierrepo.findByUserId(currentUser.getId());
-        }
+        List<Supplier> suppliers = supplierrepo.findByUserId(currentUser.getId());
 
         return suppliers.stream()
                 .map(this::toDto)
@@ -104,12 +99,7 @@ public class SupplierServiceImp implements SupplierService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Supplier> suppliers;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            suppliers = supplierrepo.findSuppliersByProductName(productname);
-        } else {
-            suppliers = supplierrepo.findSuppliersByProductNameAndUserId(productname, currentUser.getId());
-        }
+        List<Supplier> suppliers = supplierrepo.findSuppliersByProductNameAndUserId(productname, currentUser.getId());
 
         return suppliers.stream()
                 .map(this::toDto)
@@ -121,12 +111,7 @@ public class SupplierServiceImp implements SupplierService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Supplier> suppliers;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            suppliers = supplierrepo.searchSuppliers(keyword);
-        } else {
-            suppliers = supplierrepo.searchSuppliersByUserId(keyword, currentUser.getId());
-        }
+        List<Supplier> suppliers = supplierrepo.searchSuppliersByUserId(keyword, currentUser.getId());
 
         return suppliers.stream()
                 .map(this::toDto)
@@ -139,12 +124,7 @@ public class SupplierServiceImp implements SupplierService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Supplier> suppliers;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            suppliers = supplierrepo.findSuppliersByStatus(status);
-        } else {
-            suppliers = supplierrepo.findSuppliersByStatusAndUserId(status, currentUser.getId());
-        }
+        List<Supplier> suppliers = supplierrepo.findSuppliersByStatusAndUserId(status, currentUser.getId());
 
         return suppliers.stream()
                 .map(this::toDto)
@@ -157,12 +137,7 @@ public class SupplierServiceImp implements SupplierService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
-        List<Supplier> suppliers;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            suppliers = supplierrepo.findSuppliersByName(name);
-        } else {
-            suppliers = supplierrepo.findSuppliersByNameAndUserId(name, currentUser.getId());
-        }
+        List<Supplier> suppliers = supplierrepo.findSuppliersByNameAndUserId(name, currentUser.getId());
 
         return suppliers.stream()
                 .map(this::toDto)

@@ -27,6 +27,8 @@ public class UserRequestdto {
     @NotBlank(message = "Role is required and must be either 'ADMIN', 'MANAGER', 'STAFF', or 'SUPPLIER'")
     private String role;
 
+    private String createdBy; // This will store "Admin 1"
+
     private Long supplierId;
 
 }

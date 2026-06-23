@@ -29,20 +29,15 @@ export class Login {
       .subscribe({
         next: (response: any) => {
           localStorage.setItem('token', response.token);
-          if (response.role === "ADMIN") {
-            localStorage.setItem('user',
-              JSON.stringify({
-                id: response.id,
-                username: response.username,
-                email: response.email,
-                role: response.role
-              }));
+          localStorage.setItem('user',
+            JSON.stringify({
+              id: response.id,
+              username: response.username,
+              email: response.email,
+              role: response.role
+            }));
 
-            this.router.navigate(['/admin']);
-          }
-          else {
-            this.router.navigate(['/home']);
-          }
+          this.router.navigate(['/admin']);
           console.log('login successfull', response);
           alert('login successfull');
 

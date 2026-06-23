@@ -76,12 +76,7 @@ public class ProductServiceImp implements ProductService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
-        List<Products> products;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            products = productrepo.findAllWithDetails();
-        } else {
-            products = productrepo.findByUserIdWithDetails(currentUser.getId());
-        }
+        List<Products> products = productrepo.findByUserIdWithDetails(currentUser.getId());
 
         return products.stream()
                 .map(this::mapToResponseDto)
@@ -94,12 +89,7 @@ public class ProductServiceImp implements ProductService {
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
 
-        List<Products> products;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            products = productrepo.findAllWithDetails();
-        } else {
-            products = productrepo.findByUserIdWithDetails(currentUser.getId());
-        }
+        List<Products> products = productrepo.findByUserIdWithDetails(currentUser.getId());
 
         return products.stream()
                 .filter(Products::isActive)

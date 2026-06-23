@@ -1,0 +1,100 @@
+<div class="users_container">
+  <div class="header-section">
+    <div>
+      <h2>Manage Users</h2>
+      <p>Oversee your system users, managers, and staff accounts.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openform()"><span class="icon">➕</span> Add User</button>
+    </div>
+  </div>
+
+  @if (showform) {
+    <div class="overlay" (click)="closeform()"></div>
+    <div class="user-form">
+      <div class="form-header">
+        <h3>Add User</h3>
+        <button (click)="closeform()"><span class="icon">✖</span></button>
+      </div>
+      <form (ngSubmit)="register()">
+        <div class="form-group">
+          <label>Role</label>
+          <select name="role" class="form-control" [(ngModel)]="newUser.role" required>
+            <option value="STAFF">STAFF</option>
+            <option value="MANAGER">MANAGER</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" placeholder="Username" class="form-control" [(ngModel)]="newUser.username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" placeholder="First Name" class="form-control" [(ngModel)]="newUser.firstName" name="firstName" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" placeholder="Last Name" class="form-control" [(ngModel)]="newUser.lastName" name="lastName" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="Email" class="form-control" [(ngModel)]="newUser.email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" placeholder="Phone Number" class="form-control" [(ngModel)]="newUser.phone_number" name="phone_number" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="Password" class="form-control" [(ngModel)]="newUser.password" name="password" required>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Add User</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="users-card">
+    <div class="card-header">
+      <h3>All Users</h3>
+      <input type="text" placeholder="Search users..." class="search-input" (input)="searchUser($event)"/>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Role</th>
+            <th>Created By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers">
+            <td><strong>{{user.username}}</strong></td>
+            <td>{{user.firstName}} {{user.lastName}}</td>
+            <td>
+              <div>{{user.email}}</div>
+              <div class="contact-info">{{user.phone_number}}</div>
+            </td>
+            <td>
+              <span class="role-badge" [ngClass]="user.role?.toLowerCase() || 'default'">
+                {{user.role}}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="user.createdBy">{{user.createdBy}}</span>
+              <span *ngIf="!user.createdBy" class="contact-info">System / Unknown</span>
+            </td>
+            <td>
+              <button class="delete-btn" (click)="deleteUser(user.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -228,12 +228,7 @@ public class StockMovementServiceImpl implements StockMovementService {
         Users currentUser = userRepo.findByEmail(currentUsername)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
 
-        List<StockMovement> movements;
-        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            movements = stockMovementRepo.findAll();
-        } else {
-            movements = stockMovementRepo.findByUserId(currentUser.getId());
-        }
+        List<StockMovement> movements = stockMovementRepo.findByUserId(currentUser.getId());
 
         return movements.stream()
                 .map(this::toDto)
