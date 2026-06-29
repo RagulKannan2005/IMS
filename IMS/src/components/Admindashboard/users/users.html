@@ -58,7 +58,17 @@
   <div class="users-card">
     <div class="card-header">
       <h3>All Users</h3>
-      <input type="text" placeholder="Search users..." class="search-input" (input)="searchUser($event)"/>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <!-- <div class="form-group" style="margin: 0; min-width: 200px;">
+          <select class="form-control" [(ngModel)]="selectedManagerId" name="managerSelect">
+            <option [ngValue]="null" disabled>-- Filter/Select Manager --</option>
+            <option *ngFor="let manager of managers" [value]="manager.id">
+              {{ manager.firstName }} {{ manager.lastName }} ({{ manager.username }})
+            </option>
+          </select>
+        </div> -->
+        <input type="text" placeholder="Search users..." class="search-input" (input)="searchUser($event)"/>
+      </div>
     </div>
     <div class="table-container">
       <table>

@@ -59,4 +59,9 @@ public class UserController {
     public ResponseEntity<UserResponsedto> deleteuser(@PathVariable Long id) {
         return ResponseEntity.ok().body(userService.deleteuser(id));
     }
+
+    @GetMapping("/admin/{adminId}/managers")
+    public ResponseEntity<List<UserResponsedto>> getManagersByAdmin(@PathVariable Long adminId) {
+        return ResponseEntity.ok().body(userService.getManagersByAdminId(adminId));
+    }
 }

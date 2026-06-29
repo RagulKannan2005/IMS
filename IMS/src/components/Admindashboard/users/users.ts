@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../app/services/user';
@@ -12,10 +12,16 @@ import { UserService } from '../../../app/services/user';
 })
 export class Users implements OnInit {
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   users: any[] = [];
   filteredUsers: any[] = [];
   showform = false;
+
+  // Variables for Manager dropdown
+  managers: any[] = [];
+  selectedManagerId: number | null = null;
+  currentAdminid: number = 1; // Testing with admin ID 1
 
   newUser = {
     username: '',
@@ -24,20 +30,40 @@ export class Users implements OnInit {
     email: '',
     password: '',
     phone_number: '',
-    role: 'STAFF'
+    role: 'STAFF',
   };
 
   ngOnInit() {
     this.loadUsers();
+    this.loadManagers();
   }
 
   loadUsers() {
     this.userService.getAllUsers().subscribe({
-      next: (data: any[]) => {
-        this.users = data;
-        this.filteredUsers = data;
+      next: (response: any) => {
+        let usersData = response;
+        if (response && response.data && Array.isArray(response.data)) {
+          usersData = response.data;
+        } else if (response && response.value && Array.isArray(response.value)) {
+          usersData = response.value;
+        } else if (!Array.isArray(response)) {
+          usersData = [];
+        }
+        
+        this.users = usersData;
+        this.filteredUsers = usersData;
+        this.cdr.detectChanges(); // Force Angular to update the UI
       },
       error: (err: any) => console.error('Error fetching users:', err),
+    });
+  }
+
+  loadManagers() {
+    this.userService.getManagersByAdminId(this.currentAdminid).subscribe({
+      next: (data: any[]) => {
+        this.managers = data;
+      },
+      error: (err: any) => console.error('Error fetching managers:', err),
     });
   }
 
@@ -48,7 +74,7 @@ export class Users implements OnInit {
         u.firstName?.toLowerCase().includes(term) ||
         u.lastName?.toLowerCase().includes(term) ||
         u.email?.toLowerCase().includes(term) ||
-        u.role?.toLowerCase().includes(term)
+        u.role?.toLowerCase().includes(term),
     );
   }
 
@@ -65,12 +91,20 @@ export class Users implements OnInit {
       next: (res: any) => {
         this.loadUsers(); // Refresh the table
         this.closeform();
-        this.newUser = { username: '', firstName: '', lastName: '', email: '', password: '', phone_number: '', role: 'STAFF' };
+        this.newUser = {
+          username: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          phone_number: '',
+          role: 'STAFF',
+        };
       },
       error: (err: any) => {
         console.error('Error adding user:', err.error || err.message);
         alert('Failed to add user. Check console for details.');
-      }
+      },
     });
   }
 
@@ -82,4 +116,6 @@ export class Users implements OnInit {
       });
     }
   }
+
+  
 }

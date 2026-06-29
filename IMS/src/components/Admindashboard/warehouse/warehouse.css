@@ -293,3 +293,9 @@ tr:hover {
     font-size: 13px;
   }
 }
+select{
+  width: 100%;
+  padding: 10px 12px;
+  
+}
+

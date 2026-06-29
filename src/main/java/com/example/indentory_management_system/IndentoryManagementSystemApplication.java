@@ -33,12 +33,6 @@ public class IndentoryManagementSystemApplication {
 						.role("ADMIN")
 						.build());
 				System.out.println("Bootstrap: admin user created.");
-			} else {
-				Users admin = adminOpt.get();
-				admin.setPassword(passwordEncoder.encode("admin123"));
-				admin.setEmail("admin@ims.com");
-				userRepository.save(admin);
-				System.out.println("Bootstrap: admin user password reset to 'admin123'.");
 			}
 			
 			if (userRepository.findByUsername("manager").isEmpty()) {

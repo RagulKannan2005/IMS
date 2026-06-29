@@ -143,6 +143,15 @@ public class UserServiceImp implements UserService {
         return toDto(user);
     }
 
+    @Override
+    public List<UserResponsedto> getManagersByAdminId(Long adminId) {
+        Users admin = userrepo.findById(adminId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin not found with id: " + adminId));
+        
+        List<Users> managers = userrepo.findByRoleAndCreatedBy("MANAGER", admin.getUsername());
+        return managers.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
     private UserResponsedto toDto(Users s) {
         return UserResponsedto.builder()
                 .id(s.getId())

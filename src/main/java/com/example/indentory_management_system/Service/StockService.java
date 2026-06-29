@@ -23,6 +23,10 @@ public interface StockService {
 
     StockResponsedto getCurrentStock(Long productId, Long warehouseId);
 
+    void syncProductGlobalStock(Long productId);
+
+    // void syncProductGlobalStock(Long productId);
+
     // List<StockResponsedto> getStockByProduct(String productName);
 
     // List<StockResponsedto> getStockByWarehouse(String warehouseName);

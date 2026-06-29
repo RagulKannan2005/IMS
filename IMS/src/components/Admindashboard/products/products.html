@@ -79,7 +79,12 @@
 
         <div class="form-group">
           <label>Category</label>
-          <input type="text" name="category" required [(ngModel)]="newproduct.category" />
+          <select name="category" class="form-control" required [(ngModel)]="newproduct.category">
+            <option [ngValue]="null" disabled>-- Select Category --</option>
+            @for (cat of categories; track cat.id) {
+              <option [ngValue]="cat.name">{{ cat.name }}</option>
+            }
+          </select>
         </div>
 
         <div class="form-actions">

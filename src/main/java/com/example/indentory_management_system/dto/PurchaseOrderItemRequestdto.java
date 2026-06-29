@@ -25,4 +25,7 @@ public class PurchaseOrderItemRequestdto {
     @NotNull(message = "Unit cost is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Unit cost must be greater than 0")
     private BigDecimal unitCost;
+
+    @NotNull(message="order status is not empty")
+    private String orderStatus;
 }

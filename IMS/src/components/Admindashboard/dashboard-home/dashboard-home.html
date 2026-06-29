@@ -51,15 +51,16 @@
       <li (click)="toggleOrders()" class="nav-item has-dropdown" [class.active]="orderMenu">
         <div class="nav-item-content">
           <span class="icon">🛒</span>
-          <span class="text">Purchase Orders</span>
+          <span class="text" routerLink="purchaseOrders">Purchase Orders</span>
         </div>
-        <span class="arrow">▼</span>
+        <!-- <span class="arrow">▼</span> -->
       </li>
-      <ul class="dropdown" *ngIf="orderMenu">
-        <li routerLink="/admin/purchase-orders">All Orders</li>
-        <li routerLink="/admin/pending-orders">Pending Orders</li>
-        <li routerLink="/admin/completed-orders">Completed Orders</li>
-      </ul>
+      <!-- <ul class="dropdown" *ngIf="orderMenu">
+        <li routerLink="/admin/purchaseOrder/newOrder">Create Order</li>
+        <li routerLink="/admin/purchaseOrder">All Orders</li>
+        <li routerLink="/admin/pendingPurchaseOrders">Pending Orders</li>
+        <li routerLink="/admin/completedPurchaseOrders">Completed Orders</li>
+      </ul> -->
 
       <li routerLink="/admin/reports" class="nav-item">
         <span class="icon">📊</span>

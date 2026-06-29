@@ -44,4 +44,10 @@ export class UserService {
       headers: this.getAuthHeaders(),
     });
   }
+
+  getManagersByAdminId(adminId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.usersApiUrl}/admin/${adminId}/managers`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 }

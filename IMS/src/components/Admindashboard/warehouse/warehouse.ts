@@ -2,7 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WarehouseService } from '../../../app/services/warehouse';
-
+import { UserService } from '../../../app/services/user';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-warehouse',
   standalone: true,
@@ -15,20 +16,24 @@ export class Warehouse implements OnInit {
 
   warehouses: any[] = [];
   filteredWarehouses: any[] = [];
-  
+
+  userService = inject(UserService);
+  cdr = inject(ChangeDetectorRef);
+
   showAddForm = false;
   showUpdateForm = false;
 
-  newWarehouse = {
+  newWarehouse: any = {
     name: '',
     warehouseCode: '',
     capacity: 0,
     managerName: '',
     contactNumber: '',
     email: '',
+    userId: null,
   };
 
-  updateData = {
+  updateData: any = {
     id: null,
     name: '',
     warehouseCode: '',
@@ -36,6 +41,7 @@ export class Warehouse implements OnInit {
     managerName: '',
     contactNumber: '',
     email: '',
+    userId: null,
   };
 
   ngOnInit() {
@@ -47,6 +53,7 @@ export class Warehouse implements OnInit {
       next: (data: any[]) => {
         this.warehouses = data;
         this.filteredWarehouses = data;
+        this.cdr.detectChanges(); // Force Angular to update the UI
       },
       error: (err: any) => console.error('Error fetching warehouses:', err),
     });
@@ -58,12 +65,43 @@ export class Warehouse implements OnInit {
       (w: any) =>
         w.name?.toLowerCase().includes(term) ||
         w.warehouseCode?.toLowerCase().includes(term) ||
-        w.managerName?.toLowerCase().includes(term)
+        w.managerName?.toLowerCase().includes(term),
     );
   }
 
+  manageremail:any[]=[];
+
+  loademail(){
+    this.userService.getAllUsers().subscribe({
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.manageremail = response.data.map((u: any) => u.email);
+        } else if (Array.isArray(response)) {
+          this.manageremail = response.map((u: any) => u.email);
+        } else {
+          this.manageremail = [];
+        }
+      },
+    });
+  }
+  managers: any[] = [];
+  loadmanager() {
+    this.userService.getAllUsers().subscribe({
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.managers = response.data.filter((u: any) => u.role === 'MANAGER');
+        } else if (Array.isArray(response)) {
+          this.managers = response.filter((u: any) => u.role === 'MANAGER');
+        } else {
+          this.managers = [];
+        }
+      },
+    });
+  }
   openAddForm() {
     this.showAddForm = true;
+    this.loademail();
+    this.loadmanager(); // Make sure managers are loaded when form opens
     this.newWarehouse = {
       name: '',
       warehouseCode: '',
@@ -71,6 +109,7 @@ export class Warehouse implements OnInit {
       managerName: '',
       contactNumber: '',
       email: '',
+      userId: null,
     };
   }
 

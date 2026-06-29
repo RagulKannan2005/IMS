@@ -212,6 +212,8 @@ public class StockMovementServiceImpl implements StockMovementService {
             throw new IllegalArgumentException("Invalid movement type. Must be IN, OUT, ADJUSTMENT, or TRANSFER");
         }
 
+        syncProductGlobalStock(dto.getProduct_id());
+
         return toDto(mainMovement);
     }
 
@@ -310,4 +312,12 @@ public class StockMovementServiceImpl implements StockMovementService {
                 .createdAt(movement.getCreatedAt())
                 .build();
      }
+
+    private void syncProductGlobalStock(Long productId) {
+        Integer totalStock = stockRepo.getTotalStockForProduct(productId);
+        Products product = productRepo.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        product.setStockQuantity(totalStock);
+        productRepo.save(product);
+    }
 }

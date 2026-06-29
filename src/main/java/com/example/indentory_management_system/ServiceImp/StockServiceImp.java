@@ -26,138 +26,159 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StockServiceImp implements StockService {
 
-    private final StockRepository stockrepo;
-    private final ProductRepository productrepo;
-    private final WarehouseRepository warehouserepo;
-    private final UserRepository userRepository;
+        private final StockRepository stockrepo;
+        private final ProductRepository productrepo;
+        private final WarehouseRepository warehouserepo;
+        private final UserRepository userRepository;
 
-    @Override
-    public StockResponsedto addStock(StockRequestdto dto) {
-        Products product = productrepo.findById(dto.getProduct_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        @Override
+        public StockResponsedto addStock(StockRequestdto dto) {
+                Products product = productrepo.findById(dto.getProduct_id())
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
+                warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
+                                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        Stock stock = stockrepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
-                .map(existingStock -> {
-                    existingStock.setQuantityOnHand(existingStock.getQuantityOnHand() + dto.getQuantityOnHand());
-                    existingStock.setUpdatedAt(LocalDateTime.now());
-                    return existingStock;
-                })
-                .orElseGet(() -> Stock.builder()
-                        .Products(product)
-                        .warehouses(warehouse)
-                        .quantityOnHand(dto.getQuantityOnHand())
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .build());
+                Stock stock = stockrepo.findByProductsIdAndWarehousesId(dto.getProduct_id(), dto.getWarehouse_id())
+                                .map(existingStock -> {
+                                        existingStock.setQuantityOnHand(
+                                                        existingStock.getQuantityOnHand() + dto.getQuantityOnHand());
+                                        existingStock.setUpdatedAt(LocalDateTime.now());
+                                        return existingStock;
+                                })
+                                .orElseGet(() -> Stock.builder()
+                                                .Products(product)
+                                                .warehouses(warehouse)
+                                                .quantityOnHand(dto.getQuantityOnHand())
+                                                .createdAt(LocalDateTime.now())
+                                                .updatedAt(LocalDateTime.now())
+                                                .build());
 
-        stockrepo.save(stock);
-        return toDto(stock);
-    }
+                stockrepo.save(stock);
+                syncProductGlobalStock(dto.getProduct_id());
 
-    @Override
-    public StockResponsedto updateStock(Long id, StockRequestdto dto) {
-        Stock stock = stockrepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock not found"));
-        Products product = productrepo.findById(dto.getProduct_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
-        stock.setProducts(product);
-        stock.setWarehouses(warehouse);
-        stock.setQuantityOnHand(dto.getQuantityOnHand());
-        stock.setUpdatedAt(LocalDateTime.now());
-        stockrepo.save(stock);
-        return toDto(stock);
-    }
-
-    @Override
-    public List<StockResponsedto> getAllStocks() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
-
-        List<Stock> stocks = stockrepo.findByUserId(currentUser.getId());
-
-        return stocks.stream().map(this::toDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public void deleteStock(Long id) {
-        Stock stock = stockrepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("stock is not found"));
-
-        stockrepo.delete(stock);
-    }
-
-    @Override
-    public List<StockResponsedto> transferStock(
-            Long fromWarehouseId,
-            Long toWarehouseId,
-            StockRequestdto dto) {
-
-        Stock sourceStock = stockrepo
-                .findByProductsIdAndWarehousesId(
-                        dto.getProduct_id(),
-                        fromWarehouseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Source stock not found"));
-
-        Stock destinationStock = stockrepo
-                .findByProductsIdAndWarehousesId(
-                        dto.getProduct_id(),
-                        toWarehouseId)
-                .orElseGet(() -> {
-                    Products product = productrepo.findById(dto.getProduct_id())
-                            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-                    warehouses destinationWarehouse = warehouserepo.findById(toWarehouseId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Destination warehouse not found"));
-                    return Stock.builder()
-                            .Products(product)
-                            .warehouses(destinationWarehouse)
-                            .quantityOnHand(0)
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build();
-                });
-
-        int transferQty = dto.getQuantityOnHand();
-
-        if (sourceStock.getQuantityOnHand() < transferQty) {
-            throw new RuntimeException("Insufficient stock in source warehouse");
+                return toDto(stock);
         }
 
-        // Reduce stock from source warehouse
-        sourceStock.setQuantityOnHand(
-                sourceStock.getQuantityOnHand() - transferQty);
+        @Override
+        public void syncProductGlobalStock(Long productId) {
+                Integer totalStock = stockrepo.getTotalStockForProduct(productId);
+                Products product = productrepo.findById(productId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                product.setStockQuantity(totalStock);
+                productrepo.save(product);
+        }
 
-        // Add stock to destination warehouse
-        destinationStock.setQuantityOnHand(
-                destinationStock.getQuantityOnHand() + transferQty);
+        @Override
+        public StockResponsedto updateStock(Long id, StockRequestdto dto) {
+                Stock stock = stockrepo.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Stock not found"));
+                Products product = productrepo.findById(dto.getProduct_id())
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                warehouses warehouse = warehouserepo.findById(dto.getWarehouse_id())
+                                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
+                stock.setProducts(product);
+                stock.setWarehouses(warehouse);
+                stock.setQuantityOnHand(dto.getQuantityOnHand());
+                stock.setUpdatedAt(LocalDateTime.now());
+                stockrepo.save(stock);
+                syncProductGlobalStock(dto.getProduct_id());
 
-        stockrepo.save(sourceStock);
-        stockrepo.save(destinationStock);
+                return toDto(stock);
+        }
 
-        return List.of(
-                toDto(sourceStock),
-                toDto(destinationStock));
-    }
+        @Override
+        public List<StockResponsedto> getAllStocks() {
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                Users currentUser = userRepository.findByEmail(username)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Current authenticated user not found"));
 
-    private StockResponsedto toDto(Stock stock) {
-        return StockResponsedto.builder()
-                .id(stock.getId())
-                .productname(stock.getProducts().getName())
-                .warehousename(stock.getWarehouses().getName())
-                .quantityOnHand(stock.getQuantityOnHand())
-                .build();
-    }
+                List<Stock> stocks = stockrepo.findByUserId(currentUser.getId());
 
-    @Override
-    public StockResponsedto getCurrentStock(Long productid, Long warehouseid) {
-        Stock stock = stockrepo.findByProductsIdAndWarehousesId(productid, warehouseid)
-                .orElseThrow(() -> new ResourceNotFoundException("stock is not found"));
-        return toDto(stock);
-    }
+                return stocks.stream().map(this::toDto).collect(Collectors.toList());
+        }
+
+          @Override
+  public void deleteStock(Long id) {
+      Stock stock = stockrepo.findById(id)
+              .orElseThrow(() -> new ResourceNotFoundException("stock is not found"));
+              
+      Long productId = stock.getProducts().getId(); // Capture ID before deletion
+      stockrepo.delete(stock);
+      
+      syncProductGlobalStock(productId); // Sync global stock after deletion
+  }
+
+
+        @Override
+        public List<StockResponsedto> transferStock(
+                        Long fromWarehouseId,
+                        Long toWarehouseId,
+                        StockRequestdto dto) {
+
+                Stock sourceStock = stockrepo
+                                .findByProductsIdAndWarehousesId(
+                                                dto.getProduct_id(),
+                                                fromWarehouseId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Source stock not found"));
+
+                Stock destinationStock = stockrepo
+                                .findByProductsIdAndWarehousesId(
+                                                dto.getProduct_id(),
+                                                toWarehouseId)
+                                .orElseGet(() -> {
+                                        Products product = productrepo.findById(dto.getProduct_id())
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Product not found"));
+                                        warehouses destinationWarehouse = warehouserepo.findById(toWarehouseId)
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Destination warehouse not found"));
+                                        return Stock.builder()
+                                                        .Products(product)
+                                                        .warehouses(destinationWarehouse)
+                                                        .quantityOnHand(0)
+                                                        .createdAt(LocalDateTime.now())
+                                                        .updatedAt(LocalDateTime.now())
+                                                        .build();
+                                });
+
+                int transferQty = dto.getQuantityOnHand();
+
+                if (sourceStock.getQuantityOnHand() < transferQty) {
+                        throw new RuntimeException("Insufficient stock in source warehouse");
+                }
+
+                // Reduce stock from source warehouse
+                sourceStock.setQuantityOnHand(
+                                sourceStock.getQuantityOnHand() - transferQty);
+
+                // Add stock to destination warehouse
+                destinationStock.setQuantityOnHand(
+                                destinationStock.getQuantityOnHand() + transferQty);
+
+                stockrepo.save(sourceStock);
+                stockrepo.save(destinationStock);
+
+                return List.of(
+                                toDto(sourceStock),
+                                toDto(destinationStock));
+        }
+
+        private StockResponsedto toDto(Stock stock) {
+                return StockResponsedto.builder()
+                                .id(stock.getId())
+                                .productname(stock.getProducts().getName())
+                                .warehousename(stock.getWarehouses().getName())
+                                .quantityOnHand(stock.getQuantityOnHand())
+                                .build();
+        }
+
+        @Override
+        public StockResponsedto getCurrentStock(Long productid, Long warehouseid) {
+                Stock stock = stockrepo.findByProductsIdAndWarehousesId(productid, warehouseid)
+                                .orElseThrow(() -> new ResourceNotFoundException("stock is not found"));
+                return toDto(stock);
+        }
 
 }

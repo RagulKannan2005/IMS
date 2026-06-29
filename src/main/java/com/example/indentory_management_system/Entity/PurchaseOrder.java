@@ -33,7 +33,7 @@ public class PurchaseOrder {
 
     private BigDecimal totalAmount;
 
-    private String status;
+    private String orderStatus;
 
     private LocalDate orderedAt;
 

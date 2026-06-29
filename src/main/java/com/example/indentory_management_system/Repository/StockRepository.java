@@ -18,4 +18,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     @Query("SELECT s FROM Stock s WHERE s.Products.user.id = :userId")
     List<Stock> findByUserId(@Param("userId") Long userId);
+    @Query("SELECT COALESCE(SUM(s.quantityOnHand), 0) FROM Stock s WHERE s.Products.id = :productId")
+    Integer getTotalStockForProduct(@Param("productId") Long productId);
+
+
 }

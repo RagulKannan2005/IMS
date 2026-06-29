@@ -1,0 +1,156 @@
+<div class="purchase-order-container">
+  <div class="header-section">
+    <div>
+      <h2 class="page-title">Purchase Orders</h2>
+      <p class="page-subtitle">Create and manage your purchase orders to restock inventory.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary"><span class="icon">⬇️</span> Export</button>
+      <button class="btn btn-primary" (click)="openform()">
+        <span class="icon">➕</span> Create Order
+      </button>
+    </div>
+  </div>
+
+  @if (showform) {
+    <div class="po-form-card">
+      <div class="form-header">
+        <h4>Create New Purchase Order</h4>
+        <button type="button" class="close-btn" (click)="closeform()">✖</button>
+      </div>
+
+      <form #poForm="ngForm">
+        <!-- Master Section: PO Details -->
+        <div class="form-section">
+          <h5>1. Order Details</h5>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>PO Number</label>
+              <input type="text" name="poNumber" required [(ngModel)]="newPO.poNumber" readonly class="readonly-input form-control" />
+            </div>
+
+            <div class="form-group">
+              <label>Supplier <span class="required">*</span></label>
+              <select name="supplier" class="form-control" required [(ngModel)]="newPO.supplierId">
+                <option [ngValue]="null" disabled>-- Select Supplier --</option>
+                @for (sup of suppliers; track sup.id) {
+                  <option [ngValue]="sup.id">{{ sup.name }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Expected Delivery <span class="required">*</span></label>
+              <input type="date" name="expectedDate" class="form-control" required [(ngModel)]="newPO.expectedDeliveryDate" />
+            </div>
+          </div>
+          
+          <div class="form-group full-width">
+            <label>Remarks</label>
+            <textarea name="remarks" class="form-control" [(ngModel)]="newPO.remarks" placeholder="Add any special instructions..."></textarea>
+          </div>
+        </div>
+
+        <!-- Detail Section: Order Items -->
+        <div class="form-section items-section">
+          <div class="section-header-row">
+            <h5>2. Line Items</h5>
+            <button type="button" class="btn btn-secondary small-btn" (click)="addItem()">
+              <span class="icon">➕</span> Add Product
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="items-table premium-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th width="120">Qty</th>
+                  <th width="150">Unit Cost</th>
+                  <th width="150">Line Total</th>
+                  <th width="60"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (newPO.items.length === 0) {
+                  <tr>
+                    <td colspan="5" class="empty-items text-center">No items added yet. Click "+ Add Product" to begin.</td>
+                  </tr>
+                }
+                @for (item of newPO.items; track $index) {
+                  <tr>
+                    <td>
+                      <select [name]="'product'+$index" class="form-control" required [(ngModel)]="item.productId" (change)="onProductSelect(item)">
+                        <option [ngValue]="null" disabled>-- Select Product --</option>
+                        @for (prod of products; track prod.id) {
+                          <option [ngValue]="prod.id">{{ prod.name }}</option>
+                        }
+                      </select>
+                    </td>
+                    <td>
+                      <input type="number" [name]="'qty'+$index" min="1" required [(ngModel)]="item.quantityOrdered" class="form-control" />
+                    </td>
+                    <td>
+                      <div class="input-with-prefix">
+                        <span class="prefix">$</span>
+                        <input type="number" [name]="'cost'+$index" min="0" required [(ngModel)]="item.unitCost" class="form-control" />
+                      </div>
+                    </td>
+                    <td class="line-total font-weight-bold">
+                      ${{ (item.quantityOrdered * item.unitCost).toFixed(2) }}
+                    </td>
+                    <td class="text-center">
+                      <button type="button" class="action-btn delete" (click)="removeItem($index)" title="Remove Item">🗑️</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="form-summary">
+          <div class="total-row">
+            <span class="total-label">Total Order Amount:</span>
+            <span class="grand-total">${{ calculateTotal().toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeform()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!poForm.valid || newPO.items.length === 0" (click)="savePurchaseOrder()">Submit Order</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Main Table -->
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search orders by PO Number or Supplier..." />
+      </div>
+      <div class="filter-actions">
+        <button class="filter-btn">Filters <span class="icon">⚙️</span></button>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your purchase orders...</p>
+      </div>
+    } @else if (purchaseOrders.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No Purchase Orders Found</h3>
+        <p>You haven't created any purchase orders yet.</p>
+        <button class="btn btn-primary" (click)="openform()">Create Your First Order</button>
+      </div>
+    } @else {
+      <!-- Future table for showing POs will go here -->
+    }
+  </div>
+</div>
