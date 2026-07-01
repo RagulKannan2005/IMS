@@ -1,0 +1,129 @@
+<div class="products-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>My Products Catalog</h2>
+      <p>View and manage the products you supply to the system.</p>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search by SKU or Name...">
+      </div>
+      <button class="btn-primary" (click)="openform()">
+        <span class="icon">+</span> Add New Product
+      </button>
+    </div>
+  </div>
+  @if(showform){
+    <div class="supplierProduct-form">
+      <div class="form-header">
+        <h3>Add New Product</h3>
+        <button (click)="closeform()"><span class="icon">✖</span></button>
+      </div>
+      <form (ngSubmit)="submitForm()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="productSKU">Product SKU *</label>
+            <input type="text" id="productSKU" class="form-control" placeholder="e.g. SKU-12345" [(ngModel)]="newProduct.sku" name="sku" required>
+          </div>
+          <div class="form-group">
+            <label for="productName">Product Name *</label>
+            <input type="text" id="productName" class="form-control" placeholder="e.g. Industrial Bearings" [(ngModel)]="newProduct.name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="productCategory">Category Name *</label>
+            <select id="productCategory" class="form-control" [(ngModel)]="newProduct.category" name="category" required>
+              <option value="" disabled selected>Select a category...</option>
+              <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="costPrice">Cost Price *</label>
+            <input type="number" id="costPrice" class="form-control" placeholder="0.00" [(ngModel)]="newProduct.costPrice" name="costPrice" required>
+          </div>
+          <div class="form-group">
+            <label for="activeStatus">Active Status *</label>
+            <select id="activeStatus" class="form-control" [(ngModel)]="newProduct.active_status" name="active_status" required>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label for="productDescription">Description</label>
+            <textarea id="productDescription" class="form-control" rows="3" placeholder="Enter product description..." [(ngModel)]="newProduct.description" name="description"></textarea>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeform()">Cancel</button>
+          <button type="submit" class="btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  }
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>Unit Cost</th>
+            <th>Current Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products">
+            <td><span class="sku-badge">{{ product.sku }}</span></td>
+            <td>
+              <div class="product-info">
+                <strong>{{ product.name }}</strong>
+                <!-- <span class="category-text">{{ product.category?.categoryName }}</span> -->
+              </div>
+            </td>
+            <td class="description-cell">{{ product.description }}</td>
+            <td class="price-cell">{{ product.costPrice | currency:'USD' }}</td>
+            <td>
+              <span class="stock-badge" 
+                    [ngClass]="{'low-stock': product.stockQuantity <= product.reorderLevel, 'in-stock': product.stockQuantity > product.reorderLevel}">
+                {{ product.stockQuantity }} units
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="product.isActive ? 'active' : 'inactive'">
+                {{ product.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-icon edit" title="Edit Product">✏️</button>
+              <button class="btn-icon view" title="View Details">👁️</button>
+            </td>
+          </tr>
+
+          <!-- Empty State (if no products) -->
+          <tr *ngIf="products.length === 0">
+            <td colspan="7" class="empty-state">
+              <div class="empty-content">
+                <span class="empty-icon">📦</span>
+                <h3>No Products Found</h3>
+                <p>You haven't added any products to your catalog yet.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="pagination">
+      <span class="page-info">Showing 1 to 10 of {{products.length}} entries</span>
+      <div class="page-controls">
+        <button class="btn-page" disabled>Previous</button>
+        <button class="btn-page active">1</button>
+        <button class="btn-page">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

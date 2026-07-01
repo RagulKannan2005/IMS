@@ -15,7 +15,7 @@ public class PurchaseOrderResponsedto {
     private String supplierName;
     private String createdBy;
     private BigDecimal totalAmount;
-    private String status;
+    private String orderStatus;
     private LocalDate orderedAt;
     private LocalDate expectedDeliveryDate;
     private String remarks;

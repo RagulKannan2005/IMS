@@ -61,7 +61,7 @@ public class IndentoryManagementSystemApplication {
 						.role("STAFF")
 						.build());
 				System.out.println("Bootstrap: staff user created.");
-			}
+			}	
 		};
 	}
 }

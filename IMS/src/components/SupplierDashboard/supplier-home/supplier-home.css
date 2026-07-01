@@ -1,0 +1,159 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.supplier-dashboard{
+    display:flex;
+    min-height:100vh;
+    background:#f4f6f9;
+}
+
+.sidebar{
+    width:260px;
+    background:#0f172a; 
+    color:white;
+}
+
+.sidebar h2{
+    padding:20px;
+    text-align:center;
+    border-bottom:1px solid #1e293b;
+    color: #38bdf8;
+}
+
+.nav-links{
+    list-style:none;
+    padding:10px;
+}
+
+.nav-item{
+    padding:12px 15px;
+    margin:5px 0;
+    border-radius:6px;
+    cursor:pointer;
+    transition:0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-item:hover{
+    background:#1e293b;
+}
+
+.nav-item a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.main-content{
+    flex:1;
+    padding:20px;
+}
+
+.top-nav{
+    background:white;
+    padding:15px 20px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.search-bar input{
+    width:280px;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    outline:none;
+}
+
+.search-bar input:focus{
+    border-color:#38bdf8;
+}
+
+.user-profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#38bdf8;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size: 1.2rem;
+}
+
+.content-wrapper{
+    margin-top:25px;
+}
+
+.welcome-banner{
+    margin-bottom:20px;
+}
+
+.welcome-banner h1{
+    color:#0f172a;
+    margin-bottom:5px;
+}
+
+.welcome-banner p{
+    color:#64748b;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.stat-card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    transition:0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.stat-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-card:hover{
+    transform:translateY(-3px);
+}
+
+.stat-details h3{
+    color:#64748b;
+    font-size:14px;
+    margin-bottom:5px;
+}
+
+.stat-details p{
+    font-size:24px;
+    font-weight:600;
+    color:#0f172a;
+}

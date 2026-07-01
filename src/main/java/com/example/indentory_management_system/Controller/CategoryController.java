@@ -27,6 +27,7 @@ public class CategoryController {
     }
 
     @GetMapping("/allcategories")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SUPPLIER')")
     public List<CategoryResponsedto> getAllCategories() {
         return categoryService.getAllCategories();
     }
@@ -47,7 +48,8 @@ public class CategoryController {
     }
 
     @PutMapping("/updatecategory/{id}")
-    public CategoryResponsedto updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestdto categoryRequestdto) {
+    public CategoryResponsedto updateCategory(@PathVariable Long id,
+            @Valid @RequestBody CategoryRequestdto categoryRequestdto) {
         return categoryService.updateCategory(id, categoryRequestdto);
     }
 
@@ -55,5 +57,5 @@ public class CategoryController {
     public CategoryResponsedto deleteCategory(@PathVariable Long id) {
         return categoryService.deleteCategory(id);
     }
-    
+
 }

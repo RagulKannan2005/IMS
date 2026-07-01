@@ -50,7 +50,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .orderedAt(dto.getOrderedAt())
                 .expectedDeliveryDate(dto.getExpectedDeliveryDate())
                 .totalAmount(dto.getTotalAmount())
-                .status(dto.getStatus())
+                .orderStatus(dto.getStatus())
                 .remarks(dto.getRemarks())
                 .build();
 
@@ -75,7 +75,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         order.setOrderedAt(dto.getOrderedAt());
         order.setExpectedDeliveryDate(dto.getExpectedDeliveryDate());
         order.setTotalAmount(dto.getTotalAmount());
-        order.setStatus(dto.getStatus());
+        order.setOrderStatus(dto.getStatus());
         order.setRemarks(dto.getRemarks());
 
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
@@ -161,11 +161,11 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
 
-        if ("RECEIVED".equalsIgnoreCase(order.getStatus())) {
+        if ("RECEIVED".equalsIgnoreCase(order.getOrderStatus())) {
             throw new RuntimeException("Purchase order is already RECEIVED");
         }
 
-        order.setStatus("RECEIVED");
+        order.setOrderStatus("RECEIVED");
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
 
         warehouses defaultWarehouse = warehouseRepository.findAll().stream().findFirst()
@@ -195,11 +195,11 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
 
-        if ("RECEIVED".equalsIgnoreCase(order.getStatus())) {
+        if ("RECEIVED".equalsIgnoreCase(order.getOrderStatus())) {
             throw new RuntimeException("Cannot update status of a RECEIVED purchase order");
         }
 
-        order.setStatus(status);
+        order.setOrderStatus(status);
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
         return toDto(updatedOrder);
     }
@@ -211,7 +211,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .supplierName(order.getSupplier() != null ? order.getSupplier().getSupplierName() : null)
                 .createdBy(order.getUser() != null ? order.getUser().getUsername() : null)
                 .totalAmount(order.getTotalAmount())
-                .status(order.getStatus())
+                .orderStatus(order.getOrderStatus())
                 .orderedAt(order.getOrderedAt())
                 .expectedDeliveryDate(order.getExpectedDeliveryDate())
                 .remarks(order.getRemarks())

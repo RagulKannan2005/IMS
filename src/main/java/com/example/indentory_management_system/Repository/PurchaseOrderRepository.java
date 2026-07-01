@@ -18,7 +18,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
     @Query("SELECT p FROM PurchaseOrder p WHERE p.supplier.id = :supplierId")
     List<PurchaseOrder> findBySupplierId(@Param("supplierId") Long supplierId);
 
-    @Query("SELECT p FROM PurchaseOrder p WHERE p.status = :status")
+    @Query("SELECT p FROM PurchaseOrder p WHERE p.orderStatus = :status")
     List<PurchaseOrder> findByStatus(@Param("status") String status);
 
     @Query("SELECT p FROM PurchaseOrder p WHERE p.user.id = :userId")
@@ -30,7 +30,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
     @Query("SELECT p FROM PurchaseOrder p WHERE p.supplier.id = :supplierId AND p.user.id = :userId")
     List<PurchaseOrder> findBySupplierIdAndUserId(@Param("supplierId") Long supplierId, @Param("userId") Long userId);
 
-    @Query("SELECT p FROM PurchaseOrder p WHERE p.status = :status AND p.user.id = :userId")
+    @Query("SELECT p FROM PurchaseOrder p WHERE p.orderStatus = :status AND p.user.id = :userId")
     List<PurchaseOrder> findByStatusAndUserId(@Param("status") String status, @Param("userId") Long userId);
 
     @Query("SELECT p FROM PurchaseOrder p WHERE p.orderedAt BETWEEN :start AND :end AND p.user.id = :userId")
