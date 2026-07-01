@@ -168,24 +168,9 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         order.setOrderStatus("RECEIVED");
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
 
-        warehouses defaultWarehouse = warehouseRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("No warehouses available to receive stock"));
-
-        List<PurchaseOrderItem> items = purchaseOrderItemRepository.findByPurchaseOrderId(id);
-        for (PurchaseOrderItem item : items) {
-            int qtyToReceive = item.getQuantityReceived() > 0 ? item.getQuantityReceived() : item.getQuantityOrdered();
-            
-            StockRequestdto stockRequest = StockRequestdto.builder()
-                    .product_id(item.getProduct().getId())
-                    .warehouse_id(defaultWarehouse.getId())
-                    .quantityOnHand(qtyToReceive)
-                    .build();
-            stockService.addStock(stockRequest);
-
-            Products product = item.getProduct();
-            product.setStockQuantity(product.getStockQuantity() + qtyToReceive);
-            productRepository.save(product);
-        }
+        // Manual Mapping on Receive:
+        // SupplierProducts are not automatically mapped to internal Products.
+        // Admins will manually link supplier products to internal products using a separate workflow.
 
         return toDto(updatedOrder);
     }

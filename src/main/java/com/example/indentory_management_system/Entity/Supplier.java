@@ -71,5 +71,5 @@ public class Supplier {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Products> products;
+    private List<SupplierProduct> supplierProducts;
 }

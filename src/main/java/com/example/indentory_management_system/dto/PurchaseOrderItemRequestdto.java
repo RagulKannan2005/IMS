@@ -13,8 +13,8 @@ public class PurchaseOrderItemRequestdto {
     @NotNull(message = "Purchase Order ID is required")
     private Long purchaseOrderId;
 
-    @NotNull(message = "Product ID is required")
-    private Long productId;
+    @NotNull(message = "Supplier Product ID is required")
+    private Long supplierProductId;
 
     @Min(value = 1, message = "Quantity ordered must be greater than 0")
     private int quantityOrdered;

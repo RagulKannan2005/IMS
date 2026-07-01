@@ -1,1 +1,99 @@
-<p>supplier-purchase-orders works!</p>
+<div class="purchase-orders-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>Purchase Orders</h2>
+      <p>Manage and fulfill your purchase orders from the administration.</p>
+    </div>
+    
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search PO number...">
+      </div>
+      <button class="btn-refresh" (click)="loadOrders()">
+        <span>🔄</span> Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>PO Number</th>
+            <th>Date Ordered</th>
+            <th>Expected Delivery</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>
+              <div class="po-number">
+                <span class="hash">#</span>{{order.poNumber}}
+              </div>
+            </td>
+            <td>
+              <div class="date-cell">
+                <span class="icon">📅</span>
+                <span>{{order.orderedAt | date:'mediumDate'}}</span>
+              </div>
+            </td>
+            <td>
+              <div class="date-cell expected-date">
+                <span class="icon">🚚</span>
+                <span>{{order.expectedDeliveryDate | date:'mediumDate'}}</span>
+              </div>
+            </td>
+            <td>
+              <div class="amount-cell">
+                {{order.totalAmount | currency:'USD'}}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase().replace(' ', '-')">
+                {{order.orderStatus}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons" *ngIf="order.orderStatus !== 'Completed' && order.orderStatus !== 'Delivered' && order.orderStatus !== 'Cancelled'">
+                <button 
+                  class="btn-action btn-transit" 
+                  *ngIf="order.orderStatus === 'Pending' || order.orderStatus === 'Processing'"
+                  (click)="updateStatus(order, 'In Transit')"
+                  title="Mark as In Transit">
+                  🚚 Ship
+                </button>
+                <button 
+                  class="btn-action btn-delivered" 
+                  *ngIf="order.orderStatus === 'In Transit' || order.orderStatus === 'Shipped'"
+                  (click)="updateStatus(order, 'Delivered')"
+                  title="Mark as Delivered">
+                  ✅ Deliver
+                </button>
+              </div>
+              <span class="status-text" *ngIf="order.orderStatus === 'Completed' || order.orderStatus === 'Delivered'">
+                No actions required
+              </span>
+              <span class="status-text cancelled" *ngIf="order.orderStatus === 'Cancelled'">
+                Cancelled
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="orders.length === 0" class="empty-state">
+            <td colspan="6">
+              <div class="empty-content">
+                <div class="empty-icon">🧾</div>
+                <h3>No Purchase Orders Found</h3>
+                <p>You don't have any purchase orders assigned to you yet.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

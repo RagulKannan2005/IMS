@@ -102,6 +102,14 @@ public class CategoryServiceImp implements CategoryService {
         return mapToResponseDto(categories.get(0));
     }
 
+    @Override
+    public List<CategoryResponsedto> getDefaultCategories() {
+        List<Categories> categories = categoriesRepository.findByUserIsNull();
+        return categories.stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+    }
+
     private CategoryResponsedto mapToResponseDto(Categories category) {
         return CategoryResponsedto.builder()
                 .id(category.getId())

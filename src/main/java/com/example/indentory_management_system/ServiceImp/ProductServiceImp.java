@@ -29,7 +29,6 @@ public class ProductServiceImp implements ProductService {
     private final ProductRepository productrepo;
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
-    private final SupplierRepository supplierRepository;
 
     @Override
     public ProductResponsedto createProduct(ProductRequestdto dto) {
@@ -39,17 +38,6 @@ public class ProductServiceImp implements ProductService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
-
-        Supplier supplier = null;
-        if ("SUPPLIER".equalsIgnoreCase(currentUser.getRole())) {
-            if (currentUser.getSupplier() == null) {
-                throw new RuntimeException("You must create a Supplier profile before adding products.");
-            }
-            supplier = currentUser.getSupplier();
-        } else {
-            // Admin/Manager creates Internal Products. Ignore any supplierId passed.
-            supplier = null;
-        }
 
         Products products = Products.builder()
                 .sku(dto.getSku())
@@ -63,7 +51,6 @@ public class ProductServiceImp implements ProductService {
                 .isActive("active".equalsIgnoreCase(dto.getActive_status()))
                 .categories(category)
                 .user(currentUser)
-                .supplier(supplier)
                 .build();
 
         Products savedProduct = productrepo.save(products);
@@ -142,8 +129,7 @@ public class ProductServiceImp implements ProductService {
         product.setActive("active".equalsIgnoreCase(dto.getActive_status()));
         product.setCategories(category);
 
-        // Supplier ownership is locked upon creation. 
-        // Do not allow changing the supplier during an update.
+        // Supplier ownership has been removed.
         Products updatedProduct = productrepo.save(product);
         return mapToResponseDto(updatedProduct);
     }
@@ -206,15 +192,7 @@ public class ProductServiceImp implements ProductService {
                 .reorderLevel(product.getReorderLevel())
                 .reorderQuantity(product.getReorderQuantity())
                 .isActive(product.isActive())
-                .supplierId(product.getSupplier() != null ? product.getSupplier().getId() : null)
-                .supplierName(product.getSupplier() != null ? product.getSupplier().getSupplierName() : null)
                 .build();
     }
 
-    @Override
-    public List<ProductResponsedto> getProductsBySupplierId(Long supplierId) {
-        return productrepo.findBySupplierId(supplierId).stream()
-                .map(this::mapToResponseDto)
-                .collect(Collectors.toList());
-    }
 }

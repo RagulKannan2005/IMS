@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.indentory_management_system.dto.SupplierRequestdto;
 import com.example.indentory_management_system.dto.SupplierResponsedto;
+import com.example.indentory_management_system.dto.SupplierDashboardStatsDto;
 
 public interface SupplierService {
 
@@ -24,5 +25,7 @@ public interface SupplierService {
     List<SupplierResponsedto> getSuppliersByProduct(String productName);
 
     List<SupplierResponsedto> getSuppliersByName(String name);
+
+    SupplierDashboardStatsDto getDashboardStats();
 
 }

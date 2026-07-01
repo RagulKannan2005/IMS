@@ -44,7 +44,7 @@ export class PurchaseOrder {
 
   addItem() {
     this.newPO.items.push({
-      productId: null,
+      supplierProductId: null,
       quantityOrdered: 1,
       unitCost: 0
     });
@@ -55,7 +55,7 @@ export class PurchaseOrder {
   }
 
   onProductSelect(item: any) {
-    const product = this.products.find(p => p.id === item.productId);
+    const product = this.products.find(p => p.id === item.supplierProductId);
     if (product) {
       item.unitCost = product.costPrice;
     }

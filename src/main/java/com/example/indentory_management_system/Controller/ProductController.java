@@ -21,19 +21,19 @@ public class ProductController {
     private final ProductService productservice;
 
     @PostMapping("/addproduct")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SUPPLIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ProductResponsedto addproduct(@Valid @RequestBody ProductRequestdto dto) {
         return productservice.createProduct(dto);
     }
 
     @GetMapping("/allproducts")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'SUPPLIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
     public ResponseEntity<List<ProductResponsedto>> getallproducts() {
         return ResponseEntity.ok().body(productservice.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
     public ResponseEntity<ProductResponsedto> getbyid(@PathVariable Long id) {
         return ResponseEntity.ok().body(productservice.getByProductId(id));
     }
@@ -69,14 +69,14 @@ public class ProductController {
     }
 
     @PutMapping("/updateproduct/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ProductResponsedto> updateproduct(@PathVariable Long id,
             @Valid @RequestBody ProductRequestdto dto) {
         return ResponseEntity.ok().body(productservice.updateProduct(id, dto));
     }
 
     @DeleteMapping("/deleteproduct/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isProductOwner(authentication, #id))")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ProductResponsedto> deleteproduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(productservice.deleteProduct(id));
     }
@@ -89,9 +89,4 @@ public class ProductController {
         return ResponseEntity.ok().body(productservice.adjustStock(id, request));
     }
 
-    @GetMapping("/supplier/{supplierId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF') or (hasRole('SUPPLIER') and @securityService.isOwnSupplierId(authentication, #supplierId))")
-    public ResponseEntity<List<ProductResponsedto>> getProductsBySupplier(@PathVariable Long supplierId) {
-        return ResponseEntity.ok(productservice.getProductsBySupplierId(supplierId));
-    }
 }

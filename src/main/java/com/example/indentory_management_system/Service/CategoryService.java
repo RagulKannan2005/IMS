@@ -9,6 +9,8 @@ public interface CategoryService {
     // CategoryResponsedto getCategoryById(Long id);
     List<CategoryResponsedto> getAllCategories();
 
+    List<CategoryResponsedto> getDefaultCategories();
+
     List<CategoryResponsedto> getActiveCategories();
 
     CategoryResponsedto updateCategory(Long id, CategoryRequestdto categoryRequestdto);

@@ -17,7 +17,6 @@ public interface ProductService {
     public List<ProductResponsedto> findproductCategory(String name);
     public ProductResponsedto adjustStock(Long id, StockAdjustmentRequest request);
     public ProductResponsedto updateProductPrice(Long id, PriceUpdateRequestdto request);
-    public List<ProductResponsedto> getProductsBySupplierId(Long supplierId);
 
     public Long productcount(Long userId);
 }

@@ -42,6 +42,10 @@
             <input type="number" id="costPrice" class="form-control" placeholder="0.00" [(ngModel)]="newProduct.costPrice" name="costPrice" required>
           </div>
           <div class="form-group">
+            <label for="availableQuantity">Available Quantity *</label>
+            <input type="number" id="availableQuantity" class="form-control" placeholder="0" [(ngModel)]="newProduct.availableQuantity" name="availableQuantity" required>
+          </div>
+          <div class="form-group">
             <label for="activeStatus">Active Status *</label>
             <select id="activeStatus" class="form-control" [(ngModel)]="newProduct.active_status" name="active_status" required>
               <option value="Active">Active</option>
@@ -70,7 +74,7 @@
             <th>Product Name</th>
             <th>Description</th>
             <th>Unit Cost</th>
-            <th>Current Stock</th>
+            <th>Available Qty</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -87,9 +91,8 @@
             <td class="description-cell">{{ product.description }}</td>
             <td class="price-cell">{{ product.costPrice | currency:'USD' }}</td>
             <td>
-              <span class="stock-badge" 
-                    [ngClass]="{'low-stock': product.stockQuantity <= product.reorderLevel, 'in-stock': product.stockQuantity > product.reorderLevel}">
-                {{ product.stockQuantity }} units
+              <span class="stock-badge in-stock">
+                {{ product.availableQuantity }} units
               </span>
             </td>
             <td>

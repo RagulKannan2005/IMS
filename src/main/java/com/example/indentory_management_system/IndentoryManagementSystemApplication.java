@@ -8,7 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import com.example.indentory_management_system.Entity.Users;
+import com.example.indentory_management_system.Entity.Categories;
 import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Repository.CategoriesRepository;
+import java.util.List;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class IndentoryManagementSystemApplication {
@@ -18,7 +22,7 @@ public class IndentoryManagementSystemApplication {
 	}
 
 	@Bean
-	public CommandLineRunner bootstrapData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner bootstrapData(UserRepository userRepository, CategoriesRepository categoriesRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			Optional<Users> adminOpt = userRepository.findByUsername("admin");
 			if (adminOpt.isEmpty()) {
@@ -61,7 +65,19 @@ public class IndentoryManagementSystemApplication {
 						.role("STAFF")
 						.build());
 				System.out.println("Bootstrap: staff user created.");
-			}	
+			}
+
+			List<String> defaultCategories = Arrays.asList(
+				"Electronics", "Books", "Stationery", "Furniture", 
+				"Clothing", "Toys", "Food & Beverage", 
+				"Health & Beauty", "Automotive", "Others"
+			);
+			for (String catName : defaultCategories) {
+				if (categoriesRepository.findByName(catName).isEmpty()) {
+					categoriesRepository.save(Categories.builder().name(catName).description(catName + " category").active_status("Active").build());
+					System.out.println("Bootstrap: default category '" + catName + "' created.");
+				}
+			}
 		};
 	}
 }

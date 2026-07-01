@@ -19,5 +19,5 @@ public interface PurchaseOrderItemService {
 
     List<PurchaseOrderItemResponsedto> getItemsByPurchaseOrder(Long purchaseOrderId);
 
-    List<PurchaseOrderItemResponsedto> getItemsByProduct(Long productId);
+    List<PurchaseOrderItemResponsedto> getItemsBySupplierProduct(Long supplierProductId);
 }

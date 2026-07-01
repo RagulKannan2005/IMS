@@ -66,4 +66,10 @@ public class SupplierController {
     public ResponseEntity<List<SupplierResponsedto>> getSuppliersByName(@PathVariable String name){
         return ResponseEntity.ok(supplierService.getSuppliersByName(name));
     }
+
+    @GetMapping("/dashboard-stats")
+    @PreAuthorize("hasRole('SUPPLIER')")
+    public ResponseEntity<com.example.indentory_management_system.dto.SupplierDashboardStatsDto> getDashboardStats(){
+        return ResponseEntity.ok(supplierService.getDashboardStats());
+    }
 }

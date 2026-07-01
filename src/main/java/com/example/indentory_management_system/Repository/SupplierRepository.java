@@ -11,7 +11,7 @@ import com.example.indentory_management_system.Entity.Supplier;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
-    @Query("SELECT s FROM Supplier s JOIN s.products p WHERE p.name LIKE %:productName%")
+    @Query("SELECT s FROM Supplier s JOIN s.supplierProducts p WHERE p.name LIKE %:productName%")
     List<Supplier> findSuppliersByProductName(String productName);
 
     @Query("SELECT s FROM Supplier s WHERE s.supplierName LIKE %:keyword% OR s.contactPerson LIKE %:keyword%")
@@ -26,7 +26,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     @Query("SELECT s FROM Supplier s WHERE s.user.id = :userId")
     List<Supplier> findByUserId(Long userId);
 
-    @Query("SELECT s FROM Supplier s JOIN s.products p WHERE p.name LIKE %:productName% AND s.user.id = :userId")
+    @Query("SELECT s FROM Supplier s JOIN s.supplierProducts p WHERE p.name LIKE %:productName% AND s.user.id = :userId")
     List<Supplier> findSuppliersByProductNameAndUserId(String productName, Long userId);
 
     @Query("SELECT s FROM Supplier s WHERE (s.supplierName LIKE %:keyword% OR s.contactPerson LIKE %:keyword%) AND s.user.id = :userId")

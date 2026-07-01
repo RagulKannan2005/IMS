@@ -9,15 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductResponsedto {
+public class SupplierProductResponsedto {
     private Long id;
     private String sku;
     private String name;
     private String description;
     private double costPrice;
-    private double sellingPrice;
-    private int stockQuantity;
-    private int reorderLevel;
-    private int reorderQuantity;
+    private int availableQuantity;
     private boolean isActive;
+    private String category;
+    private Long supplierId;
+    private String supplierName;
 }

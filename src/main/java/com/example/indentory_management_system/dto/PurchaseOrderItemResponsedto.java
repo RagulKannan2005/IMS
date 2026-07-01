@@ -13,8 +13,8 @@ public class PurchaseOrderItemResponsedto {
     private Long id;
     private Long purchaseOrderId;
     private String poNumber;
-    private Long productId;
-    private String productName;
+    private Long supplierProductId;
+    private String supplierProductName;
     private int quantityOrdered;
     private int quantityReceived;
     private BigDecimal unitCost;

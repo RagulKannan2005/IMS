@@ -13,6 +13,10 @@ import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Service.SupplierService;
 import com.example.indentory_management_system.dto.SupplierRequestdto;
 import com.example.indentory_management_system.dto.SupplierResponsedto;
+import com.example.indentory_management_system.dto.SupplierDashboardStatsDto;
+import com.example.indentory_management_system.Repository.PurchaseOrderRepository;
+import com.example.indentory_management_system.Repository.SupplierProductRepository;
+import com.example.indentory_management_system.Entity.PurchaseOrder;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,8 @@ public class SupplierServiceImp implements SupplierService {
 
     private final SupplierRepository supplierrepo;
     private final UserRepository userRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
+    private final SupplierProductRepository supplierProductRepository;
 
     @Override
     public SupplierResponsedto addSupplier(SupplierRequestdto dto) {
@@ -155,5 +161,34 @@ public class SupplierServiceImp implements SupplierService {
                 .status(s.isStatus())
                 .userId(s.getUser() != null ? s.getUser().getId() : null)
                 .build();
+    }
+
+    @Override
+    public SupplierDashboardStatsDto getDashboardStats() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        Supplier supplier = currentUser.getSupplier();
+        if (supplier == null) {
+            return new SupplierDashboardStatsDto(0, 0, 0, 0.0);
+        }
+
+        Long supplierId = supplier.getId();
+        List<PurchaseOrder> orders = purchaseOrderRepository.findBySupplierId(supplierId);
+
+        long pendingOrders = orders.stream().filter(o -> "Pending".equalsIgnoreCase(o.getOrderStatus())).count();
+        long inTransitOrders = orders.stream().filter(o -> "In Transit".equalsIgnoreCase(o.getOrderStatus()) || "Shipped".equalsIgnoreCase(o.getOrderStatus())).count();
+        
+        long totalProducts = supplierProductRepository.findBySupplierId(supplierId).size();
+
+        double monthlyRevenue = orders.stream()
+                .filter(o -> "Delivered".equalsIgnoreCase(o.getOrderStatus()) || "Completed".equalsIgnoreCase(o.getOrderStatus()))
+                .map(PurchaseOrder::getTotalAmount)
+                .filter(java.util.Objects::nonNull)
+                .mapToDouble(java.math.BigDecimal::doubleValue)
+                .sum();
+
+        return new SupplierDashboardStatsDto(pendingOrders, inTransitOrders, totalProducts, monthlyRevenue);
     }
 }

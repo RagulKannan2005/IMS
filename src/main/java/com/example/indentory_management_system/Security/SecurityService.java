@@ -33,18 +33,6 @@ public class SecurityService {
         return userRepository.findByUsername(username).orElse(null);
     }
 
-    public boolean isProductOwner(Authentication authentication, Long productId) {
-        Users user = getAuthenticatedUser(authentication);
-        if (user == null || user.getSupplier() == null) {
-            return false;
-        }
-        Products product = productRepository.findById(productId).orElse(null);
-        if (product == null || product.getSupplier() == null) {
-            return false;
-        }
-        return product.getSupplier().getId().equals(user.getSupplier().getId());
-    }
-
     public boolean isSupplierForOrder(Authentication authentication, Long orderId) {
         Users user = getAuthenticatedUser(authentication);
         if (user == null || user.getSupplier() == null) {

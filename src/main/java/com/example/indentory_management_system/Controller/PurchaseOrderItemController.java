@@ -69,9 +69,9 @@ public class PurchaseOrderItemController {
 
     @GetMapping("/product/{productId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<List<PurchaseOrderItemResponsedto>> getItemsByProduct(
+    public ResponseEntity<List<PurchaseOrderItemResponsedto>> getItemsBySupplierProduct(
             @PathVariable Long productId) {
-        List<PurchaseOrderItemResponsedto> response = purchaseOrderItemService.getItemsByProduct(productId);
+        List<PurchaseOrderItemResponsedto> response = purchaseOrderItemService.getItemsBySupplierProduct(productId);
         return ResponseEntity.ok(response);
     }
 }

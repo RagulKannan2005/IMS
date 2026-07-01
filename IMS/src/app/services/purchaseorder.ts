@@ -10,7 +10,7 @@ import { Observable } from "rxjs";
 export class PurchaseOrderService{
 
     private http = inject(HttpClient)
-    private baseUrl ='http://localhost:808/api/auth/purchaseorders'
+    private baseUrl ='http://localhost:8083/api/v1/purrchaseorder'
     
     private getAuthHeaders(): HttpHeaders{
         const token = localStorage.getItem('token') || '';
@@ -20,8 +20,13 @@ export class PurchaseOrderService{
         })
     }
 
+    getPurchaseOrdersBySupplier(supplierId: number): Observable<any> {
+        return this.http.get(`${this.baseUrl}/findbysupplierid?supplierId=${supplierId}`, { headers: this.getAuthHeaders() });
+    }
     
-
+    updateOrderStatus(id: number, status: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}/${id}/status?status=${status}`, {}, { headers: this.getAuthHeaders() });
+    }
 
     
 }

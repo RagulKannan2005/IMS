@@ -80,7 +80,7 @@
                 @for (item of newPO.items; track $index) {
                   <tr>
                     <td>
-                      <select [name]="'product'+$index" class="form-control" required [(ngModel)]="item.productId" (change)="onProductSelect(item)">
+                      <select [name]="'product'+$index" class="form-control" required [(ngModel)]="item.supplierProductId" (change)="onProductSelect(item)">
                         <option [ngValue]="null" disabled>-- Select Product --</option>
                         @for (prod of products; track prod.id) {
                           <option [ngValue]="prod.id">{{ prod.name }}</option>

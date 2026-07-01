@@ -24,6 +24,12 @@ export class categoryservice {
     });
   }
 
+  getDefaultCategories(): Observable<any> {
+    return this.http.get(`${this.apiurl}/defaultcategories`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
   addcategory(category: any): Observable<any> {
     return this.http.post(`${this.apiurl}/newcategory`, category, { headers: this.getAuthHeaders() });
   }

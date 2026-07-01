@@ -23,8 +23,8 @@ public class PurchaseOrderItem {
     private PurchaseOrder purchaseOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Products product;
+    @JoinColumn(name = "supplier_product_id", nullable = false)
+    private SupplierProduct supplierProduct;
 
     @Column(name = "quantity_ordered", nullable = false)
     private int quantityOrdered;

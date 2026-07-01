@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.indentory_management_system.Entity.Products;
+import com.example.indentory_management_system.Entity.SupplierProduct;
 import com.example.indentory_management_system.Entity.PurchaseOrder;
 import com.example.indentory_management_system.Entity.PurchaseOrderItem;
 import com.example.indentory_management_system.Exception.ResourceNotFoundException;
-import com.example.indentory_management_system.Repository.ProductRepository;
+import com.example.indentory_management_system.Repository.SupplierProductRepository;
 import com.example.indentory_management_system.Repository.PurchaseOrderRepository;
 import com.example.indentory_management_system.Repository.PurchaseOrderItemRepository;
 import com.example.indentory_management_system.Service.PurchaseOrderItemService;
@@ -29,7 +29,7 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
 
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
-    private final ProductRepository productRepository;
+    private final SupplierProductRepository supplierProductRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -45,14 +45,14 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(dto.getPurchaseOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase Order not found with ID: " + dto.getPurchaseOrderId()));
 
-        Products product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + dto.getProductId()));
+        SupplierProduct product = supplierProductRepository.findById(dto.getSupplierProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier Product not found with ID: " + dto.getSupplierProductId()));
 
         BigDecimal totalCost = BigDecimal.valueOf(dto.getQuantityOrdered()).multiply(dto.getUnitCost());
 
         PurchaseOrderItem item = PurchaseOrderItem.builder()
                 .purchaseOrder(purchaseOrder)
-                .product(product)
+                .supplierProduct(product)
                 .quantityOrdered(dto.getQuantityOrdered())
                 .quantityReceived(dto.getQuantityReceived())
                 .unitCost(dto.getUnitCost())
@@ -79,13 +79,13 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(dto.getPurchaseOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase Order not found with ID: " + dto.getPurchaseOrderId()));
 
-        Products product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + dto.getProductId()));
+        SupplierProduct product = supplierProductRepository.findById(dto.getSupplierProductId())
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier Product not found with ID: " + dto.getSupplierProductId()));
 
         BigDecimal totalCost = BigDecimal.valueOf(dto.getQuantityOrdered()).multiply(dto.getUnitCost());
 
         item.setPurchaseOrder(purchaseOrder);
-        item.setProduct(product);
+        item.setSupplierProduct(product);
         item.setQuantityOrdered(dto.getQuantityOrdered());
         item.setQuantityReceived(dto.getQuantityReceived());
         item.setUnitCost(dto.getUnitCost());
@@ -135,8 +135,8 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PurchaseOrderItemResponsedto> getItemsByProduct(Long productId) {
-        return purchaseOrderItemRepository.findByProductId(productId).stream()
+    public List<PurchaseOrderItemResponsedto> getItemsBySupplierProduct(Long supplierProductId) {
+        return purchaseOrderItemRepository.findBySupplierProductId(supplierProductId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -146,8 +146,8 @@ public class PurchaseOrderItemServiceImpl implements PurchaseOrderItemService {
                 .id(item.getId())
                 .purchaseOrderId(item.getPurchaseOrder().getId())
                 .poNumber(item.getPurchaseOrder().getPoNumber())
-                .productId(item.getProduct().getId())
-                .productName(item.getProduct().getName())
+                .supplierProductId(item.getSupplierProduct().getId())
+                .supplierProductName(item.getSupplierProduct().getName())
                 .quantityOrdered(item.getQuantityOrdered())
                 .quantityReceived(item.getQuantityReceived())
                 .unitCost(item.getUnitCost())

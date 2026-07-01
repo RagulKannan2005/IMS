@@ -80,9 +80,4 @@ public class Products {
     @JoinColumn(name = "user_id")
     private Users user;
 
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "supplier_id", nullable = true)
-    private Supplier supplier;
 }

@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../../app/services/product';
+import { SupplierProductService } from '../../../app/services/supplier-product';
 import { categoryservice } from '../../../app/services/category';
 
 @Component({
@@ -21,18 +21,16 @@ export class SupplierProducts implements OnInit {
     { name: "others" }
   ];
   showform = false;
-  productService = inject(ProductService);
+  productService = inject(SupplierProductService);
   categoryService = inject(categoryservice);
+  cdr = inject(ChangeDetectorRef);
 
   newProduct = {
     sku: '',
     name: '',
     description: '',
     costPrice: null,
-    sellingPrice: 0,
-    stockQuantity: 0,
-    reorderLevel: 0,
-    reorderQuantity: 0,
+    availableQuantity: 0,
     active_status: 'Active',
     category: '',
   };
@@ -43,7 +41,7 @@ export class SupplierProducts implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getAllCategories().subscribe({
+    this.categoryService.getDefaultCategories().subscribe({
       next: (data) => {
         this.categories = data;
       },
@@ -55,8 +53,17 @@ export class SupplierProducts implements OnInit {
 
   loadProducts() {
     this.productService.getAllProducts().subscribe({
-      next: (data) => {
-        this.products = data;
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.products = response.data;
+        } else if (response && response.value && Array.isArray(response.value)) {
+          this.products = response.value;
+        } else if (Array.isArray(response)) {
+          this.products = response;
+        } else {
+          this.products = [];
+        }
+        this.cdr.detectChanges(); // Force view update
       },
       error: (err) => {
         console.error('Error fetching products', err);
@@ -80,10 +87,7 @@ export class SupplierProducts implements OnInit {
       name: '',
       description: '',
       costPrice: null,
-      sellingPrice: 0,
-      stockQuantity: 0,
-      reorderLevel: 0,
-      reorderQuantity: 0,
+      availableQuantity: 0,
       active_status: 'Active',
       category: '',
     };

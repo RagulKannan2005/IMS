@@ -32,6 +32,12 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
+    @GetMapping("/defaultcategories")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'SUPPLIER')")
+    public List<CategoryResponsedto> getDefaultCategories() {
+        return categoryService.getDefaultCategories();
+    }
+
     @GetMapping("/activecategories")
     public List<CategoryResponsedto> getActiveCategories() {
         return categoryService.getActiveCategories();
