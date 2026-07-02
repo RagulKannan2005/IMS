@@ -3,6 +3,7 @@ package com.example.indentory_management_system.Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Repository.UserRepository;
+import com.example.indentory_management_system.Repository.SupplierRepository;
+import com.example.indentory_management_system.Entity.Supplier;
 import com.example.indentory_management_system.Service.JwtService;
 import com.example.indentory_management_system.Service.UserService;
 import com.example.indentory_management_system.dto.AuthRequest;
@@ -36,6 +39,7 @@ public class AuthController {
         private final AuthenticationManager authenticationManager;
         private final UserDetailsService userDetailsService;
         private final UserRepository userRepository;
+        private final SupplierRepository supplierRepository;
         private final JwtService jwtService;
         private final UserService userService;
 
@@ -67,8 +71,9 @@ public class AuthController {
 
                 Map<String, Object> claims = new HashMap<>();
                 Long supplierId = null;
-                if (user.getSupplier() != null) {
-                        supplierId = user.getSupplier().getId();
+                List<Supplier> suppliers = supplierRepository.findByUserId(user.getId());
+                if (!suppliers.isEmpty()) {
+                        supplierId = suppliers.get(0).getId();
                         claims.put("supplierId", supplierId);
                 }
                 claims.put("role", user.getRole());
@@ -87,6 +92,7 @@ public class AuthController {
                                 .token(token)
                                 .username(user.getUsername())
                                 .role(role)
+                                .supplierId(supplierId)
                                 .build();
 
                 return ResponseEntity.ok(authResponse);

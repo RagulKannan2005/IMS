@@ -88,11 +88,7 @@ public class SupplierServiceImp implements SupplierService {
 
     @Override
     public List<SupplierResponsedto> getAllSuppliers() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
-
-        List<Supplier> suppliers = supplierrepo.findByUserId(currentUser.getId());
+        List<Supplier> suppliers = supplierrepo.findAll();
 
         return suppliers.stream()
                 .map(this::toDto)

@@ -20,4 +20,8 @@ export class SupplierService {
   getDashboardStats(): Observable<any> {
     return this.http.get(`${this.apiUrl}/dashboard-stats`, { headers: this.getAuthHeaders() });
   }
+
+  getAllSuppliers(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/getallsuppliers`, { headers: this.getAuthHeaders() });
+  }
 }

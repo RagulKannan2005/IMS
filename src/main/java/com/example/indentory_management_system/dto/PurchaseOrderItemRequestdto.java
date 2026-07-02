@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class PurchaseOrderItemRequestdto {
 
-    @NotNull(message = "Purchase Order ID is required")
     private Long purchaseOrderId;
 
     @NotNull(message = "Supplier Product ID is required")
@@ -26,6 +25,6 @@ public class PurchaseOrderItemRequestdto {
     @DecimalMin(value = "0.0", inclusive = false, message = "Unit cost must be greater than 0")
     private BigDecimal unitCost;
 
-    @NotNull(message="order status is not empty")
+    @NotNull(message = "order status is not empty")
     private String orderStatus;
 }

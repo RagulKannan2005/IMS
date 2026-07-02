@@ -25,25 +25,29 @@ export class SupplierPurchaseOrders implements OnInit {
   }
 
   loadOrders() {
-    if (this.user && this.user.supplierId) {
-      this.poService.getPurchaseOrdersBySupplier(this.user.supplierId).subscribe({
-        next: (response: any) => {
-          if (response && response.data && Array.isArray(response.data)) {
-            this.orders = response.data;
-          } else if (response && response.value && Array.isArray(response.value)) {
-            this.orders = response.value;
-          } else if (Array.isArray(response)) {
-            this.orders = response;
-          } else {
-            this.orders = [];
-          }
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error fetching purchase orders', err);
-        }
-      });
+    if (!this.user || !this.user.supplierId) {
+      alert("No Supplier ID found in your session! Please log out and log back in as a Supplier.");
+      console.warn("User session data:", this.user);
+      return;
     }
+
+    this.poService.getPurchaseOrdersBySupplier(this.user.supplierId).subscribe({
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.orders = response.data;
+        } else if (response && response.value && Array.isArray(response.value)) {
+          this.orders = response.value;
+        } else if (Array.isArray(response)) {
+          this.orders = response;
+        } else {
+          this.orders = [];
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching purchase orders', err);
+      }
+    });
   }
 
   updateStatus(order: any, newStatus: string) {

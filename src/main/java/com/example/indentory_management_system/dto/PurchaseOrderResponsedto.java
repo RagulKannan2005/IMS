@@ -13,6 +13,7 @@ public class PurchaseOrderResponsedto {
     private Long id;
     private String poNumber;
     private String supplierName;
+    private String warehouseName;
     private String createdBy;
     private BigDecimal totalAmount;
     private String orderStatus;

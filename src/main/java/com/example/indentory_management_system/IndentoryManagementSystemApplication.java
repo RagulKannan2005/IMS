@@ -66,7 +66,7 @@ public class IndentoryManagementSystemApplication {
 						.build());
 				System.out.println("Bootstrap: staff user created.");
 			}
-
+      
 			List<String> defaultCategories = Arrays.asList(
 				"Electronics", "Books", "Stationery", "Furniture", 
 				"Clothing", "Toys", "Food & Beverage", 

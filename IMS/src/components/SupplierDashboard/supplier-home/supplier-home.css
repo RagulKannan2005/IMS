@@ -44,6 +44,11 @@
     background:#1e293b;
 }
 
+.logout-item:hover {
+    background: #ef4444;
+    color: white;
+}
+
 .nav-item a {
     text-decoration: none;
     color: inherit;

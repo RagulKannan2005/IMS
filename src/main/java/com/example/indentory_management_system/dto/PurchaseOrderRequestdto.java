@@ -2,6 +2,8 @@ package com.example.indentory_management_system.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import jakarta.validation.Valid;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +16,9 @@ public class PurchaseOrderRequestdto {
 
     @NotNull(message = "Supplier ID is required")
     private Long supplierId;
+
+    @NotNull(message = "Warehouse ID is required")
+    private Long warehouseId;
 
     @NotNull(message = "Created By is required")
     private Long createdBy;
@@ -30,5 +35,8 @@ public class PurchaseOrderRequestdto {
     private LocalDate expectedDeliveryDate;
 
     private String remarks;
+
+    @Valid
+    private List<PurchaseOrderItemRequestdto> items;
 
 }

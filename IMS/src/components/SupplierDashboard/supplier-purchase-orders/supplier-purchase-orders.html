@@ -54,7 +54,7 @@
               </div>
             </td>
             <td>
-              <span class="status-badge" [ngClass]="order.orderStatus.toLowerCase().replace(' ', '-')">
+              <span class="status-badge" [ngClass]="order.orderStatus ? order.orderStatus.toLowerCase().replace(' ', '-') : ''">
                 {{order.orderStatus}}
               </span>
             </td>

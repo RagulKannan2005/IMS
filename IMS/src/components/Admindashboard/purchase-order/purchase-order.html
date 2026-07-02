@@ -26,15 +26,25 @@
           <div class="form-grid">
             <div class="form-group">
               <label>PO Number</label>
-              <input type="text" name="poNumber" required [(ngModel)]="newPO.poNumber" readonly class="readonly-input form-control" />
+              <input type="text" name="poNumber" required [(ngModel)]="newPO.poNumber" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label>Warehouse <span class="required">*</span></label>
+              <select name="warehouse" class="form-control" required [(ngModel)]="newPO.warehouseId" (change)="onWarehouseSelect()">
+                <option [ngValue]="null" disabled>-- Select Warehouse --</option>
+                @for (wh of warehouses; track wh.id) {
+                  <option [ngValue]="wh.id">{{ wh.name }} ({{ wh.warehouseCode }})</option>
+                }
+              </select>
             </div>
 
             <div class="form-group">
               <label>Supplier <span class="required">*</span></label>
-              <select name="supplier" class="form-control" required [(ngModel)]="newPO.supplierId">
+              <select name="supplier" class="form-control" required [(ngModel)]="newPO.supplierId" [disabled]="!newPO.warehouseId" (change)="onSupplierSelect()">
                 <option [ngValue]="null" disabled>-- Select Supplier --</option>
                 @for (sup of suppliers; track sup.id) {
-                  <option [ngValue]="sup.id">{{ sup.name }}</option>
+                  <option [ngValue]="sup.id">{{ sup.supplierName }}</option>
                 }
               </select>
             </div>
@@ -80,7 +90,7 @@
                 @for (item of newPO.items; track $index) {
                   <tr>
                     <td>
-                      <select [name]="'product'+$index" class="form-control" required [(ngModel)]="item.supplierProductId" (change)="onProductSelect(item)">
+                      <select [name]="'product'+$index" class="form-control" required [(ngModel)]="item.supplierProductId" [disabled]="!newPO.supplierId" (change)="onProductSelect(item)">
                         <option [ngValue]="null" disabled>-- Select Product --</option>
                         @for (prod of products; track prod.id) {
                           <option [ngValue]="prod.id">{{ prod.name }}</option>

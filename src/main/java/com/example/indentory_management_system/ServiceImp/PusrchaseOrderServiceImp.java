@@ -33,6 +33,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
+    private final SupplierProductRepository supplierProductRepository;
     private final StockService stockService;
 
     @Override
@@ -40,12 +41,16 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Supplier supplier = supplierrepo.findById(dto.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
 
+        warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
+
         Users user = userRepository.findById(dto.getCreatedBy())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         PurchaseOrder order = PurchaseOrder.builder()
                 .poNumber(dto.getPoNumber())
                 .supplier(supplier)
+                .warehouse(warehouse)
                 .user(user)
                 .orderedAt(dto.getOrderedAt())
                 .expectedDeliveryDate(dto.getExpectedDeliveryDate())
@@ -55,6 +60,25 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .build();
 
         PurchaseOrder savedOrder = purchaseorderrepo.save(order);
+
+        if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+            for (com.example.indentory_management_system.dto.PurchaseOrderItemRequestdto itemDto : dto.getItems()) {
+                com.example.indentory_management_system.Entity.SupplierProduct supplierProduct = supplierProductRepository.findById(itemDto.getSupplierProductId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Supplier Product not found"));
+
+                PurchaseOrderItem item = PurchaseOrderItem.builder()
+                        .purchaseOrder(savedOrder)
+                        .supplierProduct(supplierProduct)
+                        .quantityOrdered(itemDto.getQuantityOrdered())
+                        .quantityReceived(itemDto.getQuantityReceived())
+                        .unitCost(itemDto.getUnitCost())
+                        .totalCost(itemDto.getUnitCost().multiply(java.math.BigDecimal.valueOf(itemDto.getQuantityOrdered())))
+                        .build();
+
+                purchaseOrderItemRepository.save(item);
+            }
+        }
+
         return toDto(savedOrder);
     }
 
@@ -66,11 +90,15 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         Supplier supplier = supplierrepo.findById(dto.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
 
+        warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
+
         Users user = userRepository.findById(dto.getCreatedBy())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         order.setPoNumber(dto.getPoNumber());
         order.setSupplier(supplier);
+        order.setWarehouse(warehouse);
         order.setUser(user);
         order.setOrderedAt(dto.getOrderedAt());
         order.setExpectedDeliveryDate(dto.getExpectedDeliveryDate());
@@ -111,11 +139,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
 
     @Override
     public List<PurchaseOrderResponsedto> findBySupplierId(Long supplierId) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
-
-        List<PurchaseOrder> orders = purchaseorderrepo.findBySupplierIdAndUserId(supplierId, currentUser.getId());
+        List<PurchaseOrder> orders = purchaseorderrepo.findBySupplierId(supplierId);
 
         return orders.stream()
                 .map(this::toDto)
@@ -194,6 +218,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .id(order.getId())
                 .poNumber(order.getPoNumber())
                 .supplierName(order.getSupplier() != null ? order.getSupplier().getSupplierName() : null)
+                .warehouseName(order.getWarehouse() != null ? order.getWarehouse().getName() : null)
                 .createdBy(order.getUser() != null ? order.getUser().getUsername() : null)
                 .totalAmount(order.getTotalAmount())
                 .orderStatus(order.getOrderStatus())

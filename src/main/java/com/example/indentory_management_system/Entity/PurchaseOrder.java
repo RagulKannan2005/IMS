@@ -27,6 +27,10 @@ public class PurchaseOrder {
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private warehouses warehouse;
+
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
     private Users user;

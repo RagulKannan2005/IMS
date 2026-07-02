@@ -32,6 +32,7 @@ export class Login {
             username: response.username,
             email: response.email,
             role: response.role,
+            supplierId: response.supplierId,
           }),
         );
         if (response.role == 'SUPPLIER') {
