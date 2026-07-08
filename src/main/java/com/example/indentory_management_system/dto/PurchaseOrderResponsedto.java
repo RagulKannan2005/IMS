@@ -20,4 +20,5 @@ public class PurchaseOrderResponsedto {
     private LocalDate orderedAt;
     private LocalDate expectedDeliveryDate;
     private String remarks;
+    private java.util.List<PurchaseOrderItemResponsedto> items;
 }

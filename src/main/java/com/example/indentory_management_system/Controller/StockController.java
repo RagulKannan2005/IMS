@@ -27,7 +27,7 @@ public class StockController {
     }
 
     @GetMapping("/getallstock")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'SUPPLIER')")
     public ResponseEntity<List<StockResponsedto>> getAllStocks() {
         return ResponseEntity.ok(stockService.getAllStocks());
     }

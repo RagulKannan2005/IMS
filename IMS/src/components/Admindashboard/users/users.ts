@@ -100,10 +100,12 @@ export class Users implements OnInit {
           phone_number: '',
           role: 'STAFF',
         };
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error adding user:', err.error || err.message);
         alert('Failed to add user. Check console for details.');
+        this.cdr.detectChanges();
       },
     });
   }
@@ -111,8 +113,14 @@ export class Users implements OnInit {
   deleteUser(id: number) {
     if (confirm('Are you sure you want to delete this user?')) {
       this.userService.deleteUser(id).subscribe({
-        next: () => this.loadUsers(),
-        error: (err: any) => console.error('Error deleting user:', err),
+        next: () => {
+          this.loadUsers();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Error deleting user:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }

@@ -27,7 +27,7 @@ public class ProductController {
     }
 
     @GetMapping("/allproducts")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'SUPPLIER')")
     public ResponseEntity<List<ProductResponsedto>> getallproducts() {
         return ResponseEntity.ok().body(productservice.getAllProducts());
     }

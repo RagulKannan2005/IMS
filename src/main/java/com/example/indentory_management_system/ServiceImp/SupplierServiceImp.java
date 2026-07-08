@@ -173,13 +173,13 @@ public class SupplierServiceImp implements SupplierService {
         Long supplierId = supplier.getId();
         List<PurchaseOrder> orders = purchaseOrderRepository.findBySupplierId(supplierId);
 
-        long pendingOrders = orders.stream().filter(o -> "Pending".equalsIgnoreCase(o.getOrderStatus())).count();
-        long inTransitOrders = orders.stream().filter(o -> "In Transit".equalsIgnoreCase(o.getOrderStatus()) || "Shipped".equalsIgnoreCase(o.getOrderStatus())).count();
+        long pendingOrders = orders.stream().filter(o -> "ORDERED".equalsIgnoreCase(o.getOrderStatus())).count();
+        long inTransitOrders = orders.stream().filter(o -> "ACCEPTED".equalsIgnoreCase(o.getOrderStatus()) || "SHIPPED".equalsIgnoreCase(o.getOrderStatus())).count();
         
         long totalProducts = supplierProductRepository.findBySupplierId(supplierId).size();
 
         double monthlyRevenue = orders.stream()
-                .filter(o -> "Delivered".equalsIgnoreCase(o.getOrderStatus()) || "Completed".equalsIgnoreCase(o.getOrderStatus()))
+                .filter(o -> "RECEIVED".equalsIgnoreCase(o.getOrderStatus()))
                 .map(PurchaseOrder::getTotalAmount)
                 .filter(java.util.Objects::nonNull)
                 .mapToDouble(java.math.BigDecimal::doubleValue)

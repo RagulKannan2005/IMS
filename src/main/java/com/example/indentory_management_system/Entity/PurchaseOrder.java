@@ -3,6 +3,7 @@ package com.example.indentory_management_system.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.indentory_management_system.Entity.Users;
 
@@ -44,6 +45,9 @@ public class PurchaseOrder {
     private LocalDate expectedDeliveryDate;
 
     private String remarks;
+
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PurchaseOrderItem> items;
 
     private LocalDateTime createdAt;
 

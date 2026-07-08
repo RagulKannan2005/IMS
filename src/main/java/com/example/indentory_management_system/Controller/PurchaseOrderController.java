@@ -74,8 +74,8 @@ public class PurchaseOrderController {
 
     @PostMapping("/receivepurchaseorder")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public PurchaseOrderResponsedto receivePurchaseOrder(@RequestParam Long id){
-        return purchaseorderservice.receivePurchaseOrder(id);
+    public PurchaseOrderResponsedto receivePurchaseOrder(@Valid @RequestBody PurchaseOrderReceiveDto dto){
+        return purchaseorderservice.receivePurchaseOrder(dto);
     }
 
     @PostMapping("/{id}/status")

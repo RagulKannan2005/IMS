@@ -8,11 +8,11 @@ export const adminGuard: CanActivateFn = (route, state) => {
   
   const user = authService.getuser();
   
-  if (user) {
-    return true; // Allow access to all logged-in users
+  if (user && (user.role === 'ADMIN' || user.role === 'MANAGER')) {
+    return true; // Allow access to ADMIN or MANAGER
   }
   
-  // If not logged in, redirect to login
+  // If not logged in or wrong role, redirect to login
   router.navigate(['/login']);
   return false;
 };

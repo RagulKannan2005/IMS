@@ -31,4 +31,8 @@ export class Auth {
     return this.http.get(this.apiUrl + '/currentuser/products');
   }
   
+  logout() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+  }
 }

@@ -160,7 +160,88 @@
         <button class="btn btn-primary" (click)="openform()">Create Your First Order</button>
       </div>
     } @else {
-      <!-- Future table for showing POs will go here -->
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>PO Number</th>
+              <th>Supplier</th>
+              <th>Warehouse</th>
+              <th>Date Ordered</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of purchaseOrders">
+              <td><div class="po-number"><span class="hash">#</span>{{order.poNumber}}</div></td>
+              <td>{{order.supplierName}}</td>
+              <td>{{order.warehouseName}}</td>
+              <td><div class="date-cell"><span class="icon">📅</span><span>{{order.orderedAt | date:'mediumDate'}}</span></div></td>
+              <td><div class="amount-cell">{{order.totalAmount | currency:'USD'}}</div></td>
+              <td>
+                <span class="status-badge" [ngClass]="order.orderStatus ? order.orderStatus.toLowerCase().replace(' ', '-') : ''">
+                  {{order.orderStatus}}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button *ngIf="order.orderStatus === 'SHIPPED'" class="btn-action btn-receive" (click)="openReceiveForm(order)" title="Receive Order">
+                  📥 Receive Order
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- Receive Order Modal -->
+    @if (showReceiveForm) {
+      <div class="modal-overlay">
+        <div class="modal-content large-modal">
+          <div class="modal-header">
+            <h4>Receive Order - #{{selectedPO.poNumber}}</h4>
+            <button class="close-btn" (click)="closeReceiveForm()">✖</button>
+          </div>
+          <div class="modal-body">
+            <p>Please map the supplier products to your internal inventory to update stock.</p>
+            <table class="modern-table receive-table">
+              <thead>
+                <tr>
+                  <th>Supplier Product</th>
+                  <th>Quantity Expected</th>
+                  <th>Action</th>
+                  <th>Internal Product (Link)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let map of receiveMappings; let i = index">
+                  <td>{{map.supplierProductName}}</td>
+                  <td>{{map.quantityOrdered}}</td>
+                  <td>
+                    <select class="form-control" [(ngModel)]="map.action">
+                      <option value="LINK">Link to Existing</option>
+                      <option value="CREATE">Create New Product</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-control" *ngIf="map.action === 'LINK'" [(ngModel)]="map.internalProductId">
+                      <option [ngValue]="null" disabled>-- Select Internal Product --</option>
+                      <option *ngFor="let prod of internalProducts" [ngValue]="prod.id">{{prod.name}} (SKU: {{prod.sku}})</option>
+                    </select>
+                    <span *ngIf="map.action === 'CREATE'" class="status-badge new">Will be created automatically</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeReceiveForm()">Cancel</button>
+            <button class="btn btn-primary" (click)="submitReceiveOrder()">Confirm Reception</button>
+          </div>
+        </div>
+      </div>
     }
   </div>
 </div>

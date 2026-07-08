@@ -25,7 +25,7 @@ public interface PurchaseOrderService {
 
     List<PurchaseOrderResponsedto> findByOrderDateRange(LocalDate from, LocalDate to);
 
-    PurchaseOrderResponsedto receivePurchaseOrder(Long id);
+    PurchaseOrderResponsedto receivePurchaseOrder(com.example.indentory_management_system.dto.PurchaseOrderReceiveDto dto);
 
     PurchaseOrderResponsedto updateStatus(Long id, String status);
 }

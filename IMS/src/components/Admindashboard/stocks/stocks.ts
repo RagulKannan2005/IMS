@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StockService } from '../../../app/services/stock';
@@ -16,6 +16,7 @@ export class Stocks implements OnInit {
   private stockService = inject(StockService);
   private productService = inject(ProductService);
   private warehouseService = inject(WarehouseService);
+  private cdr = inject(ChangeDetectorRef);
 
   stocks: any[] = [];
   filteredStocks: any[] = [];
@@ -57,22 +58,38 @@ export class Stocks implements OnInit {
       next: (data: any) => {
         this.stocks = data;
         this.filteredStocks = data;
+        this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Error fetching stocks:', err),
+      error: (err: any) => {
+        console.error('Error fetching stocks:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
   loadProducts() {
     this.productService.getAllProducts().subscribe({
-      next: (data: any) => (this.products = data),
-      error: (err: any) => console.error('Error fetching products:', err),
+      next: (data: any) => {
+        this.products = data;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching products:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
   loadWarehouses() {
     this.warehouseService.getAllWarehouses().subscribe({
-      next: (data: any) => (this.warehouses = data),
-      error: (err: any) => console.error('Error fetching warehouses:', err),
+      next: (data: any) => {
+        this.warehouses = data;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching warehouses:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -81,7 +98,7 @@ export class Stocks implements OnInit {
     this.filteredStocks = this.stocks.filter(
       (s: any) =>
         s.productname?.toLowerCase().includes(term) ||
-        s.warehousename?.toLowerCase().includes(term)
+        s.warehousename?.toLowerCase().includes(term),
     );
   }
 
@@ -99,8 +116,12 @@ export class Stocks implements OnInit {
       next: (res: any) => {
         this.loadStocks();
         this.closeAddForm();
+        this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Error adding stock:', err),
+      error: (err: any) => {
+        console.error('Error adding stock:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -123,19 +144,23 @@ export class Stocks implements OnInit {
       next: (res: any) => {
         this.loadStocks();
         this.closeTransferForm();
+        this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Error transferring stock:', err),
+      error: (err: any) => {
+        console.error('Error transferring stock:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
   openUpdateForm(stock: any) {
     this.showUpdateForm = true;
-    
+
     // Find product and warehouse IDs from names or if DTO contains them (assume we can't find ID, user just inputs quantity)
     // Actually, StockResponsedto has productname and warehousename, not IDs.
     // For a real app, we need the IDs. We'll map by name for the default selections if needed.
-    const product = this.products.find(p => p.name === stock.productname);
-    const warehouse = this.warehouses.find(w => w.name === stock.warehousename);
+    const product = this.products.find((p) => p.name === stock.productname);
+    const warehouse = this.warehouses.find((w) => w.name === stock.warehousename);
 
     this.updateData = {
       id: stock.id,
@@ -155,8 +180,12 @@ export class Stocks implements OnInit {
         next: (res: any) => {
           this.loadStocks();
           this.closeUpdateForm();
+          this.cdr.detectChanges();
         },
-        error: (err: any) => console.error('Error updating stock:', err),
+        error: (err: any) => {
+          console.error('Error updating stock:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }
@@ -164,8 +193,14 @@ export class Stocks implements OnInit {
   deleteStock(id: number) {
     if (confirm('Are you sure you want to delete this stock entry?')) {
       this.stockService.deleteStock(id).subscribe({
-        next: (res: any) => this.loadStocks(),
-        error: (err: any) => console.error('Error deleting stock:', err),
+        next: (res: any) => {
+          this.loadStocks();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Error deleting stock:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }

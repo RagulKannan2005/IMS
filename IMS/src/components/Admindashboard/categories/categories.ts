@@ -56,10 +56,12 @@ export class Categories {
         console.log('Category added',response);
         this.closeform();
         this.loadCategories();
+        this.cdr.detectChanges();
       },
       error:(err)=>{
         console.log('Failed to add category',err);
         this.errormessage=err.error.message || 'Failed to add category';
+        this.cdr.detectChanges();
       }
     });
     

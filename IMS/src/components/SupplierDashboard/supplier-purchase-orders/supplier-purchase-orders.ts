@@ -46,6 +46,7 @@ export class SupplierPurchaseOrders implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching purchase orders', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -62,5 +63,12 @@ export class SupplierPurchaseOrders implements OnInit {
         alert('Failed to update order status');
       }
     });
+  }
+
+  confirmReject(order: any) {
+    const isConfirmed = window.confirm("Are you sure you want to reject this purchase order?");
+    if (isConfirmed) {
+      this.updateStatus(order, 'Cancelled');
+    }
   }
 }

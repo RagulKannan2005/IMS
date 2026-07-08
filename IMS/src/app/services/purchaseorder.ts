@@ -36,5 +36,9 @@ export class PurchaseOrderService{
         return this.http.post(`${this.baseUrl}/${id}/status?status=${status}`, {}, { headers: this.getAuthHeaders() });
     }
 
+    receivePurchaseOrder(payload: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}/receivepurchaseorder`, payload, { headers: this.getAuthHeaders() });
+    }
+
     
 }

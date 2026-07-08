@@ -54,4 +54,9 @@ export class DashboardHome {
   toggleOrders() {
     this.orderMenu = !this.orderMenu;
   }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

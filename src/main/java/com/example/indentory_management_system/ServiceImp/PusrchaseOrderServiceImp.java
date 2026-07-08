@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.indentory_management_system.Entity.PurchaseOrder;
 import com.example.indentory_management_system.Entity.Supplier;
@@ -34,9 +35,11 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final SupplierProductRepository supplierProductRepository;
-    private final StockService stockService;
+    private final com.example.indentory_management_system.Service.StockMovementService stockMovementService;
+    private final com.example.indentory_management_system.Repository.SupplierProductMappingRepository supplierProductMappingRepository;
 
     @Override
+    @Transactional
     public PurchaseOrderResponsedto addPurchaseOrder(PurchaseOrderRequestdto dto) {
         Supplier supplier = supplierrepo.findById(dto.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
@@ -44,8 +47,9 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        Users user = userRepository.findById(dto.getCreatedBy())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
         PurchaseOrder order = PurchaseOrder.builder()
                 .poNumber(dto.getPoNumber())
@@ -83,6 +87,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     @Override
+    @Transactional
     public PurchaseOrderResponsedto updatePurchaseOrder(Long id, PurchaseOrderRequestdto dto) {
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found"));
@@ -93,8 +98,9 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        Users user = userRepository.findById(dto.getCreatedBy())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
         order.setPoNumber(dto.getPoNumber());
         order.setSupplier(supplier);
@@ -181,7 +187,9 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     @Override
-    public PurchaseOrderResponsedto receivePurchaseOrder(Long id) {
+    @Transactional
+    public PurchaseOrderResponsedto receivePurchaseOrder(com.example.indentory_management_system.dto.PurchaseOrderReceiveDto dto) {
+        Long id = dto.getPurchaseOrderId();
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
 
@@ -189,12 +197,71 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
             throw new RuntimeException("Purchase order is already RECEIVED");
         }
 
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        if (dto.getMappings() != null) {
+            for (com.example.indentory_management_system.dto.ProductMappingDto mapping : dto.getMappings()) {
+                PurchaseOrderItem item = purchaseOrderItemRepository.findById(mapping.getPurchaseOrderItemId())
+                        .orElseThrow(() -> new ResourceNotFoundException("PO Item not found"));
+                
+                com.example.indentory_management_system.Entity.SupplierProduct sp = item.getSupplierProduct();
+                Products internalProduct = null;
+
+                if ("CREATE".equalsIgnoreCase(mapping.getAction())) {
+                    internalProduct = Products.builder()
+                            .sku(sp.getSku())
+                            .name(sp.getName())
+                            .description(sp.getDescription())
+                            .categories(sp.getCategories())
+                            .costPrice(sp.getCostPrice())
+                            .sellingPrice(sp.getCostPrice() * 1.5) // Default selling price
+                            .stockQuantity(0)
+                            .reorderLevel(10)
+                            .reorderQuantity(50)
+                            .user(currentUser)
+                            .build();
+                    internalProduct = productRepository.save(internalProduct);
+                    
+                    com.example.indentory_management_system.Entity.SupplierProductMapping spMapping = com.example.indentory_management_system.Entity.SupplierProductMapping.builder()
+                            .supplierProduct(sp)
+                            .internalProduct(internalProduct)
+                            .createdBy(currentUser.getId())
+                            .build();
+                    supplierProductMappingRepository.save(spMapping);
+
+                } else if ("LINK".equalsIgnoreCase(mapping.getAction())) {
+                    internalProduct = productRepository.findById(mapping.getInternalProductId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Internal product not found"));
+                    
+                    java.util.Optional<com.example.indentory_management_system.Entity.SupplierProductMapping> existingMapping = supplierProductMappingRepository.findBySupplierProductId(sp.getId());
+                    if (existingMapping.isEmpty()) {
+                        com.example.indentory_management_system.Entity.SupplierProductMapping spMapping = com.example.indentory_management_system.Entity.SupplierProductMapping.builder()
+                                .supplierProduct(sp)
+                                .internalProduct(internalProduct)
+                                .createdBy(currentUser.getId())
+                                .build();
+                        supplierProductMappingRepository.save(spMapping);
+                    }
+                }
+                
+                if (internalProduct != null) {
+                    com.example.indentory_management_system.dto.StockMovementRequestDto movementDto = new com.example.indentory_management_system.dto.StockMovementRequestDto();
+                    movementDto.setProduct_id(internalProduct.getId());
+                    movementDto.setWarehouse_id(order.getWarehouse().getId());
+                    movementDto.setQuantity(item.getQuantityOrdered());
+                    movementDto.setMovement_type("IN");
+                    movementDto.setReference_no(order.getPoNumber());
+                    movementDto.setRemarks("Purchase Order Received");
+                    movementDto.setPerformed_by(currentUser.getId());
+                    stockMovementService.createMovement(movementDto);
+                }
+            }
+        }
+
         order.setOrderStatus("RECEIVED");
         PurchaseOrder updatedOrder = purchaseorderrepo.save(order);
-
-        // Manual Mapping on Receive:
-        // SupplierProducts are not automatically mapped to internal Products.
-        // Admins will manually link supplier products to internal products using a separate workflow.
 
         return toDto(updatedOrder);
     }
@@ -214,6 +281,21 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     private PurchaseOrderResponsedto toDto(PurchaseOrder order) {
+        java.util.List<com.example.indentory_management_system.dto.PurchaseOrderItemResponsedto> itemDtos = new java.util.ArrayList<>();
+        if (order.getItems() != null) {
+            itemDtos = order.getItems().stream().map(item -> com.example.indentory_management_system.dto.PurchaseOrderItemResponsedto.builder()
+                    .id(item.getId())
+                    .purchaseOrderId(order.getId())
+                    .poNumber(order.getPoNumber())
+                    .supplierProductId(item.getSupplierProduct() != null ? item.getSupplierProduct().getId() : null)
+                    .supplierProductName(item.getSupplierProduct() != null ? item.getSupplierProduct().getName() : null)
+                    .quantityOrdered(item.getQuantityOrdered())
+                    .quantityReceived(item.getQuantityReceived())
+                    .unitCost(item.getUnitCost())
+                    .totalCost(item.getTotalCost())
+                    .build()).collect(Collectors.toList());
+        }
+
         return PurchaseOrderResponsedto.builder()
                 .id(order.getId())
                 .poNumber(order.getPoNumber())
@@ -225,6 +307,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
                 .orderedAt(order.getOrderedAt())
                 .expectedDeliveryDate(order.getExpectedDeliveryDate())
                 .remarks(order.getRemarks())
+                .items(itemDtos)
                 .build();
     }
 }

@@ -81,7 +81,12 @@ export class Warehouse implements OnInit {
         } else {
           this.manageremail = [];
         }
+        this.cdr.detectChanges();
       },
+      error: (err: any) => {
+        console.error('Error fetching emails', err);
+        this.cdr.detectChanges();
+      }
     });
   }
   managers: any[] = [];
@@ -95,7 +100,12 @@ export class Warehouse implements OnInit {
         } else {
           this.managers = [];
         }
+        this.cdr.detectChanges();
       },
+      error: (err: any) => {
+        console.error('Error fetching managers', err);
+        this.cdr.detectChanges();
+      }
     });
   }
   openAddForm() {
@@ -122,8 +132,12 @@ export class Warehouse implements OnInit {
       next: (res: any) => {
         this.loadWarehouses();
         this.closeAddForm();
+        this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Error adding warehouse:', err),
+      error: (err: any) => {
+        console.error('Error adding warehouse:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -150,8 +164,12 @@ export class Warehouse implements OnInit {
         next: (res: any) => {
           this.loadWarehouses();
           this.closeUpdateForm();
+          this.cdr.detectChanges();
         },
-        error: (err: any) => console.error('Error updating warehouse:', err),
+        error: (err: any) => {
+          console.error('Error updating warehouse:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }
@@ -159,8 +177,14 @@ export class Warehouse implements OnInit {
   deleteWarehouse(id: number) {
     if (confirm('Are you sure you want to delete this warehouse?')) {
       this.warehouseService.deleteWarehouse(id).subscribe({
-        next: (res: any) => this.loadWarehouses(),
-        error: (err: any) => console.error('Error deleting warehouse:', err),
+        next: (res: any) => {
+          this.loadWarehouses();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Error deleting warehouse:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }

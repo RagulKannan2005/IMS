@@ -59,26 +59,33 @@
               </span>
             </td>
             <td class="actions-cell">
-              <div class="action-buttons" *ngIf="order.orderStatus !== 'Completed' && order.orderStatus !== 'Delivered' && order.orderStatus !== 'Cancelled'">
+              <div class="action-buttons" *ngIf="order.orderStatus && order.orderStatus.toUpperCase() !== 'RECEIVED' && order.orderStatus.toUpperCase() !== 'SHIPPED' && order.orderStatus.toUpperCase() !== 'CANCELLED'">
+                <button 
+                  class="btn-action btn-accept" 
+                  *ngIf="order.orderStatus.toUpperCase() !== 'ACCEPTED'"
+                  (click)="updateStatus(order, 'ACCEPTED')"
+                  title="Accept Order">
+                  ✔️ Accept
+                </button>
+                <button 
+                  class="btn-action btn-reject" 
+                  *ngIf="order.orderStatus.toUpperCase() !== 'ACCEPTED'"
+                  (click)="confirmReject(order)"
+                  title="Reject Order">
+                  ❌ Reject
+                </button>
                 <button 
                   class="btn-action btn-transit" 
-                  *ngIf="order.orderStatus === 'Pending' || order.orderStatus === 'Processing'"
-                  (click)="updateStatus(order, 'In Transit')"
-                  title="Mark as In Transit">
+                  *ngIf="order.orderStatus.toUpperCase() === 'ACCEPTED'"
+                  (click)="updateStatus(order, 'SHIPPED')"
+                  title="Mark as Shipped">
                   🚚 Ship
                 </button>
-                <button 
-                  class="btn-action btn-delivered" 
-                  *ngIf="order.orderStatus === 'In Transit' || order.orderStatus === 'Shipped'"
-                  (click)="updateStatus(order, 'Delivered')"
-                  title="Mark as Delivered">
-                  ✅ Deliver
-                </button>
               </div>
-              <span class="status-text" *ngIf="order.orderStatus === 'Completed' || order.orderStatus === 'Delivered'">
+              <span class="status-text" *ngIf="order.orderStatus && (order.orderStatus.toUpperCase() === 'RECEIVED' || order.orderStatus.toUpperCase() === 'SHIPPED')">
                 No actions required
               </span>
-              <span class="status-text cancelled" *ngIf="order.orderStatus === 'Cancelled'">
+              <span class="status-text cancelled" *ngIf="order.orderStatus && order.orderStatus.toUpperCase() === 'CANCELLED'">
                 Cancelled
               </span>
             </td>

@@ -197,3 +197,24 @@ table td{
     background:#dcfce7;
     color:#166534;
 }
+
+.logout-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+    transition: 0.3s;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}

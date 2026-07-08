@@ -42,7 +42,7 @@ public class WarehouseController {
     }
 
     @GetMapping("isactive/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STAFF', 'SUPPLIER')")
     public ResponseEntity<List<warehousesResponsedto>> findbyisActive(@PathVariable String status){
         List<warehousesResponsedto> found = warehouseService.findbyisActive(status);
         return ResponseEntity.ok(found);
