@@ -36,4 +36,12 @@ export class categoryservice {
   getCategoryByName(name: string): Observable<any> {
     return this.http.get(`${this.apiurl}/categoryname/${name}`, { headers: this.getAuthHeaders() });
   }
+
+  updateCategory(id: number, category: any): Observable<any> {
+    return this.http.put(`${this.apiurl}/updatecategory/${id}`, category, { headers: this.getAuthHeaders() });
+  }
+
+  deleteCategory(id: number): Observable<any> {
+    return this.http.delete(`${this.apiurl}/deletecategory/${id}`, { headers: this.getAuthHeaders() });
+  }
 }

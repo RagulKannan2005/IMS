@@ -35,12 +35,17 @@ export class Categories {
     });
   }
 
+  isEditMode = false;
   showform= false;
   openform(){
+    this.isEditMode = false;
+    this.newCategory = {};
     this.showform=true;
   }
   closeform(){
     this.showform=false;
+    this.newCategory = {};
+    this.isEditMode = false;
   }
 
   ngOnInit() {
@@ -65,6 +70,44 @@ export class Categories {
       }
     });
     
+  }
+
+  editCategory(category: any) {
+    this.isEditMode = true;
+    this.newCategory = { ...category };
+    this.showform = true;
+  }
+
+  updateCategory() {
+    if (this.newCategory.id) {
+      this.categoryService.updateCategory(this.newCategory.id, this.newCategory).subscribe({
+        next: (response: any) => {
+          console.log('Category updated', response);
+          this.closeform();
+          this.loadCategories();
+        },
+        error: (err) => {
+          console.log('Failed to update category', err);
+          this.errormessage = err.error?.message || 'Failed to update category';
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+
+  deleteCategory(id: number) {
+    if (confirm('Are you sure you want to delete this category?')) {
+      this.categoryService.deleteCategory(id).subscribe({
+        next: (response: any) => {
+          console.log('Category deleted', response);
+          this.loadCategories();
+        },
+        error: (err) => {
+          console.log('Failed to delete category', err);
+          alert('Failed to delete category.');
+        }
+      });
+    }
   }
 
   loadCategories() {

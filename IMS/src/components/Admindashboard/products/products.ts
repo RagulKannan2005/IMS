@@ -12,9 +12,11 @@ import { UserService } from '../../../app/services/user';
 })
 export class Products {
   products: any[] = [];
+  allProducts: any[] = []; // backup for local search filtering
   isLoading = true;
   errorMessage = '';
   newproduct: any = {};
+  isEditMode = false;
 
   productsService = inject(ProductService);
   categoryService = inject(categoryservice);
@@ -25,10 +27,14 @@ export class Products {
 
   showform = false;
   openform() {
+    this.isEditMode = false;
+    this.newproduct = {};
     this.showform = true;
   }
   closeform() {
     this.showform = false;
+    this.newproduct = {};
+    this.isEditMode = false;
   }
   addProduct() {
     this.productsService.addProduct(this.newproduct).subscribe({
@@ -43,6 +49,55 @@ export class Products {
         alert('Failed to save the product. Please try again.');
       },
     });
+  }
+
+  editProduct(product: any) {
+    this.isEditMode = true;
+    this.newproduct = { ...product }; // Shallow copy
+    this.showform = true;
+  }
+
+  updateProduct() {
+    if (this.newproduct.id) {
+      this.productsService.updateProduct(this.newproduct.id, this.newproduct).subscribe({
+        next: (response: any) => {
+          console.log('Product updated successfully', response);
+          this.closeform();
+          this.ngOnInit(); // Reload products
+        },
+        error: (err: any) => {
+          console.error('Error updating product', err);
+          alert('Failed to update the product. Please try again.');
+        }
+      });
+    }
+  }
+
+  deleteProduct(id: number) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.productsService.deleteProduct(id).subscribe({
+        next: (response: any) => {
+          console.log('Product deleted successfully', response);
+          this.ngOnInit(); // Reload products
+        },
+        error: (err: any) => {
+          console.error('Error deleting product', err);
+          alert('Failed to delete the product.');
+        }
+      });
+    }
+  }
+
+  searchProducts(event: any) {
+    const term = event.target.value.toLowerCase().trim();
+    if (!term) {
+      this.products = [...this.allProducts];
+      return;
+    }
+    this.products = this.allProducts.filter((p: any) => 
+      p.name?.toLowerCase().includes(term) ||
+      p.sku?.toLowerCase().includes(term)
+    );
   }
 
   ngOnInit() {
@@ -64,6 +119,7 @@ export class Products {
             console.error('Unexpected response format:', response);
             this.products = [];
           }
+          this.allProducts = [...this.products]; // Update backup
           console.log('Processed products array:', this.products);
           this.isLoading = false;
           this.cdr.detectChanges(); // Force view update

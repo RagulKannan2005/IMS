@@ -14,7 +14,7 @@
   @if (showform) {
     <div class="product-form">
       <div class="form-header">
-        <h4>Add Product</h4>
+        <h4>{{ isEditMode ? 'Edit Product' : 'Add Product' }}</h4>
         <button type="button" (click)="closeform()">✖</button>
       </div>
 
@@ -90,7 +90,9 @@
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" (click)="closeform()">Cancel</button>
 
-          <button type="submit" class="btn btn-primary" (click)="addProduct()">Save Product</button>
+          <button type="submit" class="btn btn-primary" (click)="isEditMode ? updateProduct() : addProduct()">
+            {{ isEditMode ? 'Update Product' : 'Save Product' }}
+          </button>
         </div>
       </form>
     </div>
@@ -99,7 +101,7 @@
     <div class="table-toolbar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search products by name or SKU..." />
+        <input type="text" placeholder="Search products by name or SKU..." (input)="searchProducts($event)" />
       </div>
       <div class="filter-actions">
         <button class="filter-btn">Filters <span class="icon">⚙️</span></button>
@@ -192,8 +194,8 @@
                 </td>
                 <td>
                   <div class="action-buttons">
-                    <button class="action-btn edit" title="Edit">✏️</button>
-                    <button class="action-btn delete" title="Delete">🗑️</button>
+                    <button class="action-btn edit" title="Edit" (click)="editProduct(product)">✏️</button>
+                    <button class="action-btn delete" title="Delete" (click)="deleteProduct(product.id)">🗑️</button>
                   </div>
                 </td>
               </tr>

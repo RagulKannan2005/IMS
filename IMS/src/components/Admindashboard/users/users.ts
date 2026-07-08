@@ -17,13 +17,14 @@ export class Users implements OnInit {
   users: any[] = [];
   filteredUsers: any[] = [];
   showform = false;
+  isEditMode = false;
 
   // Variables for Manager dropdown
   managers: any[] = [];
   selectedManagerId: number | null = null;
   currentAdminid: number = 1; // Testing with admin ID 1
 
-  newUser = {
+  newUser: any = {
     username: '',
     firstName: '',
     lastName: '',
@@ -79,11 +80,22 @@ export class Users implements OnInit {
   }
 
   openform() {
+    this.isEditMode = false;
+    this.newUser = {
+      username: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      phone_number: '',
+      role: 'STAFF',
+    };
     this.showform = true;
   }
 
   closeform() {
     this.showform = false;
+    this.isEditMode = false;
   }
 
   register() {
@@ -91,15 +103,6 @@ export class Users implements OnInit {
       next: (res: any) => {
         this.loadUsers(); // Refresh the table
         this.closeform();
-        this.newUser = {
-          username: '',
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          phone_number: '',
-          role: 'STAFF',
-        };
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -108,6 +111,29 @@ export class Users implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  editUser(user: any) {
+    this.isEditMode = true;
+    this.newUser = { ...user };
+    this.showform = true;
+  }
+
+  updateUser() {
+    if (this.newUser.id) {
+      this.userService.updateUser(this.newUser.id, this.newUser).subscribe({
+        next: (res: any) => {
+          this.loadUsers();
+          this.closeform();
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Error updating user:', err);
+          alert('Failed to update user.');
+          this.cdr.detectChanges();
+        }
+      });
+    }
   }
 
   deleteUser(id: number) {

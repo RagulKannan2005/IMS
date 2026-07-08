@@ -24,4 +24,12 @@ export class SupplierService {
   getAllSuppliers(): Observable<any> {
     return this.http.get(`${this.apiUrl}/getallsuppliers`, { headers: this.getAuthHeaders() });
   }
+
+  updateSupplier(id: number, supplierData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/updatesupplier/${id}`, supplierData, { headers: this.getAuthHeaders() });
+  }
+
+  deleteSupplier(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/deletesupplier/${id}`, { headers: this.getAuthHeaders() });
+  }
 }

@@ -50,4 +50,10 @@ export class UserService {
       headers: this.getAuthHeaders(),
     });
   }
+
+  updateUser(id: number, userData: any): Observable<any> {
+    return this.http.put(`${this.usersApiUrl}/updateuser/${id}`, userData, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 }

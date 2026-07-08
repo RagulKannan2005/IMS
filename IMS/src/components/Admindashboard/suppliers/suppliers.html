@@ -1,0 +1,141 @@
+<div class="suppliers-container">
+  <div class="header-section">
+    <div>
+      <h2 class="page-title">Manage Suppliers</h2>
+      <p class="page-subtitle">Monitor your active suppliers, adjust contact info, and manage accounts.</p>
+    </div>
+  </div>
+
+  @if (showEditForm) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>Edit Supplier - {{selectedSupplier.supplierName}}</h4>
+          <button class="close-btn" (click)="closeEditForm()">✖</button>
+        </div>
+        <div class="modal-body">
+          <form #supplierForm="ngForm" (ngSubmit)="updateSupplier()">
+            <div class="form-group full-width">
+              <label>Supplier Name</label>
+              <input type="text" name="supplierName" required class="form-control" [(ngModel)]="selectedSupplier.supplierName">
+            </div>
+
+            <div class="form-group">
+              <label>Contact Person</label>
+              <input type="text" name="contactPerson" required class="form-control" [(ngModel)]="selectedSupplier.contactPerson">
+            </div>
+
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" name="supplierPhone" required class="form-control" [(ngModel)]="selectedSupplier.supplierPhone">
+            </div>
+
+            <div class="form-group full-width">
+              <label>Email Address</label>
+              <input type="email" name="supplier_email" required class="form-control" [(ngModel)]="selectedSupplier.supplier_email">
+            </div>
+
+            <div class="form-group full-width">
+              <label>Address</label>
+              <textarea name="address" required class="form-control" [(ngModel)]="selectedSupplier.address"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Active Status</label>
+              <select name="status" class="form-control" [(ngModel)]="selectedSupplier.status">
+                <option [ngValue]="true">Active</option>
+                <option [ngValue]="false">Inactive</option>
+              </select>
+            </div>
+
+            <div class="modal-footer full-width">
+              <button type="button" class="btn btn-secondary" (click)="closeEditForm()">Cancel</button>
+              <button type="submit" class="btn btn-primary" [disabled]="!supplierForm.valid">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search suppliers by name, contact or email..." (input)="searchSupplier($event)" />
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading suppliers list...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="error-state">
+        <div class="error-icon">⚠️</div>
+        <h3>Oops! Something went wrong</h3>
+        <p>{{ errorMessage }}</p>
+        <button class="btn btn-primary" (click)="loadSuppliers()">Try Again</button>
+      </div>
+    } @else if (suppliers.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🚚</div>
+        <h3>No Suppliers Found</h3>
+        <p>There are no suppliers registered in the system yet.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Supplier Info</th>
+              <th>Contact Person</th>
+              <th>Contact Details</th>
+              <th>Address</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (supplier of suppliers; track supplier.id) {
+              <tr class="table-row">
+                <td class="id-cell">#{{ supplier.id }}</td>
+                <td>
+                  <div class="supplier-info">
+                    <div class="supplier-avatar">
+                      {{ supplier.supplierName?.charAt(0) || 'S' }}
+                    </div>
+                    <div class="supplier-details">
+                      <span class="supplier-name">{{ supplier.supplierName }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ supplier.contactPerson }}</td>
+                <td>
+                  <div class="contact-info-cell">
+                    <div class="email">{{ supplier.supplier_email }}</div>
+                    <div class="phone" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">{{ supplier.supplierPhone }}</div>
+                  </div>
+                </td>
+                <td>{{ supplier.address }}</td>
+                <td>
+                  <span class="status-badge" [class.active]="supplier.status" [class.inactive]="!supplier.status">
+                    {{ supplier.status ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn edit" title="Edit" (click)="openEditForm(supplier)">✏️</button>
+                    <button class="action-btn delete" title="Delete" (click)="deleteSupplier(supplier.id)">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

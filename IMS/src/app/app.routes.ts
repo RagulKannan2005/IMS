@@ -16,6 +16,8 @@ import { supplierGuard } from './guards/supplier.guard';
 import { SupplierProducts } from '../components/SupplierDashboard/supplier-products/supplier-products';
 import { SupplierProfile } from '../components/SupplierDashboard/supplier-profile/supplier-profile';
 import { SupplierPurchaseOrders } from '../components/SupplierDashboard/supplier-purchase-orders/supplier-purchase-orders';
+import { UnderConstruction } from '../components/Admindashboard/under-construction/under-construction';
+import { Suppliers } from '../components/Admindashboard/suppliers/suppliers';
 export const routes: Routes = [
   { path: '', redirectTo: 'register', pathMatch: 'full' },
   { path: 'register', component: Register },
@@ -32,6 +34,11 @@ export const routes: Routes = [
       { path: 'warehouse', component: Warehouse },
       { path: 'users', component: Users },
       { path: 'purchaseOrders', component: PurchaseOrder },
+      { path: 'roles', component: UnderConstruction },
+      { path: 'stock-movements', component: UnderConstruction },
+      { path: 'suppliers', component: Suppliers },
+      { path: 'reports', component: UnderConstruction },
+      { path: 'settings', component: UnderConstruction },
     ],
   },
   {
