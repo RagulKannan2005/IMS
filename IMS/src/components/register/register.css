@@ -1,0 +1,86 @@
+/* Center the form */
+form {
+    width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Labels */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Inputs and Select */
+input,
+select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Focus effect */
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.3);
+}
+
+/* Register button */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+/* Login text */
+span {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    form {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+    }
+}

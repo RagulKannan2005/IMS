@@ -38,6 +38,20 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     private final com.example.indentory_management_system.Service.StockMovementService stockMovementService;
     private final com.example.indentory_management_system.Repository.SupplierProductMappingRepository supplierProductMappingRepository;
 
+    private Users getEffectiveUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .or(() -> userRepository.findByUsername(username))
+                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+
+        if ("MANAGER".equalsIgnoreCase(currentUser.getRole()) && currentUser.getCreatedBy() != null && !currentUser.getCreatedBy().trim().isEmpty()) {
+            return userRepository.findByUsername(currentUser.getCreatedBy())
+                    .or(() -> userRepository.findByEmail(currentUser.getCreatedBy()))
+                    .orElse(currentUser);
+        }
+        return currentUser;
+    }
+
     @Override
     @Transactional
     public PurchaseOrderResponsedto addPurchaseOrder(PurchaseOrderRequestdto dto) {
@@ -47,9 +61,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+        Users user = getEffectiveUser();
 
         PurchaseOrder order = PurchaseOrder.builder()
                 .poNumber(dto.getPoNumber())
@@ -98,9 +110,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
         warehouses warehouse = warehouseRepository.findById(dto.getWarehouseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found"));
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
+        Users user = getEffectiveUser();
 
         order.setPoNumber(dto.getPoNumber());
         order.setSupplier(supplier);
@@ -132,10 +142,7 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
 
     @Override
     public List<PurchaseOrderResponsedto> getAllPurchaseOrders() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
-
+        Users currentUser = getEffectiveUser();
         List<PurchaseOrder> orders = purchaseorderrepo.findByUserId(currentUser.getId());
 
         return orders.stream()
@@ -267,12 +274,31 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     @Override
+    @Transactional
     public PurchaseOrderResponsedto updateStatus(Long id, String status) {
         PurchaseOrder order = purchaseorderrepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
 
         if ("RECEIVED".equalsIgnoreCase(order.getOrderStatus())) {
             throw new RuntimeException("Cannot update status of a RECEIVED purchase order");
+        }
+
+        // When order is SHIPPED, decrease availableQuantity of each SupplierProduct in the order
+        if ("SHIPPED".equalsIgnoreCase(status) && !"SHIPPED".equalsIgnoreCase(order.getOrderStatus())) {
+            if (order.getItems() != null) {
+                for (PurchaseOrderItem item : order.getItems()) {
+                    com.example.indentory_management_system.Entity.SupplierProduct sp = item.getSupplierProduct();
+                    if (sp != null) {
+                        int currentQty = sp.getAvailableQuantity();
+                        int orderQty = item.getQuantityOrdered();
+                        if (currentQty < orderQty) {
+                            throw new RuntimeException("Insufficient stock for supplier product '" + sp.getName() + "'. Available: " + currentQty + ", Ordered: " + orderQty);
+                        }
+                        sp.setAvailableQuantity(currentQty - orderQty);
+                        supplierProductRepository.save(sp);
+                    }
+                }
+            }
         }
 
         order.setOrderStatus(status);

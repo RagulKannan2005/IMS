@@ -87,13 +87,23 @@ public class StockServiceImp implements StockService {
                 return toDto(stock);
         }
 
-        @Override
-        public List<StockResponsedto> getAllStocks() {
+        private Users getEffectiveUser() {
                 String username = SecurityContextHolder.getContext().getAuthentication().getName();
                 Users currentUser = userRepository.findByEmail(username)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Current authenticated user not found"));
+                                .or(() -> userRepository.findByUsername(username))
+                                .orElseThrow(() -> new ResourceNotFoundException("Current authenticated user not found"));
 
+                if ("MANAGER".equalsIgnoreCase(currentUser.getRole()) && currentUser.getCreatedBy() != null && !currentUser.getCreatedBy().trim().isEmpty()) {
+                        return userRepository.findByUsername(currentUser.getCreatedBy())
+                                        .or(() -> userRepository.findByEmail(currentUser.getCreatedBy()))
+                                        .orElse(currentUser);
+                }
+                return currentUser;
+        }
+
+        @Override
+        public List<StockResponsedto> getAllStocks() {
+                Users currentUser = getEffectiveUser();
                 List<Stock> stocks = stockrepo.findByUserId(currentUser.getId());
 
                 return stocks.stream().map(this::toDto).collect(Collectors.toList());

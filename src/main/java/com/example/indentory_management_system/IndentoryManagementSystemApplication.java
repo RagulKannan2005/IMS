@@ -9,8 +9,10 @@ import java.util.Optional;
 
 import com.example.indentory_management_system.Entity.Users;
 import com.example.indentory_management_system.Entity.Categories;
+import com.example.indentory_management_system.Entity.Supplier;
 import com.example.indentory_management_system.Repository.UserRepository;
 import com.example.indentory_management_system.Repository.CategoriesRepository;
+import com.example.indentory_management_system.Repository.SupplierRepository;
 import java.util.List;
 import java.util.Arrays;
 
@@ -22,7 +24,7 @@ public class IndentoryManagementSystemApplication {
 	}
 
 	@Bean
-	public CommandLineRunner bootstrapData(UserRepository userRepository, CategoriesRepository categoriesRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner bootstrapData(UserRepository userRepository, CategoriesRepository categoriesRepository, SupplierRepository supplierRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
 			Optional<Users> adminOpt = userRepository.findByUsername("admin");
 			if (adminOpt.isEmpty()) {
@@ -65,6 +67,29 @@ public class IndentoryManagementSystemApplication {
 						.role("STAFF")
 						.build());
 				System.out.println("Bootstrap: staff user created.");
+			}
+
+			if (userRepository.findByUsername("supplier").isEmpty()) {
+				// Seed Supplier user & Supplier entity
+				Users supplierUser = userRepository.save(Users.builder()
+						.username("supplier")
+						.firstName("Default")
+						.lastName("Supplier")
+						.email("supplier@ims.com")
+						.password(passwordEncoder.encode("supplier123"))
+						.phone_number("9988776655")
+						.role("SUPPLIER")
+						.build());
+				supplierRepository.save(Supplier.builder()
+						.supplierName("Default Supplier Inc.")
+						.contactPerson("Default Supplier")
+						.supplier_email("supplier@ims.com")
+						.supplierPhone("9988776655")
+						.address("123 Supply Street")
+						.status(true)
+						.user(supplierUser)
+						.build());
+				System.out.println("Bootstrap: supplier user & entity created.");
 			}
       
 			List<String> defaultCategories = Arrays.asList(

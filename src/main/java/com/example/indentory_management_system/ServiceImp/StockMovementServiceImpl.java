@@ -224,12 +224,23 @@ public class StockMovementServiceImpl implements StockMovementService {
         return toDto(movement);
     }
 
-    @Override
-    public List<StockMovementResponseDto> getAllMovements() {
+    private Users getEffectiveUser() {
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = userRepo.findByEmail(currentUsername)
+                .or(() -> userRepo.findByUsername(currentUsername))
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found."));
 
+        if ("MANAGER".equalsIgnoreCase(currentUser.getRole()) && currentUser.getCreatedBy() != null && !currentUser.getCreatedBy().trim().isEmpty()) {
+            return userRepo.findByUsername(currentUser.getCreatedBy())
+                    .or(() -> userRepo.findByEmail(currentUser.getCreatedBy()))
+                    .orElse(currentUser);
+        }
+        return currentUser;
+    }
+
+    @Override
+    public List<StockMovementResponseDto> getAllMovements() {
+        Users currentUser = getEffectiveUser();
         List<StockMovement> movements = stockMovementRepo.findByUserId(currentUser.getId());
 
         return movements.stream()

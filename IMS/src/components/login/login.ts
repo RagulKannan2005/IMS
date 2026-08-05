@@ -36,10 +36,13 @@ export class Login {
           }),
         );
         if (response.role == 'SUPPLIER') {
-          this.router.navigate(['/supplier'])
+          this.router.navigate(['/supplier']);
         }
-        if(response.role=='ADMIN'){
-          this.router.navigate(['/admin'])
+        if (response.role == 'ADMIN') {
+          this.router.navigate(['/admin']);
+        }
+        if (response.role == 'MANAGER') {
+          this.router.navigate(['/manager']);
         }
         console.log('login successfull', response);
         alert('login successfull');

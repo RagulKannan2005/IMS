@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.example.indentory_management_system.Entity.Users;
+// import com.example.indentory_management_system.Entity.Users;
 
 import jakarta.persistence.*;
 import lombok.*;

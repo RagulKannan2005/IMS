@@ -20,11 +20,23 @@ public class CategoryServiceImp implements CategoryService {
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
 
-    @Override
-    public CategoryResponsedto createCategory(CategoryRequestdto dto) {
+    private Users getEffectiveUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users currentUser = userRepository.findByEmail(username)
+                .or(() -> userRepository.findByUsername(username))
                 .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        if ("MANAGER".equalsIgnoreCase(currentUser.getRole()) && currentUser.getCreatedBy() != null && !currentUser.getCreatedBy().trim().isEmpty()) {
+            return userRepository.findByUsername(currentUser.getCreatedBy())
+                    .or(() -> userRepository.findByEmail(currentUser.getCreatedBy()))
+                    .orElse(currentUser);
+        }
+        return currentUser;
+    }
+
+    @Override
+    public CategoryResponsedto createCategory(CategoryRequestdto dto) {
+        Users currentUser = getEffectiveUser();
 
         Categories category = Categories.builder()
                 .name(dto.getName())
@@ -48,10 +60,7 @@ public class CategoryServiceImp implements CategoryService {
 
     @Override
     public List<CategoryResponsedto> getAllCategories() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
-
+        Users currentUser = getEffectiveUser();
         List<Categories> categories = categoriesRepository.findByUserId(currentUser.getId());
 
         return categories.stream()

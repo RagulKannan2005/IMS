@@ -18,6 +18,9 @@ import { SupplierProfile } from '../components/SupplierDashboard/supplier-profil
 import { SupplierPurchaseOrders } from '../components/SupplierDashboard/supplier-purchase-orders/supplier-purchase-orders';
 import { UnderConstruction } from '../components/Admindashboard/under-construction/under-construction';
 import { Suppliers } from '../components/Admindashboard/suppliers/suppliers';
+import { ManagerHome } from '../components/ManagerDashboard/manager-home/manager-home';
+import { managerGuard } from './guards/manager.guard';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'register', pathMatch: 'full' },
   { path: 'register', component: Register },
@@ -42,6 +45,21 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'manager',
+    component: ManagerHome,
+    canActivate: [managerGuard],
+    children: [
+      { path: 'products', component: Products },
+      { path: 'categories', component: Categories },
+      { path: 'stocks', component: Stocks },
+      { path: 'warehouse', component: Warehouse },
+      { path: 'suppliers', component: Suppliers },
+      { path: 'purchaseOrders', component: PurchaseOrder },
+      { path: 'stock-movements', component: UnderConstruction },
+      { path: 'reports', component: UnderConstruction },
+    ],
+  },
+  {
     path:'supplier',
     component: SupplierHome,
     canActivate: [supplierGuard],
@@ -49,8 +67,6 @@ export const routes: Routes = [
       {path :'supplierProducts',component:SupplierProducts},
       {path :'supplierProfile',component:SupplierProfile},
       {path :'supplierPurchaseOrders',component:SupplierPurchaseOrders},
-      
     ],
-    
   }
 ];

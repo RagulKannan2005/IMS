@@ -30,14 +30,26 @@ public class ProductServiceImp implements ProductService {
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
 
+    private Users getEffectiveUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users currentUser = userRepository.findByEmail(username)
+                .or(() -> userRepository.findByUsername(username))
+                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+
+        if ("MANAGER".equalsIgnoreCase(currentUser.getRole()) && currentUser.getCreatedBy() != null && !currentUser.getCreatedBy().trim().isEmpty()) {
+            return userRepository.findByUsername(currentUser.getCreatedBy())
+                    .or(() -> userRepository.findByEmail(currentUser.getCreatedBy()))
+                    .orElse(currentUser);
+        }
+        return currentUser;
+    }
+
     @Override
     public ProductResponsedto createProduct(ProductRequestdto dto) {
         Categories category = categoriesRepository.findByName(dto.getCategory())
                 .orElseThrow(() -> new RuntimeException("Category not found with name: " + dto.getCategory()));
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
+        Users effectiveUser = getEffectiveUser();
 
         Products products = Products.builder()
                 .sku(dto.getSku())
@@ -50,7 +62,7 @@ public class ProductServiceImp implements ProductService {
                 .reorderQuantity(dto.getReorderQuantity())
                 .isActive("active".equalsIgnoreCase(dto.getActive_status()))
                 .categories(category)
-                .user(currentUser)
+                .user(effectiveUser)
                 .build();
 
         Products savedProduct = productrepo.save(products);
@@ -59,11 +71,8 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public List<ProductResponsedto> getAllProducts() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
-
-        List<Products> products = productrepo.findByUserIdWithDetails(currentUser.getId());
+        Users effectiveUser = getEffectiveUser();
+        List<Products> products = productrepo.findByUserIdWithDetails(effectiveUser.getId());
 
         return products.stream()
                 .map(this::mapToResponseDto)
@@ -72,11 +81,8 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public List<ProductResponsedto> getActiveProducts() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Users currentUser = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Current authenticated user not found"));
-
-        List<Products> products = productrepo.findByUserIdWithDetails(currentUser.getId());
+        Users effectiveUser = getEffectiveUser();
+        List<Products> products = productrepo.findByUserIdWithDetails(effectiveUser.getId());
 
         return products.stream()
                 .filter(Products::isActive)
@@ -86,6 +92,15 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public Long productcount(Long userId) {
+        Users user = userRepository.findById(userId).orElse(null);
+        if (user != null && "MANAGER".equalsIgnoreCase(user.getRole()) && user.getCreatedBy() != null && !user.getCreatedBy().trim().isEmpty()) {
+            Users admin = userRepository.findByUsername(user.getCreatedBy())
+                    .or(() -> userRepository.findByEmail(user.getCreatedBy()))
+                    .orElse(null);
+            if (admin != null) {
+                userId = admin.getId();
+            }
+        }
         return productrepo.findByProductcount(userId);
     }
 
