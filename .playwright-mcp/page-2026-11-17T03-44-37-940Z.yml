@@ -1,0 +1,169 @@
+- generic [ref=e25]:
+  - complementary [ref=e26]:
+    - generic [ref=e27]: IMS Portal
+    - list [ref=e32]:
+      - listitem [ref=e33]:
+        - link "Dashboard" [ref=e34] [cursor=pointer]:
+          - /url: /dashboard
+      - listitem [ref=e42]:
+        - link "Users" [ref=e43] [cursor=pointer]:
+          - /url: /users
+      - listitem [ref=e51]:
+        - link "Categories" [ref=e52] [cursor=pointer]:
+          - /url: /categories
+      - listitem [ref=e57]:
+        - link "Products" [ref=e58] [cursor=pointer]:
+          - /url: /products
+      - listitem [ref=e64]:
+        - link "Suppliers" [ref=e65] [cursor=pointer]:
+          - /url: /suppliers
+      - listitem [ref=e73]:
+        - link "Warehouses" [ref=e74] [cursor=pointer]:
+          - /url: /warehouses
+      - listitem [ref=e79]:
+        - link "Stock Levels" [ref=e80] [cursor=pointer]:
+          - /url: /stock
+      - listitem [ref=e86]:
+        - link "Stock Movements" [ref=e87] [cursor=pointer]:
+          - /url: /stock-movements
+      - listitem [ref=e95]:
+        - link "Purchase Orders" [ref=e96] [cursor=pointer]:
+          - /url: /purchase-orders
+      - listitem [ref=e102]:
+        - link "Reports" [ref=e103] [cursor=pointer]:
+          - /url: /reports
+      - listitem [ref=e107]:
+        - link "Settings" [ref=e108] [cursor=pointer]:
+          - /url: /settings
+    - generic [ref=e114]:
+      - generic [ref=e115]: ADMIN Mode
+      - button "Log Out" [ref=e118] [cursor=pointer]
+  - generic [ref=e123]:
+    - navigation [ref=e125]:
+      - textbox "Search inventory, orders, suppliers..." [ref=e131]
+      - generic [ref=e132]:
+        - button "Toggle Theme" [ref=e133] [cursor=pointer]
+        - button "Notifications" [ref=e137] [cursor=pointer]
+        - generic [ref=e142] [cursor=pointer]:
+          - generic [ref=e143]: AU
+          - generic [ref=e144]:
+            - generic [ref=e145]: Admin User
+            - generic [ref=e146]: ADMIN
+        - button "Log Out" [ref=e149] [cursor=pointer]:
+          - generic [ref=e153]: Logout
+    - main [ref=e154]:
+      - generic [ref=e156]:
+        - generic [ref=e157]:
+          - heading "System Administration" [level=1] [ref=e158]
+          - paragraph [ref=e159]: Real-time monitoring and configurations for the IMS platform.
+        - generic [ref=e160]:
+          - generic [ref=e162]:
+            - generic [ref=e163]: Total Users
+            - generic [ref=e164]: "6"
+            - generic [ref=e165]: Registered accounts
+          - generic [ref=e173]:
+            - generic [ref=e174]: Total Products
+            - generic [ref=e175]: "1"
+            - generic [ref=e176]: Catalog items
+          - generic [ref=e182]:
+            - generic [ref=e183]: Suppliers
+            - generic [ref=e184]: "2"
+            - generic [ref=e185]: Registered partners
+          - generic [ref=e191]:
+            - generic [ref=e192]: Warehouses
+            - generic [ref=e193]: "1"
+            - generic [ref=e194]: Active storage units
+          - generic [ref=e199]:
+            - generic [ref=e200]: Purchase Orders
+            - generic [ref=e201]: "0"
+            - generic [ref=e202]: Lifetime orders logged
+        - generic [ref=e207]:
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - generic [ref=e210]:
+                - heading "System Audit Log" [level=2] [ref=e211]
+                - button "View All" [ref=e212] [cursor=pointer]
+              - table [ref=e214]:
+                - rowgroup [ref=e215]:
+                  - row [ref=e216]:
+                    - columnheader "User" [ref=e217]
+                    - columnheader "Action" [ref=e218]
+                    - columnheader "Target" [ref=e219]
+                    - columnheader "Time" [ref=e220]
+                    - columnheader "Status" [ref=e221]
+                - rowgroup [ref=e222]:
+                  - row [ref=e223]:
+                    - cell "admin" [ref=e224]
+                    - cell "Registered Vendor" [ref=e225]
+                    - cell [ref=e226]:
+                      - code [ref=e227]: Anbu industrial suppliers Pvt Lt
+                    - cell "24 mins ago" [ref=e228]
+                    - cell "success" [ref=e229]
+                  - row [ref=e231]:
+                    - cell "admin" [ref=e232]
+                    - cell "Registered Vendor" [ref=e233]
+                    - cell [ref=e234]:
+                      - code [ref=e235]: Global Supplies Inc.
+                    - cell "25 mins ago" [ref=e236]
+                    - cell "success" [ref=e237]
+                  - row [ref=e239]:
+                    - cell "System" [ref=e240]
+                    - cell "Registered Account" [ref=e241]
+                    - cell [ref=e242]:
+                      - code [ref=e243]: admin (ADMIN)
+                    - cell "9 hrs ago" [ref=e244]
+                    - cell "success" [ref=e245]
+                  - row [ref=e247]:
+                    - cell "admin" [ref=e248]
+                    - cell "Registered Account" [ref=e249]
+                    - cell [ref=e250]:
+                      - code [ref=e251]: manager (MANAGER)
+                    - cell "9 hrs ago" [ref=e252]
+                    - cell "success" [ref=e253]
+                  - row [ref=e255]:
+                    - cell "admin" [ref=e256]
+                    - cell "Registered Account" [ref=e257]
+                    - cell [ref=e258]:
+                      - code [ref=e259]: staff (STAFF)
+                    - cell "9 hrs ago" [ref=e260]
+                    - cell "success" [ref=e261]
+            - generic [ref=e263]:
+              - generic [ref=e264]:
+                - heading "Recent Internal Products (0 Total)" [level=2] [ref=e265]
+                - generic [ref=e266] [cursor=pointer]: View All Products
+              - table [ref=e268]:
+                - rowgroup [ref=e269]:
+                  - row [ref=e270]:
+                    - columnheader "Product Name" [ref=e271]
+                    - columnheader "SKU" [ref=e272]
+                    - columnheader "Current Stock" [ref=e273]
+                - rowgroup [ref=e274]:
+                  - row [ref=e275]:
+                    - cell "No internal products found." [ref=e276]
+          - generic [ref=e277]:
+            - generic [ref=e278]:
+              - heading "Platform Status" [level=2] [ref=e279]
+              - generic [ref=e280]:
+                - generic [ref=e281]:
+                  - generic [ref=e282]: API Server Latency
+                  - generic [ref=e283]: 35ms
+                - generic [ref=e284]:
+                  - generic [ref=e285]: Database Density
+                  - generic [ref=e286]: 10 rows
+                - generic [ref=e287]:
+                  - generic [ref=e288]: JVM Memory Consumption
+                  - generic [ref=e289]: 67 MB / 1994 MB
+                - generic [ref=e290]:
+                  - generic [ref=e291]: Database Status
+                  - generic [ref=e292]: Connected
+            - generic [ref=e293]:
+              - heading "Admin Quick Actions" [level=2] [ref=e294]
+              - generic [ref=e295]:
+                - button "Create User Account" [ref=e296] [cursor=pointer]
+                - button "Export Platform Reports" [ref=e298] [cursor=pointer]
+                - button "Backup Database" [ref=e302] [cursor=pointer]
+    - contentinfo [ref=e308]:
+      - generic [ref=e309]: © 2026 Inventory Management System. All rights reserved.
+      - generic [ref=e310]:
+        - text: "Version 1.0.0 (SaaS Edition) | System Status:"
+        - generic [ref=e311]: Online

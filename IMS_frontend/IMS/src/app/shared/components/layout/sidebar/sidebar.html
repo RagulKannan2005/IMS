@@ -26,7 +26,7 @@
     }
   </ul>
 
-  <!-- Sidebar Footer: Session Info -->
+  <!-- Sidebar Footer: Session Info & Logout -->
   <div class="sidebar-footer">
     <div style="display: flex; align-items: center; gap: 10px;">
       <div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--success);"></div>
@@ -34,5 +34,11 @@
         {{ authService.userRole() }} Mode
       </span>
     </div>
+    <button class="sidebar-logout-btn" (click)="logout()" title="Log out of IMS">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px;">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+      </svg>
+      <span>Log Out</span>
+    </button>
   </div>
 </aside>

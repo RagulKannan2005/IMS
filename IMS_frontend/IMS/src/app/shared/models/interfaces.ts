@@ -22,6 +22,8 @@ export interface UserRequestDto {
   phoneNumber: string;
   role: 'ADMIN' | 'MANAGER' | 'STAFF' | 'SUPPLIER';
   supplierId?: number | null;
+  companyName?: string;
+  address?: string;
 }
 
 export interface UserResponseDto {
@@ -74,7 +76,8 @@ export interface ProductResponseDto {
   stockQuantity: number;
   reorderLevel: number;
   reorderQuantity: number;
-  isActive: boolean;
+  isActive?: boolean;
+  active?: boolean;
   supplierId: number | null;
   supplierName: string | null;
   categoryName?: string;

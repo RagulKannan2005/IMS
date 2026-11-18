@@ -38,6 +38,10 @@ export class PurchaseOrderService {
     return this.http.post<PurchaseOrderResponseDto>(`${this.poApiUrl}/findbypurchaseordernumber`, {}, { params });
   }
 
+  getPurchaseOrderById(id: number): Observable<PurchaseOrderResponseDto> {
+    return this.http.get<PurchaseOrderResponseDto>(`${this.poApiUrl}/${id}`);
+  }
+
   getAllPurchaseOrders(): Observable<PurchaseOrderResponseDto[]> {
     return this.http.post<PurchaseOrderResponseDto[]>(`${this.poApiUrl}/findallpurchaseorders`, {});
   }

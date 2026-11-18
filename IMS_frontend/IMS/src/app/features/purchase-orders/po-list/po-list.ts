@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
@@ -12,26 +12,34 @@ import { PurchaseOrderResponseDto } from '../../../shared/models/interfaces';
   styleUrl: './po-list.css'
 })
 export class PurchaseOrderListComponent implements OnInit {
-  orders: PurchaseOrderResponseDto[] = [];
-  loading = false;
+  orders = signal<PurchaseOrderResponseDto[]>([]);
+  loading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
-  constructor(private poService: PurchaseOrderService) {}
+  constructor(
+    private poService: PurchaseOrderService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
   }
 
   loadOrders(): void {
-    this.loading = true;
+    this.loading.set(true);
+    this.errorMessage.set(null);
     this.poService.getAllPurchaseOrders().subscribe({
       next: (data) => {
-        // Sort orders descending
-        this.orders = data.sort((a, b) => b.id - a.id);
-        this.loading = false;
+        const sorted = (data || []).sort((a, b) => (b.id || 0) - (a.id || 0));
+        this.orders.set(sorted);
+        this.loading.set(false);
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Failed to load orders', err);
-        this.loading = false;
+        this.errorMessage.set('Failed to load purchase orders. Please try again.');
+        this.loading.set(false);
+        this.cdr.markForCheck();
       }
     });
   }

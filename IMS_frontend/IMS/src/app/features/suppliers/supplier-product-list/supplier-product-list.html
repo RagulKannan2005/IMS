@@ -39,8 +39,8 @@
               <td style="font-weight: 600;">{{ prod.sellingPrice | currency }}</td>
               <td>{{ prod.stockQuantity }}</td>
               <td>
-                <span class="status-pill" [class.success]="prod.isActive" [class.danger]="!prod.isActive">
-                  {{ prod.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                <span class="status-pill" [class.success]="prod.isActive ?? prod.active" [class.danger]="!(prod.isActive ?? prod.active)">
+                  {{ (prod.isActive ?? prod.active) ? 'ACTIVE' : 'INACTIVE' }}
                 </span>
               </td>
             </tr>

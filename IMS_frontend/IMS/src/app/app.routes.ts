@@ -65,9 +65,9 @@ export const routes: Routes = [
       },
       { 
         path: 'categories', 
-        component: Placeholder, 
+        loadComponent: () => import('./features/categories/category-list/category-list').then(c => c.CategoryListComponent), 
         canActivate: [roleGuard], 
-        data: { roles: ['ADMIN'], title: 'Product Categories' } 
+        data: { roles: ['ADMIN', 'MANAGER'], title: 'Product Categories' } 
       },
       { 
         path: 'products', 

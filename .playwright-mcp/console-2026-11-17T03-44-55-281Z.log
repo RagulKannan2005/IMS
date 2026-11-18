@@ -1,0 +1,14 @@
+[     248ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  331492ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  367030ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  388335ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  407981ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  426112ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  440273ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  462547ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-L4K3XSE5.js?v=91c8f224:17353
+[  463188ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  471939ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  479195ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  489801ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  609939ms] [ERROR] Failed to load notifications HttpErrorResponse @ http://localhost:4200/main.js:4064
+[  609947ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8082/api/v1/notifications:1

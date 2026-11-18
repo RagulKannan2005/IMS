@@ -42,7 +42,13 @@ public class PurchaseOrderController {
         return purchaseorderservice.findByPoNumber(poNumber);
     }
 
-    @PostMapping("/findallpurchaseorders")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER') or (hasRole('SUPPLIER') and @securityService.isSupplierForOrder(authentication, #id))")
+    public PurchaseOrderResponsedto getPurchaseOrderById(@PathVariable Long id){
+        return purchaseorderservice.getPurchaseOrderById(id);
+    }
+
+    @RequestMapping(value = "/findallpurchaseorders", method = {RequestMethod.GET, RequestMethod.POST})
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public List<PurchaseOrderResponsedto> findAllPurchaseOrders(){
         return purchaseorderservice.getAllPurchaseOrders();

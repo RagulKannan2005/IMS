@@ -20,6 +20,7 @@ export const MENU_CONFIG: Record<'ADMIN' | 'MANAGER' | 'STAFF' | 'SUPPLIER', Men
   ],
   MANAGER: [
     { label: 'Dashboard', route: '/dashboard', icon: 'dashboard' },
+    { label: 'Categories', route: '/categories', icon: 'categories' },
     { label: 'Products', route: '/products', icon: 'products' },
     { label: 'Suppliers', route: '/suppliers', icon: 'suppliers' },
     { label: 'Purchase Orders', route: '/purchase-orders', icon: 'orders' },

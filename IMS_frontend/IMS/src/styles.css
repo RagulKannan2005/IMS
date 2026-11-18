@@ -314,8 +314,58 @@ h1, h2, h3, h4, .auth-header h2 {
 }
 
 .sidebar-footer {
-  padding: 20px;
+  padding: 16px 20px;
   border-top: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sidebar-logout-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.logout-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--error);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-nav-btn:hover {
+  background: var(--error);
+  color: #ffffff;
+}
+
+.logout-nav-btn:hover svg {
+  color: #ffffff !important;
 }
 
 /* Main Content Area */

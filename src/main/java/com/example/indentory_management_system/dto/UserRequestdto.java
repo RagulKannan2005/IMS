@@ -29,4 +29,8 @@ public class UserRequestdto {
 
     private Long supplierId;
 
+    private String companyName;
+
+    private String address;
+
 }

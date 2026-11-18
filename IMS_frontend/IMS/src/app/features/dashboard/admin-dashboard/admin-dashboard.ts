@@ -1,11 +1,12 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { DashboardService, AdminDashboardDto } from '../../../core/services/dashboard.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './admin-dashboard.html'
 })
 export class AdminDashboard implements OnInit {

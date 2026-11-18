@@ -1,6 +1,6 @@
 import { Component, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MENU_CONFIG } from '../../../models/menu.config';
@@ -38,11 +38,17 @@ export class Sidebar {
 
   constructor(
     public authService: AuthService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   getSafeSvg(iconName: string): SafeHtml {
     const rawSvg = this.svgIcons[iconName] || this.svgIcons['dashboard'];
     return this.sanitizer.bypassSecurityTrustHtml(rawSvg);
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

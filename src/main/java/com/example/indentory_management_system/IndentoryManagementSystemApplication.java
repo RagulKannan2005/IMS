@@ -87,34 +87,50 @@ public class IndentoryManagementSystemApplication {
 							.build());
 					System.out.println("Bootstrap: Default categories seeded.");
 				}
-			});
-			if (userRepository.findByUsername("manager").isEmpty()) {
-				// Seed Manager
-				userRepository.save(Users.builder()
-						.username("manager")
-						.firstName("Manager")
-						.lastName("User")
-						.email("manager@ims.com")
-						.password(passwordEncoder.encode("Manager@1234"))
-						.phone_number("0987654321")
-						.role("MANAGER")
-						.build());
-				System.out.println("Bootstrap: manager user created.");
-			}
 
-			if (userRepository.findByUsername("staff").isEmpty()) {
-				// Seed Staff
-				userRepository.save(Users.builder()
-						.username("staff")
-						.firstName("Staff")
-						.lastName("User")
-						.email("staff@ims.com")
-						.password(passwordEncoder.encode("Staff@123456"))
-						.phone_number("1122334455")
-						.role("STAFF")
-						.build());
-				System.out.println("Bootstrap: staff user created.");
-			}
+				// 4. Seed or associate default team for system admin
+				if (userRepository.findByUsername("manager").isEmpty()) {
+					userRepository.save(Users.builder()
+							.username("manager")
+							.firstName("Manager")
+							.lastName("User")
+							.email("manager@ims.com")
+							.password(passwordEncoder.encode("Manager@1234"))
+							.phone_number("0987654321")
+							.role("MANAGER")
+							.createdBy(adminUser)
+							.build());
+					System.out.println("Bootstrap: manager user created.");
+				} else {
+					userRepository.findByUsername("manager").ifPresent(m -> {
+						if (m.getCreatedBy() == null) {
+							m.setCreatedBy(adminUser);
+							userRepository.save(m);
+						}
+					});
+				}
+
+				if (userRepository.findByUsername("staff").isEmpty()) {
+					userRepository.save(Users.builder()
+							.username("staff")
+							.firstName("Staff")
+							.lastName("User")
+							.email("staff@ims.com")
+							.password(passwordEncoder.encode("Staff@123456"))
+							.phone_number("1122334455")
+							.role("STAFF")
+							.createdBy(adminUser)
+							.build());
+					System.out.println("Bootstrap: staff user created.");
+				} else {
+					userRepository.findByUsername("staff").ifPresent(s -> {
+						if (s.getCreatedBy() == null) {
+							s.setCreatedBy(adminUser);
+							userRepository.save(s);
+						}
+					});
+				}
+			});
 			if(userRepository.findByUsername("supplier").isEmpty()){
 				// Seed Supplier
 				Users supplierUser = userRepository.save(Users.builder()
@@ -125,6 +141,7 @@ public class IndentoryManagementSystemApplication {
 						.password(passwordEncoder.encode("Supplier@123"))
 						.phone_number("2233445566")
 						.role("SUPPLIER")
+						.createdBy(userRepository.findByUsername("admin").orElse(null))
 						.build());
 				System.out.println("Bootstrap: supplier user created.");
 
@@ -144,6 +161,13 @@ public class IndentoryManagementSystemApplication {
 				// Heal broken supplier mapping if necessary
 				Users supplierUser = userRepository.findByUsername("supplier").get();
 				
+				userRepository.findByUsername("admin").ifPresent(adm -> {
+					if (supplierUser.getCreatedBy() == null) {
+						supplierUser.setCreatedBy(adm);
+						userRepository.save(supplierUser);
+					}
+				});
+
 				// We do not use supplierUser.getSupplier() to avoid LazyInitializationException
 				boolean supplierExists = false;
 				for (Supplier s : supplierRepository.findAll()) {

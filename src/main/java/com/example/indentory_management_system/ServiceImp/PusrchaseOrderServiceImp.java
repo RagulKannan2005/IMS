@@ -106,6 +106,13 @@ public class PusrchaseOrderServiceImp implements PurchaseOrderService {
     }
 
     @Override
+    public PurchaseOrderResponsedto getPurchaseOrderById(Long id) {
+        PurchaseOrder order = purchaseorderrepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase order not found with ID: " + id));
+        return toDto(order);
+    }
+
+    @Override
     public List<PurchaseOrderResponsedto> getAllPurchaseOrders() {
         return purchaseorderrepo.findAll()
                 .stream()

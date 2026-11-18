@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -37,7 +37,8 @@ export class CreatePurchaseOrderComponent implements OnInit {
     private http: HttpClient,
     private poService: PurchaseOrderService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,10 +56,12 @@ export class CreatePurchaseOrderComponent implements OnInit {
       next: (data) => {
         this.suppliers = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = 'Failed to load suppliers.';
         this.loading = false;
+        this.cdr.detectChanges();
         console.error(err);
       }
     });
@@ -74,10 +77,12 @@ export class CreatePurchaseOrderComponent implements OnInit {
         next: (data) => {
           this.supplierProducts = data;
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.error = 'Failed to load supplier products.';
           this.loading = false;
+          this.cdr.detectChanges();
           console.error(err);
         }
       });
@@ -144,6 +149,7 @@ export class CreatePurchaseOrderComponent implements OnInit {
           next: () => {
             this.success = 'Purchase order created successfully!';
             this.submitting = false;
+            this.cdr.detectChanges();
             setTimeout(() => {
               this.router.navigate(['/purchase-orders']);
             }, 1500);
@@ -151,6 +157,7 @@ export class CreatePurchaseOrderComponent implements OnInit {
           error: (err) => {
             this.error = err.error?.message || 'Failed to add items to purchase order.';
             this.submitting = false;
+            this.cdr.detectChanges();
             console.error(err);
           }
         });
@@ -158,6 +165,7 @@ export class CreatePurchaseOrderComponent implements OnInit {
       error: (err) => {
         this.error = err.error?.message || 'Failed to create purchase order.';
         this.submitting = false;
+        this.cdr.detectChanges();
         console.error(err);
       }
     });

@@ -1,0 +1,13 @@
+[     270ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  184143ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:865
+[  184472ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[  189156ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:865
+[ 1834764ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[ 1857203ms] [WARNING] NG0955: The provided track expression resulted in duplicated keys for a given collection. Adjust the tracking expression such that it uniquely identifies all the items in the collection. Duplicated keys were: 
+key "1 hr ago" at index "0" and "1", 
+key "10 hrs ago" at index "2" and "3", 
+key "10 hrs ago" at index "3" and "4". Find more at https://v21.angular.dev/errors/NG0955 @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:17224
+[ 2088770ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:865
+[ 2099277ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466
+[ 2103937ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:865
+[ 2190046ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/D:/IMS/IMS_frontend/IMS/.angular/cache/21.2.14/IMS/vite/deps/chunk-XWQQ42E4.js?v=0224d8e9:14466

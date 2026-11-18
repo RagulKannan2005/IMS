@@ -119,8 +119,8 @@
               </div>
               <div style="text-align: right;">
                 <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); display: block;">{{ prod.sellingPrice | currency }}</span>
-                <span class="status-pill" [class.success]="prod.isActive" [class.danger]="!prod.isActive" style="padding: 2px 6px; font-size: 9px; margin-top: 2px;">
-                  {{ prod.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                <span class="status-pill" [class.success]="prod.isActive ?? prod.active" [class.danger]="!(prod.isActive ?? prod.active)" style="padding: 2px 6px; font-size: 9px; margin-top: 2px;">
+                  {{ (prod.isActive ?? prod.active) ? 'ACTIVE' : 'INACTIVE' }}
                 </span>
               </div>
             </div>

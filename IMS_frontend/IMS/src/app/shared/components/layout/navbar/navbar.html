@@ -80,10 +80,10 @@
       @if (authService.currentUser(); as user) {
         <div class="profile-menu" (click)="toggleProfileMenu()">
           <div class="avatar">
-            {{ user.firstName[0] }}{{ user.lastName[0] }}
+            {{ (user.firstName ? user.firstName[0] : (user.username ? user.username[0] : 'U')) }}{{ (user.lastName ? user.lastName[0] : '') }}
           </div>
           <div class="profile-info">
-            <span class="profile-name">{{ user.firstName }} {{ user.lastName }}</span>
+            <span class="profile-name">{{ user.firstName || user.username }} {{ user.lastName || '' }}</span>
             <span class="profile-role">{{ user.role }}</span>
           </div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: var(--text-muted); margin-left: 4px;">
@@ -95,7 +95,7 @@
         @if (showProfileMenu()) {
           <div class="dropdown-menu" style="right: 0;">
             <div style="padding: 10px 14px; border-bottom: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 2px;">
-              <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">{{ user.firstName }} {{ user.lastName }}</span>
+              <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);">{{ user.firstName || user.username }} {{ user.lastName || '' }}</span>
               <span style="font-size: 11px; color: var(--text-muted);">{{ user.email }}</span>
             </div>
             <button class="dropdown-item" (click)="logout()">
@@ -108,5 +108,13 @@
         }
       }
     </div>
+
+    <!-- Direct Header Logout Button -->
+    <button class="logout-nav-btn" (click)="logout()" title="Log out of IMS" aria-label="Log Out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
+      </svg>
+      <span>Logout</span>
+    </button>
   </div>
 </nav>

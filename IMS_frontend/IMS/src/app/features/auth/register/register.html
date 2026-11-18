@@ -23,6 +23,18 @@
       <p class="auth-subtitle">Register to access the Inventory Management System</p>
     </div>
 
+    @if (errorMessage()) {
+      <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 20px; line-height: 1.4;">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    @if (successMessage()) {
+      <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 20px; line-height: 1.4;">
+        {{ successMessage() }}
+      </div>
+    }
+
     <form [formGroup]="registerForm" (ngSubmit)="submit()" class="auth-form">
       <div class="form-grid">
         <!-- First Name -->
@@ -198,36 +210,47 @@
         }
       </div>
 
-      <!-- Dynamic Supplier ID field -->
+      <!-- Dynamic Supplier Specific Information -->
       @if (registerForm.get('role')?.value === 'SUPPLIER') {
         <div class="form-group fade-in">
-          <label for="supplierId">Associated Supplier ID (Optional)</label>
+          <label for="companyName">Company / Supplier Business Name</label>
           <div class="input-wrapper">
-            <svg viewBox="0 0 24 24" class="input-icon input-icon-key" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="7.5" cy="15.5" r="5.5"/>
-              <path d="m21 2-9.6 9.6"/>
-              <path d="m15.5 7.5 3 3L22 7l-3-3"/>
+            <svg viewBox="0 0 24 24" class="input-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
             </svg>
             <input
-              type="number"
-              id="supplierId"
-              formControlName="supplierId"
-              placeholder="Enter Supplier ID"
-              [class.invalid]="registerForm.get('supplierId')?.touched && registerForm.get('supplierId')?.invalid">
+              type="text"
+              id="companyName"
+              formControlName="companyName"
+              placeholder="e.g. Acme Industrial Supplies Ltd">
           </div>
-          @if (registerForm.get('supplierId')?.touched) {
-            @if (registerForm.get('supplierId')?.errors?.['required']) {
-              <small class="error-msg">Supplier ID is required for SUPPLIER role</small>
-            }
-            @if (registerForm.get('supplierId')?.errors?.['min']) {
-              <small class="error-msg">Supplier ID must be a positive number</small>
-            }
-          }
+          <small style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">
+            The registered company or business name displayed in inventory purchase orders.
+          </small>
+        </div>
+
+        <div class="form-group fade-in">
+          <label for="address">Business / Warehouse Address</label>
+          <div class="input-wrapper">
+            <svg viewBox="0 0 24 24" class="input-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <input
+              type="text"
+              id="address"
+              formControlName="address"
+              placeholder="e.g. 100 Logistics Way, Industrial Park">
+          </div>
+          <small style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">
+            Shipping origin address for incoming stock.
+          </small>
         </div>
       }
 
-      <button type="submit" class="submit-btn" [disabled]="registerForm.invalid && registerForm.touched">
-        Register Account
+      <button type="submit" class="submit-btn" [disabled]="registerForm.invalid || isSubmitting()">
+        {{ isSubmitting() ? 'Registering...' : 'Register Account' }}
       </button>
 
       <p class="auth-footer">

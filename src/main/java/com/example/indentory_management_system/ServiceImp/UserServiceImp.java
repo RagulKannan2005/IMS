@@ -20,6 +20,7 @@ import com.example.indentory_management_system.Service.UserService;
 import com.example.indentory_management_system.dto.UserRequestdto;
 import com.example.indentory_management_system.dto.UserResponsedto;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -43,7 +44,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional 
     public UserResponsedto createUser(UserRequestdto dto) {
         Users creator = getAuthenticatedUser();
         
@@ -52,6 +53,13 @@ public class UserServiceImp implements UserService {
             if (!"STAFF".equalsIgnoreCase(dto.getRole())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Managers are only allowed to create Staff accounts.");
             }
+        }
+
+        if (userrepo.findByUsername(dto.getUsername()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username '" + dto.getUsername() + "' is already taken.");
+        }
+        if (userrepo.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email '" + dto.getEmail() + "' is already registered.");
         }
 
         Supplier supplier = null;
@@ -79,18 +87,36 @@ public class UserServiceImp implements UserService {
             supplier.setUser(saved);
             supplierrepo.save(supplier);
             saved.setSupplier(supplier);
+            userrepo.save(saved);
         } else if ("SUPPLIER".equalsIgnoreCase(dto.getRole())) {
+            for (Supplier s : supplierrepo.findAll()) {
+                if (s.getSupplier_email() != null && s.getSupplier_email().equalsIgnoreCase(dto.getEmail())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A supplier with email '" + dto.getEmail() + "' already exists.");
+                }
+                if (s.getSupplierPhone() != null && s.getSupplierPhone().equalsIgnoreCase(dto.getPhoneNumber())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A supplier with phone number '" + dto.getPhoneNumber() + "' already exists.");
+                }
+            }
+
+            String company = (dto.getCompanyName() != null && !dto.getCompanyName().isBlank())
+                    ? dto.getCompanyName().trim()
+                    : (dto.getFirstName() + " " + dto.getLastName());
+            String addr = (dto.getAddress() != null && !dto.getAddress().isBlank())
+                    ? dto.getAddress().trim()
+                    : "Address Not Provided";
+
             Supplier newSupplier = Supplier.builder()
-                    .supplierName(dto.getFirstName() + " " + dto.getLastName())
+                    .supplierName(company)
                     .contactPerson(dto.getFirstName() + " " + dto.getLastName())
                     .supplier_email(dto.getEmail())
-                    .supplierPhone(dto.getPhoneNumber() != null ? dto.getPhoneNumber() : "0000000000")
-                    .address("Address Not Provided")
+                    .supplierPhone(dto.getPhoneNumber())
+                    .address(addr)
                     .status(true)
                     .user(saved)
                     .build();
             supplierrepo.save(newSupplier);
             saved.setSupplier(newSupplier);
+            userrepo.save(saved);
         }
 
         return toDto(saved);
@@ -109,9 +135,29 @@ public class UserServiceImp implements UserService {
                     .stream().map(this::toDto).collect(Collectors.toList());
         }
 
-        // Admins see all users
-        return userrepo.findAll()
-                .stream().map(this::toDto).collect(Collectors.toList());
+        if ("ADMIN".equalsIgnoreCase(actor.getRole())) {
+            // Root/Bootstrap admin has global visibility
+            if ("admin".equalsIgnoreCase(actor.getUsername()) || "admin@ims.com".equalsIgnoreCase(actor.getEmail())) {
+                return userrepo.findAll()
+                        .stream().map(this::toDto).collect(Collectors.toList());
+            }
+
+            // Other admins only see users created by themselves or by managers under their administration
+            List<Users> myDirectUsers = userrepo.findByCreatedById(actor.getId());
+            List<Long> managerIds = myDirectUsers.stream()
+                    .filter(u -> "MANAGER".equalsIgnoreCase(u.getRole()))
+                    .map(Users::getId)
+                    .collect(Collectors.toList());
+
+            List<Users> allMyTeam = new java.util.ArrayList<>(myDirectUsers);
+            for (Long mId : managerIds) {
+                allMyTeam.addAll(userrepo.findByCreatedById(mId));
+            }
+
+            return allMyTeam.stream().distinct().map(this::toDto).collect(Collectors.toList());
+        }
+
+        return List.of();
     }
 
     @Override

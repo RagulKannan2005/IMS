@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrderResponseDto, PurchaseOrderItemResponseDto } from '../../../shared/models/interfaces';
 
@@ -13,14 +14,16 @@ import { PurchaseOrderResponseDto, PurchaseOrderItemResponseDto } from '../../..
 })
 export class PurchaseOrderDetailsComponent implements OnInit {
   orderId!: number;
-  order?: PurchaseOrderResponseDto;
-  items: PurchaseOrderItemResponseDto[] = [];
-  loading = false;
+  order = signal<PurchaseOrderResponseDto | null>(null);
+  items = signal<PurchaseOrderItemResponseDto[]>([]);
+  loading = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private poService: PurchaseOrderService
+    private poService: PurchaseOrderService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -34,33 +37,24 @@ export class PurchaseOrderDetailsComponent implements OnInit {
   }
 
   loadOrderDetails(): void {
-    this.loading = true;
-    
-    // Fetch all POs and find this one
-    this.poService.getAllPurchaseOrders().subscribe({
-      next: (orders) => {
-        this.order = orders.find(o => o.id === this.orderId);
-        if (!this.order) {
-          alert('Order not found.');
-          this.router.navigate(['/purchase-orders']);
-          return;
-        }
+    this.loading.set(true);
+    this.errorMessage.set(null);
 
-        // Fetch PO items
-        this.poService.getItemsByPurchaseOrder(this.orderId).subscribe({
-          next: (items) => {
-            this.items = items;
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('Error fetching PO items', err);
-            this.loading = false;
-          }
-        });
+    forkJoin({
+      order: this.poService.getPurchaseOrderById(this.orderId),
+      items: this.poService.getItemsByPurchaseOrder(this.orderId)
+    }).subscribe({
+      next: ({ order, items }) => {
+        this.order.set(order);
+        this.items.set(items || []);
+        this.loading.set(false);
+        this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Error fetching PO', err);
-        this.loading = false;
+        console.error('Error fetching PO details', err);
+        this.errorMessage.set('Could not load purchase order details.');
+        this.loading.set(false);
+        this.cdr.markForCheck();
       }
     });
   }

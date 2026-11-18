@@ -24,11 +24,20 @@ public class SupplierServiceImp implements SupplierService {
     private final UserRepository userRepository;
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public SupplierResponsedto addSupplier(SupplierRequestdto dto) {
         Users user = null;
         if (dto.getUserId() != null) {
             user = userRepository.findById(dto.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
+
+            for (Supplier s : supplierrepo.findAll()) {
+                if (s.getUser() != null && s.getUser().getId().equals(dto.getUserId())) {
+                    throw new org.springframework.web.server.ResponseStatusException(
+                            org.springframework.http.HttpStatus.BAD_REQUEST,
+                            "User ID " + dto.getUserId() + " is already linked to another supplier profile.");
+                }
+            }
         }
 
         Supplier supplier = Supplier.builder()
@@ -40,8 +49,12 @@ public class SupplierServiceImp implements SupplierService {
                 .status(dto.isStatus())
                 .user(user)
                 .build();
-        supplierrepo.save(supplier);
-        return toDto(supplier);
+        Supplier saved = supplierrepo.save(supplier);
+        if (user != null) {
+            user.setSupplier(saved);
+            userRepository.save(user);
+        }
+        return toDto(saved);
     }
 
     @Override
@@ -90,14 +103,15 @@ public class SupplierServiceImp implements SupplierService {
     }
 
     @Override
-    public List<SupplierResponsedto> getSuppliersByProduct(String productname){
+    public List<SupplierResponsedto> getSuppliersByProduct(String productname) {
         List<Supplier> suppliers = supplierrepo.findSuppliersByProductName(productname);
         return suppliers.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
     @Override
-    public List<SupplierResponsedto> searchSuppliers(String keyword){
+    public List<SupplierResponsedto> searchSuppliers(String keyword) {
         List<Supplier> suppliers = supplierrepo.searchSuppliers(keyword);
         return suppliers.stream()
                 .map(this::toDto)
@@ -105,7 +119,7 @@ public class SupplierServiceImp implements SupplierService {
     }
 
     @Override
-    public List<SupplierResponsedto> getSuppliersByStatus(boolean status){
+    public List<SupplierResponsedto> getSuppliersByStatus(boolean status) {
         List<Supplier> suppliers = supplierrepo.findSuppliersByStatus(status);
         return suppliers.stream()
                 .map(this::toDto)
@@ -113,7 +127,7 @@ public class SupplierServiceImp implements SupplierService {
     }
 
     @Override
-    public List<SupplierResponsedto> getSuppliersByName(String name){
+    public List<SupplierResponsedto> getSuppliersByName(String name) {
         List<Supplier> suppliers = supplierrepo.findSuppliersByName(name);
         return suppliers.stream()
                 .map(this::toDto)

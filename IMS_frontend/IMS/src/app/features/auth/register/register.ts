@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -18,10 +18,9 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './register.css',
 })
 export class Register {
-
- 
-
-
+  errorMessage = signal<string | null>(null);
+  successMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   registerForm = new FormGroup({
     username: new FormControl('', [
@@ -52,7 +51,8 @@ export class Register {
     role: new FormControl('STAFF', [
       Validators.required
     ]),
-    supplierId: new FormControl<number | null>(null)
+    companyName: new FormControl(''),
+    address: new FormControl('')
   });
 
   roles = ['ADMIN', 'MANAGER', 'STAFF', 'SUPPLIER'];
@@ -61,38 +61,41 @@ export class Register {
     private router: Router,
     public themeService: ThemeService,
     private authService: AuthService
-  ) {
-    // The backend automatically creates a new supplier if a user is registered with role SUPPLIER
-    // and no supplierId is provided. Thus, we keep supplierId optional.
-    this.registerForm.get('role')?.valueChanges.subscribe(role => {
-      const supplierIdCtrl = this.registerForm.get('supplierId');
-      if (role !== 'SUPPLIER') {
-        supplierIdCtrl?.setValue(null);
-      }
-      supplierIdCtrl?.updateValueAndValidity();
-    });
-  }
+  ) {}
 
   submit() {
-    console.log('Register Form Value:', this.registerForm.value);
-    console.log('Register Form Valid:', this.registerForm.valid);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
 
     if (this.registerForm.valid) {
-      console.log('Registration Request successfully generated!');
-      this.authService.register(this.registerForm.value)
+      this.isSubmitting.set(true);
+      const payload: any = { ...this.registerForm.value };
+
+      // Clean empty fields
+      if (!payload.companyName) delete payload.companyName;
+      if (!payload.address) delete payload.address;
+
+      this.authService.register(payload)
         .subscribe({
-          next: (response) => {
-            console.log('Register Response:', response);
-            alert('Registration successful');
-            this.router.navigate(['/login']);
+          next: () => {
+            this.isSubmitting.set(false);
+            this.successMessage.set('Account registered successfully! Redirecting to login...');
+            setTimeout(() => {
+              this.router.navigate(['/login']);
+            }, 1200);
           },
           error: (error) => {
+            this.isSubmitting.set(false);
             console.error('Register Error:', error);
-            alert('Registration failed');
+            if (error.status === 0) {
+              this.errorMessage.set('Cannot connect to backend server. Please verify Spring Boot is running on port 8082.');
+            } else {
+              const msg = error.error?.message || error.error?.error || 'Registration failed. Please check your details.';
+              this.errorMessage.set(msg);
+            }
           }
         });
     } else {
-      console.log('Registration Form is Invalid');
       this.registerForm.markAllAsTouched();
     }
   }

@@ -15,6 +15,8 @@ public interface PurchaseOrderService {
 
     PurchaseOrderResponsedto findByPoNumber(String poNumber);
 
+    PurchaseOrderResponsedto getPurchaseOrderById(Long id);
+
     List<PurchaseOrderResponsedto> getAllPurchaseOrders();
 
     List<PurchaseOrderResponsedto> findBySupplierId(Long supplierId);

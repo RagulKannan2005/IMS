@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrderResponseDto, PurchaseOrderItemResponseDto } from '../../../shared/models/interfaces';
 
@@ -21,7 +22,8 @@ export class SupplierOrderDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private poService: PurchaseOrderService
+    private poService: PurchaseOrderService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -37,31 +39,22 @@ export class SupplierOrderDetailsComponent implements OnInit {
   loadOrderDetails(): void {
     this.loading = true;
     
-    // Fetch all POs and find this one (since there's no getById endpoint for POs in backend)
-    this.poService.getAllPurchaseOrders().subscribe({
-      next: (orders) => {
-        this.order = orders.find(o => o.id === this.orderId);
-        if (!this.order) {
-          alert('Order not found.');
-          this.router.navigate(['/supplier/orders']);
-          return;
-        }
-
-        // Fetch PO items
-        this.poService.getItemsByPurchaseOrder(this.orderId).subscribe({
-          next: (items) => {
-            this.items = items;
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('Error fetching PO items', err);
-            this.loading = false;
-          }
-        });
+    forkJoin({
+      order: this.poService.getPurchaseOrderById(this.orderId),
+      items: this.poService.getItemsByPurchaseOrder(this.orderId)
+    }).subscribe({
+      next: ({ order, items }) => {
+        this.order = order;
+        this.items = items || [];
+        this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching PO', err);
+        console.error('Error fetching PO details', err);
+        alert('Could not load order details.');
         this.loading = false;
+        this.cdr.detectChanges();
+        this.router.navigate(['/supplier/orders']);
       }
     });
   }
@@ -73,11 +66,13 @@ export class SupplierOrderDetailsComponent implements OnInit {
         next: (updatedOrder) => {
           this.order = updatedOrder;
           this.actionLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to accept order', err);
           alert('Error accepting order.');
           this.actionLoading = false;
+          this.cdr.detectChanges();
         }
       });
     }
@@ -90,11 +85,13 @@ export class SupplierOrderDetailsComponent implements OnInit {
         next: (updatedOrder) => {
           this.order = updatedOrder;
           this.actionLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to reject order', err);
           alert('Error rejecting order.');
           this.actionLoading = false;
+          this.cdr.detectChanges();
         }
       });
     }
@@ -107,11 +104,13 @@ export class SupplierOrderDetailsComponent implements OnInit {
         next: (updatedOrder) => {
           this.order = updatedOrder;
           this.actionLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to ship order', err);
           alert('Error shipping order.');
           this.actionLoading = false;
+          this.cdr.detectChanges();
         }
       });
     }

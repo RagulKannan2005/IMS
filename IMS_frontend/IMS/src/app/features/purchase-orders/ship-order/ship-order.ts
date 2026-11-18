@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -23,7 +23,8 @@ export class ShipOrder implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private poService: PurchaseOrderService
+    private poService: PurchaseOrderService,
+    private cdr: ChangeDetectorRef
   ) {
     this.shipForm = this.fb.group({
       carrierName: ['', Validators.required],
@@ -43,14 +44,16 @@ export class ShipOrder implements OnInit {
 
   loadOrder(): void {
     this.loading = true;
-    this.poService.getAllPurchaseOrders().subscribe({
-      next: (orders: PurchaseOrderResponseDto[]) => {
-        this.purchaseOrder = orders.find((o: PurchaseOrderResponseDto) => o.id === this.orderId);
+    this.poService.getPurchaseOrderById(this.orderId).subscribe({
+      next: (order: PurchaseOrderResponseDto) => {
+        this.purchaseOrder = order;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Failed to load order metadata', err);
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -69,11 +72,13 @@ export class ShipOrder implements OnInit {
         alert('Order marked as shipped successfully!');
         this.router.navigate(['/supplier/orders']);
         this.submitting = false;
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Failed to ship order', err);
         alert('Failed to mark order as shipped. Please try again.');
         this.submitting = false;
+        this.cdr.detectChanges();
       }
     });
   }

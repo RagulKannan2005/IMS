@@ -55,14 +55,14 @@ public class Products {
     @Column(name="updated_date",nullable = false)
     private LocalDate updatedDate;
 
+    @Builder.Default
     @Column(name="is_active",nullable = false)
-    private boolean isActive;
+    private boolean isActive = true;
 
     @PrePersist
     public void prePersist(){
         createdDate = LocalDate.now();
         updatedDate = LocalDate.now();
-        isActive = true;
     }
 
     @PreUpdate

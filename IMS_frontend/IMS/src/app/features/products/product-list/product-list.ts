@@ -102,7 +102,7 @@ export class ProductListComponent implements OnInit {
           stockQuantity: existingProduct.stockQuantity,
           reorderLevel: existingProduct.reorderLevel,
           reorderQuantity: existingProduct.reorderQuantity,
-          active_status: existingProduct.isActive ? 'Active' : 'Inactive',
+          active_status: (existingProduct.isActive ?? existingProduct.active) ? 'Active' : 'Inactive',
           category: existingProduct.categoryName || '',
           supplierId: existingProduct.supplierId
         }, { emitEvent: false }); // Prevent recursive triggering just in case
@@ -157,7 +157,7 @@ export class ProductListComponent implements OnInit {
       stockQuantity: product.stockQuantity,
       reorderLevel: product.reorderLevel,
       reorderQuantity: product.reorderQuantity,
-      active_status: product.isActive ? 'Active' : 'Inactive',
+      active_status: (product.isActive ?? product.active) ? 'Active' : 'Inactive',
       category: product.categoryName || '',
       supplierId: product.supplierId
     });

@@ -57,7 +57,7 @@ public class ProductServiceImp implements ProductService {
                 .stockQuantity(dto.getStockQuantity())
                 .reorderLevel(dto.getReorderLevel())
                 .reorderQuantity(dto.getReorderQuantity())
-                .isActive("active".equalsIgnoreCase(dto.getActive_status()))
+                .isActive(dto.getActive_status() == null || "active".equalsIgnoreCase(dto.getActive_status()))
                 .categories(category)
                 .user(currentUser)
                 .supplier(supplier)

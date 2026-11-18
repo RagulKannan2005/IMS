@@ -1,0 +1,69 @@
+- generic [ref=f13e4]:
+  - complementary [ref=f13e5]:
+    - generic [ref=f13e6]: IMS Portal
+    - list [ref=f13e11]:
+      - listitem [ref=f13e12]:
+        - link "Dashboard" [ref=f13e13] [cursor=pointer]:
+          - /url: /dashboard
+      - listitem [ref=f13e21]:
+        - link "Users" [ref=f13e22] [cursor=pointer]:
+          - /url: /users
+      - listitem [ref=f13e30]:
+        - link "Categories" [ref=f13e31] [cursor=pointer]:
+          - /url: /categories
+      - listitem [ref=f13e36]:
+        - link "Products" [ref=f13e37] [cursor=pointer]:
+          - /url: /products
+      - listitem [ref=f13e43]:
+        - link "Suppliers" [ref=f13e44] [cursor=pointer]:
+          - /url: /suppliers
+      - listitem [ref=f13e52]:
+        - link "Warehouses" [ref=f13e53] [cursor=pointer]:
+          - /url: /warehouses
+      - listitem [ref=f13e58]:
+        - link "Stock Levels" [ref=f13e59] [cursor=pointer]:
+          - /url: /stock
+      - listitem [ref=f13e65]:
+        - link "Stock Movements" [ref=f13e66] [cursor=pointer]:
+          - /url: /stock-movements
+      - listitem [ref=f13e74]:
+        - link "Purchase Orders" [ref=f13e75] [cursor=pointer]:
+          - /url: /purchase-orders
+      - listitem [ref=f13e81]:
+        - link "Reports" [ref=f13e82] [cursor=pointer]:
+          - /url: /reports
+      - listitem [ref=f13e86]:
+        - link "Settings" [ref=f13e87] [cursor=pointer]:
+          - /url: /settings
+    - generic [ref=f13e93]:
+      - generic [ref=f13e94]: ADMIN Mode
+      - button "Log Out" [ref=f13e97] [cursor=pointer]
+  - generic [ref=f13e102]:
+    - navigation [ref=f13e104]:
+      - textbox "Search inventory, orders, suppliers..." [ref=f13e110]
+      - generic [ref=f13e111]:
+        - button "Toggle Theme" [ref=f13e112] [cursor=pointer]
+        - button "Notifications" [ref=f13e116] [cursor=pointer]
+        - generic [ref=f13e121] [cursor=pointer]:
+          - generic [ref=f13e122]: AU
+          - generic [ref=f13e123]:
+            - generic [ref=f13e124]: Admin User
+            - generic [ref=f13e125]: ADMIN
+        - button "Log Out" [ref=f13e128] [cursor=pointer]:
+          - generic [ref=f13e132]: Logout
+    - main [ref=f13e133]:
+      - generic [ref=f13e269]:
+        - generic [ref=f13e270]:
+          - heading "Create Purchase Order" [level=2] [ref=f13e271]
+          - button "Back to Orders" [ref=f13e273]
+        - generic [ref=f13e276]:
+          - generic [ref=f13e277]: Supplier
+          - combobox "Supplier" [ref=f13e278]:
+            - option "Select a Supplier" [disabled] [selected]
+            - option "Global Supplies Inc."
+            - option "Anbu industrial suppliers Pvt Lt"
+    - contentinfo [ref=f13e145]:
+      - generic [ref=f13e146]: © 2026 Inventory Management System. All rights reserved.
+      - generic [ref=f13e147]:
+        - text: "Version 1.0.0 (SaaS Edition) | System Status:"
+        - generic [ref=f13e148]: Online
